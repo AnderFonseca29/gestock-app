@@ -10,22 +10,22 @@
       <button 
         [class.active]="tabActiva === 'notificaciones'" 
         (click)="cambiarTab('notificaciones')">
-        🔔 Notificaciones
+<i class="fas fa-bell"></i> Notificaciones
       </button>
       <button 
         [class.active]="tabActiva === 'seguridad'" 
         (click)="cambiarTab('seguridad')">
-        🛡️ Seguridad
+<i class="fas fa-shield-halved"></i> Seguridad
       </button>
       <button 
         [class.active]="tabActiva === 'backup'" 
         (click)="cambiarTab('backup')">
-        💾 Backup
+        <i class="fas fa-floppy-disk"></i> Backup
       </button>
       <button 
         [class.active]="tabActiva === 'sesiones'" 
         (click)="cambiarTab('sesiones')">
-        💻 Sesiones
+<i class="fas fa-laptop"></i> Sesiones
       </button>
     </div>
   </div>
@@ -76,7 +76,7 @@
 
       <div class="notifications-feed">
         <div class="notification-card unread">
-          <div class="notif-icon incidencia">⚠️</div>
+          <div class="notif-icon incidencia"><i class="fas fa-triangle-exclamation"></i></div>
           <div class="notif-details">
             <div class="notif-head">
               <span class="notif-title">Incidencia en Envío #ENV-8842</span>
@@ -87,7 +87,7 @@
         </div>
 
         <div class="notification-card unread">
-          <div class="notif-icon envio">🚚</div>
+          <div class="notif-icon envio"><i class="fas fa-truck"></i></div>
           <div class="notif-details">
             <div class="notif-head">
               <span class="notif-title">Despegue Confirmado</span>
@@ -98,7 +98,7 @@
         </div>
 
         <div class="notification-card">
-          <div class="notif-icon stock">📦</div>
+          <div class="notif-icon stock"><i class="fas fa-boxes-stacked"></i></div>
           <div class="notif-details">
             <div class="notif-head">
               <span class="notif-title">Alerta de Stock Mínimo</span>
@@ -109,7 +109,7 @@
         </div>
 
         <div class="notification-card">
-          <div class="notif-icon resolved">✅</div>
+          <div class="notif-icon resolved"><i class="fas fa-circle-check"></i></div>
           <div class="notif-details">
             <div class="notif-head">
               <span class="notif-title">Incidencia Resuelta</span>
@@ -229,12 +229,12 @@
           @if (cargandoBackup) {
             <span class="spinner-sm"></span> Generando respaldo...
           } @else {
-            🗄️ Backup manual
+            <i class="fas fa-database"></i> Backup manual
           }
         </button>
 
         <button class="btn-action-outline" (click)="exportarConfiguracion()">
-          ✉️ Exportar configuración
+          <i class="fas fa-envelope"></i> Exportar configuración
         </button>
       </div>
     </div>
@@ -245,7 +245,7 @@
     <div class="card-panel history-panel">
       <div class="history-header">
         <div class="setting-info">
-          <h4>💻 Sesiones Activas</h4>
+          <h4><i class="fas fa-laptop"></i> Sesiones Activas</h4>
           <p>Dispositivos que mantienen actualmente abierta una sesión en tu cuenta de Gestock.</p>
         </div>
         <span class="history-badge">{{ activeSessions.length }} Activas</span>
@@ -254,7 +254,7 @@
       <div class="notifications-feed">
         @for (session of activeSessions; track session.id) {
           <div class="notification-card" [style.border-left]="session.current ? '4px solid #10b981' : '4px solid #3a86ff'">
-            <div class="notif-icon">🖥️</div>
+            <div class="notif-icon"><i class="fas fa-desktop"></i></div>
             <div class="notif-details">
               <div class="notif-head">
                 <span class="notif-title">
@@ -267,7 +267,7 @@
               </div>
               <p class="notif-body" style="margin-top: 4px;">
                 {{ session.browser }} &bull; IP: {{ session.ip }}<br>
-                📍 {{ session.location }}
+                <i class="fas fa-location-dot"></i> {{ session.location }}
               </p>
             </div>
             <div>
@@ -283,9 +283,15 @@
 
   <!-- BOTÓN DE GUARDAR CAMBIOS -->
   <div class="actions-footer">
-    <button class="btn-primary btn-save" (click)="abrirModalGuardar()">
-      Guardar cambios
-    </button>
+    @if (puedeEditar()) {
+      <button class="btn-primary btn-save" (click)="abrirModalGuardar()">
+        Guardar cambios
+      </button>
+    } @else {
+      <span class="readonly-note">
+        <i class="fas fa-lock"></i> Solo lectura: tu rol puede consultar la configuración, pero no modificarla.
+      </span>
+    }
   </div>
 </div>
 
@@ -297,7 +303,7 @@
       <!-- ESTADO 1: PREGUNTA DE CONFIRMACIÓN -->
       @if (!guardadoExitoso) {
         <div class="modal-icon-container">
-          <span class="modal-icon">⚙️</span>
+          <span class="modal-icon"><i class="fas fa-gear"></i></span>
         </div>
         <h3 class="modal-title">¿Guardar ajustes?</h3>
         <p class="modal-description">
@@ -338,7 +344,7 @@
       
       <div class="modal-header-export">
         <div class="modal-icon-container">
-          <span class="modal-icon">📤</span>
+          <span class="modal-icon"><i class="fas fa-arrow-up-from-bracket"></i></span>
         </div>
         <h3 class="modal-title">Exportar Configuración</h3>
         <p class="modal-description">Selecciona el formato y los datos que deseas incluir en la descarga.</p>
@@ -354,7 +360,7 @@
               class="format-btn" 
               [class.active]="opcionesExportar.formato === 'json'"
               (click)="opcionesExportar.formato = 'json'">
-              <span class="format-icon">📄</span>
+              <span class="format-icon"><i class="fas fa-file-lines"></i></span>
               <span class="format-name">JSON</span>
               <span class="format-desc">Respaldo técnico completo</span>
             </button>
@@ -364,7 +370,7 @@
               class="format-btn" 
               [class.active]="opcionesExportar.formato === 'csv'"
               (click)="opcionesExportar.formato = 'csv'">
-              <span class="format-icon">📊</span>
+              <span class="format-icon"><i class="fas fa-chart-line"></i></span>
               <span class="format-name">CSV</span>
               <span class="format-desc">Para hojas de cálculo</span>
             </button>
@@ -374,7 +380,7 @@
               class="format-btn" 
               [class.active]="opcionesExportar.formato === 'pdf'"
               (click)="opcionesExportar.formato = 'pdf'">
-              <span class="format-icon">📑</span>
+              <span class="format-icon"><i class="fas fa-file-lines"></i></span>
               <span class="format-name">PDF</span>
               <span class="format-desc">Reporte imprimible</span>
             </button>
@@ -387,15 +393,15 @@
           <div class="checkbox-group">
             <label class="checkbox-item">
               <input type="checkbox" [(ngModel)]="opcionesExportar.incluirNotificaciones">
-              <span>🔔 Notificaciones</span>
+              <span><i class="fas fa-bell"></i> Notificaciones</span>
             </label>
             <label class="checkbox-item">
               <input type="checkbox" [(ngModel)]="opcionesExportar.incluirSeguridad">
-              <span>🛡️ Seguridad y Permisos</span>
+              <span><i class="fas fa-shield-halved"></i> Seguridad y Permisos</span>
             </label>
             <label class="checkbox-item">
               <input type="checkbox" [(ngModel)]="opcionesExportar.incluirBackup">
-              <span>💾 Copias de Seguridad</span>
+              <span><i class="fas fa-floppy-disk"></i> Copias de Seguridad</span>
             </label>
           </div>
         </div>
@@ -417,7 +423,7 @@
   <div class="modal-backdrop" (click)="cerrarModalBackup()">
     <div class="modal-card" (click)="$event.stopPropagation()">
       <div class="modal-icon-container success-icon-container">
-        <span class="modal-icon success-icon">💾</span>
+        <span class="modal-icon success-icon"><i class="fas fa-floppy-disk"></i></span>
       </div>
       <h3 class="modal-title text-success">¡Copia de Seguridad Generada!</h3>
       <p class="modal-description">

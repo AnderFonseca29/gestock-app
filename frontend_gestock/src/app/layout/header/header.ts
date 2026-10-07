@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ElementRef, HostListener, ChangeDetectorRef 
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService, Usuario } from '../../services/auth';
+import { ApiService } from '../../services/api.service';
 
 interface Notificacion {
   id: number;
@@ -9,6 +10,14 @@ interface Notificacion {
   mensaje: string;
   tiempo: string;
   leida: boolean;
+}
+
+interface NotificacionBackend {
+  id: number;
+  titulo: string;
+  mensaje: string;
+  leida: boolean;
+  fecha: string;
 }
 
 @Component({
@@ -23,23 +32,17 @@ export class HeaderComponent implements OnInit {
   private router = inject(Router);
   private elementRef = inject(ElementRef);
   private cdr = inject(ChangeDetectorRef);
+  private api = inject(ApiService);
 
   usuarioActual: Usuario | null = null;
   mostrarMenuPerfil: boolean = false;
   mostrarNotificaciones: boolean = false;
 
-  notificaciones: Notificacion[] = [
-    {
-      id: 1,
-      titulo: 'Stock Bajo',
-      mensaje: 'El producto Sensor LDR tiene 3 unidades.',
-      tiempo: 'Hace 5 min',
-      leida: false
-    }
-  ];
+  notificaciones: Notificacion[] = [];
 
   ngOnInit(): void {
     this.cargarUsuario();
+    this.cargarNotificaciones();
   }
 
   cargarUsuario(): void {
@@ -90,8 +93,46 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  cargarNotificaciones(): void {
+    this.api.get<{ notificaciones: NotificacionBackend[]; sinLeer: number }>('/notificaciones').then(
+      (res) => {
+        this.notificaciones = (res?.notificaciones || []).map((n) => ({
+          id: n.id,
+          titulo: n.titulo,
+          mensaje: n.mensaje,
+          tiempo: this.formatearTiempo(n.fecha),
+          leida: !!n.leida
+        }));
+        this.cdr.detectChanges();
+      },
+      () => {
+        this.notificaciones = [];
+        this.cdr.detectChanges();
+      }
+    );
+  }
+
+  private formatearTiempo(fecha: string): string {
+    if (!fecha) return 'Recién ahora';
+    const ms = Date.now() - new Date(fecha).getTime();
+    if (Number.isNaN(ms) || ms < 0) return 'Recién ahora';
+    const minutos = Math.floor(ms / 60000);
+    if (minutos < 1) return 'Hace un momento';
+    if (minutos < 60) return `Hace ${minutos} min`;
+    const horas = Math.floor(minutos / 60);
+    if (horas < 24) return `Hace ${horas} h`;
+    const dias = Math.floor(horas / 24);
+    return `Hace ${dias} día${dias > 1 ? 's' : ''}`;
+  }
+
   marcarTodasComoLeidas(): void {
     this.notificaciones.forEach(n => n.leida = true);
+    this.api.post<void>('/notificaciones/leidas').then(
+      () => {},
+      () => {
+        // El interceptor muestra el toast de error automáticamente.
+      }
+    );
   }
 
   obtenerSinLeerCount(): number {
@@ -102,5 +143,9 @@ export class HeaderComponent implements OnInit {
     this.cerrarMenus();
     this.authService.logout();
     this.router.navigate(['/auth/login']);
+  }
+
+  tienePermiso(codigo: string): boolean {
+    return this.authService.tienePermiso(codigo);
   }
 }

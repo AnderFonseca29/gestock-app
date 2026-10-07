@@ -427,3 +427,9 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# GESTOCK - copia local de respaldo (no se sube al repositorio)
+GESTOCK_FINAL/
+
+# Codigo compilado / artefactos de build
+**/dist/

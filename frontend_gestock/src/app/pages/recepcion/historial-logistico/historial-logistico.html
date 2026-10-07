@@ -8,8 +8,8 @@
     
     <!-- Botón Único de Exportación (HU043) -->
     <div class="report-actions">
-      <button class="btn-export" (click)="exportarReporte()">
-        📊 Exportar
+      <button class="btn-export" (click)="exportarReporte()" *ngIf="tienePermiso('reportes.exportar')">
+        <i class="fas fa-download"></i> Exportar
       </button>
     </div>
   </div>

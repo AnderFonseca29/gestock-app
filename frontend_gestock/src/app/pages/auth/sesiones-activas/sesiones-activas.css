@@ -2,7 +2,7 @@
 
 :host {
   font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-  color: #f5f5f7;
+  color: var(--text-primary);
   display: block;
   padding: 2rem 1rem;
 }
@@ -10,23 +10,36 @@
 .admin-wrapper {
   max-width: 800px;
   margin: 0 auto;
+  animation: fadeInScale 0.5s var(--ease-out) forwards;
+}
+
+/* Animaciones */
+@keyframes fadeInScale {
+  0%   { opacity: 0; transform: scale(0.95) translateY(12px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .apple-card {
   position: relative;
-  background: rgba(22, 22, 26, 0.75);
+  background: var(--bg-surface);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-light);
   border-radius: 28px;
   padding: 2.5rem;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  transition: border-color 0.4s ease;
+  transition: border-color 0.4s ease, box-shadow 0.25s ease;
 }
 
 .apple-card:hover {
-  border-color: rgba(41, 151, 255, 0.3);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
 }
 
 .glow-overlay {
@@ -38,7 +51,7 @@
   pointer-events: none;
   background: radial-gradient(
     600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(41, 151, 255, 0.08),
+    rgba(59, 130, 246, 0.05),
     transparent 40%
   );
 }
@@ -49,35 +62,35 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.35rem 0.85rem;
-  background: rgba(41, 151, 255, 0.12);
-  border: 1px solid rgba(41, 151, 255, 0.25);
+  background: var(--accent-light);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: 980px;
   font-size: 0.78rem;
   font-weight: 600;
-  color: #2997ff;
+  color: var(--accent);
   margin-bottom: 1rem;
 }
 
 .badge-dot {
   width: 6px;
   height: 6px;
-  background: #30d158;
+  background: var(--success);
   border-radius: 50%;
-  box-shadow: 0 0 8px #30d158;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
 }
 
 .card-header h1 {
   font-size: 1.85rem;
   font-weight: 700;
   margin: 0 0 0.5rem 0;
-  background: linear-gradient(180deg, #ffffff 0%, #a1a1a6 100%);
+  background: linear-gradient(180deg, #0f172a 0%, #475569 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
-  color: #86868b;
+  color: var(--text-muted);
   font-size: 0.9rem;
   margin: 0 0 2rem 0;
 }
@@ -85,16 +98,23 @@
 /* Alertas Inusuales (HU013) */
 .alerts-section {
   margin-bottom: 2rem;
+  animation: fadeInUp 0.5s var(--ease-out) backwards;
 }
 
 .alert-card {
-  background: rgba(255, 159, 10, 0.08);
-  border: 1px solid rgba(255, 159, 10, 0.25);
+  background: var(--warning-light);
+  border: 1px solid rgba(245, 158, 11, 0.3);
   border-radius: 16px;
   padding: 1rem 1.25rem;
   display: flex;
   align-items: center;
   gap: 1rem;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.alert-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .alert-icon {
@@ -108,28 +128,29 @@
 .alert-content h4 {
   margin: 0 0 0.2rem 0;
   font-size: 0.9rem;
-  color: #ff9f0a;
+  color: var(--warning);
 }
 
 .alert-content p {
   margin: 0;
   font-size: 0.8rem;
-  color: #a1a1a6;
+  color: var(--text-secondary);
 }
 
 .btn-dismiss {
   background: transparent;
-  border: 1px solid rgba(255, 159, 10, 0.3);
-  color: #ff9f0a;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: var(--warning);
   padding: 0.4rem 0.8rem;
   border-radius: 8px;
   font-size: 0.75rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .btn-dismiss:hover {
-  background: rgba(255, 159, 10, 0.2);
+  background: var(--warning-light);
+  border-color: var(--warning);
 }
 
 /* Lista de Sesiones (HU011, HU012) */
@@ -144,16 +165,17 @@
   font-size: 1.05rem;
   font-weight: 600;
   margin: 0;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .btn-danger-link {
   background: transparent;
   border: none;
-  color: #ff453a;
+  color: var(--danger);
   font-size: 0.82rem;
   cursor: pointer;
   font-weight: 500;
+  transition: color 0.25s ease;
 }
 
 .btn-danger-link:hover {
@@ -170,26 +192,35 @@
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   padding: 1.2rem;
   transition: all 0.25s ease;
+  animation: fadeInUp 0.5s var(--ease-out) backwards;
 }
 
+.session-item:nth-child(1) { animation-delay: 0.05s; }
+.session-item:nth-child(2) { animation-delay: 0.1s; }
+.session-item:nth-child(3) { animation-delay: 0.15s; }
+.session-item:nth-child(4) { animation-delay: 0.2s; }
+.session-item:nth-child(5) { animation-delay: 0.25s; }
+.session-item:nth-child(6) { animation-delay: 0.3s; }
+
 .session-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--bg-surface);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
 }
 
 .session-item.is-current {
-  border-color: rgba(48, 209, 88, 0.3);
-  background: rgba(48, 209, 88, 0.03);
+  border-color: rgba(16, 185, 129, 0.35);
+  background: var(--success-light);
 }
 
 .device-icon {
   font-size: 1.75rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-muted);
   width: 48px;
   height: 48px;
   display: flex;
@@ -205,15 +236,15 @@
 .device-name {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 0.6rem;
 }
 
 .current-badge {
-  background: rgba(48, 209, 88, 0.15);
-  color: #30d158;
+  background: var(--success-light);
+  color: var(--success);
   font-size: 0.7rem;
   padding: 0.2rem 0.5rem;
   border-radius: 6px;
@@ -222,37 +253,37 @@
 
 .session-meta {
   font-size: 0.82rem;
-  color: #86868b;
+  color: var(--text-muted);
   margin-top: 0.2rem;
 }
 
 .ip-code {
   font-family: monospace;
-  color: #a1a1a6;
+  color: var(--text-secondary);
 }
 
 .activity-time {
   font-size: 0.75rem;
-  color: #636366;
+  color: var(--text-muted);
   margin-top: 0.25rem;
 }
 
 .apple-btn-outline-danger {
   background: transparent;
-  border: 1px solid rgba(255, 69, 58, 0.4);
-  color: #ff453a;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: var(--danger);
   padding: 0.5rem 0.9rem;
   border-radius: 10px;
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .apple-btn-outline-danger:hover {
-  background: rgba(255, 69, 58, 0.15);
-  border-color: #ff453a;
-  box-shadow: 0 0 12px rgba(255, 69, 58, 0.3);
+  background: var(--danger-light);
+  border-color: var(--danger);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
 }
 
 /* Acceso Denegado */
@@ -269,10 +300,10 @@
 
 .access-denied h2 {
   margin: 0 0 0.5rem 0;
-  color: #ff453a;
+  color: var(--danger);
 }
 
 .access-denied p {
-  color: #86868b;
+  color: var(--text-muted);
   margin: 0;
 }

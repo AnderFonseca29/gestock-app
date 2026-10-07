@@ -2,7 +2,7 @@
 
 :host {
   font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
-  color: #f5f5f7;
+  color: #0f172a;
   display: block;
 }
 
@@ -10,7 +10,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 1rem 0;
-  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Header */
@@ -21,14 +21,14 @@
 .header-badge {
   display: inline-block;
   padding: 0.35rem 0.85rem;
-  background: rgba(41, 151, 255, 0.12);
-  color: #2997ff;
+  background: #dbeafe;
+  color: #2563eb;
   border-radius: 980px;
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.5px;
   margin-bottom: 0.75rem;
-  border: 1px solid rgba(41, 151, 255, 0.2);
+  border: 1px solid #bfdbfe;
 }
 
 .page-header h1 {
@@ -36,14 +36,14 @@
   font-weight: 700;
   letter-spacing: -0.5px;
   margin: 0 0 0.5rem 0;
-  background: linear-gradient(180deg, #ffffff 0%, #a1a1a6 100%);
+  background: linear-gradient(180deg, #0f172a 0%, #64748b 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
-  color: #86868b;
+  color: #64748b;
   font-size: 1rem;
   margin: 0;
 }
@@ -64,18 +64,19 @@
 
 /* Tarjetas Glassmorphism */
 .apple-card {
-  background: rgba(22, 22, 26, 0.75);
+  background: #ffffff;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid #e2e8f0;
   border-radius: 20px;
   padding: 1.75rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  transition: transform 0.3s ease, border-color 0.3s ease;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .apple-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: #cbd5e1;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.08);
 }
 
 .card-header {
@@ -84,14 +85,14 @@
   gap: 0.75rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .card-header h2 {
   font-size: 1.15rem;
   font-weight: 600;
   margin: 0;
-  color: #f5f5f7;
+  color: #0f172a;
 }
 
 .card-icon {
@@ -114,17 +115,17 @@
 .form-group label {
   font-size: 0.8rem;
   font-weight: 500;
-  color: #a1a1a6;
+  color: #64748b;
 }
 
 .input-container input,
 .select-container select {
   width: 100%;
   padding: 0.85rem 1rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
   border-radius: 12px;
-  color: #ffffff;
+  color: #0f172a;
   font-size: 0.9rem;
   outline: none;
   box-sizing: border-box;
@@ -133,14 +134,14 @@
 
 .input-container input:focus,
 .select-container select:focus {
-  border-color: #2997ff;
-  background: rgba(41, 151, 255, 0.05);
-  box-shadow: 0 0 0 4px rgba(41, 151, 255, 0.15);
+  border-color: #3b82f6;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
 }
 
 .select-container select option {
-  background-color: #1c1c1e;
-  color: #ffffff;
+  background-color: #ffffff;
+  color: #0f172a;
 }
 
 /* Botón Apple */
@@ -148,7 +149,7 @@
   margin-top: 0.5rem;
   width: 100%;
   padding: 0.9rem 1.25rem;
-  background: linear-gradient(180deg, #0077ed 0%, #0066cc 100%);
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
   color: #ffffff;
   border: none;
   border-radius: 12px;
@@ -160,13 +161,13 @@
   justify-content: center;
   gap: 0.5rem;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 15px rgba(0, 119, 237, 0.3);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
 }
 
 .apple-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 119, 237, 0.45);
-  background: linear-gradient(180deg, #0082fc 0%, #0070e0 100%);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45);
+  background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
 }
 
 .apple-btn-primary:active {
@@ -197,10 +198,10 @@
   padding: 0.75rem 1rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #86868b;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .table-row {
@@ -209,8 +210,9 @@
 
 .table-row td {
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: #f8fafc;
   font-size: 0.88rem;
+  transition: background-color 0.25s ease;
 }
 
 .table-row td:first-child {
@@ -224,25 +226,25 @@
 }
 
 .table-row:hover td {
-  background: rgba(255, 255, 255, 0.05);
+  background: #eff6ff;
 }
 
 .col-id {
-  color: #86868b;
+  color: #64748b;
   font-weight: 600;
 }
 
 .col-equipo {
-  color: #ffffff;
+  color: #0f172a;
   font-weight: 600;
 }
 
 .type-pill {
   padding: 0.25rem 0.65rem;
-  background: rgba(255, 255, 255, 0.06);
+  background: #f1f5f9;
   border-radius: 6px;
   font-size: 0.78rem;
-  color: #d1d1d6;
+  color: #475569;
 }
 
 /* Badges de Estado */
@@ -264,20 +266,31 @@
 
 .status-badge.pendiente {
   background: rgba(255, 159, 10, 0.12);
-  color: #ff9f0a;
+  color: #b45309;
   border: 1px solid rgba(255, 159, 10, 0.25);
 }
-.status-badge.pendiente .status-dot { background-color: #ff9f0a; }
+.status-badge.pendiente .status-dot { background-color: #d97706; }
 
 .status-badge.en-proceso {
   background: rgba(10, 132, 255, 0.12);
-  color: #0a84ff;
+  color: #0369a1;
   border: 1px solid rgba(10, 132, 255, 0.25);
 }
-.status-badge.en-proceso .status-dot { background-color: #0a84ff; }
+.status-badge.en-proceso .status-dot { background-color: #0284c7; }
 
 /* Animaciones */
 @keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
   from {
     opacity: 0;
     transform: translateY(12px);

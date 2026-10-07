@@ -1,8 +1,8 @@
 <header class="header-container">
   <div class="header-left">
     <div class="brand-badge">
-      <span class="brand-logo"></span>
-      <span class="brand-title"></span>
+      <span class="brand-logo"><i class="fas fa-boxes-stacked"></i></span>
+      <span class="brand-title">GESTOCK</span>
     </div>
   </div>
 
@@ -10,7 +10,7 @@
     
     <div class="popover-wrapper">
       <button class="icon-btn" type="button" (click)="toggleNotificaciones($event)">
-        <span class="bell-icon">🔔</span>
+        <span class="bell-icon"><i class="fas fa-bell"></i></span>
         <span *ngIf="obtenerSinLeerCount() > 0" class="notification-badge">
           {{ obtenerSinLeerCount() }}
         </span>
@@ -56,26 +56,26 @@
         </div>
 
         <div class="chrome-menu-section">
-          <button routerLink="/app/configuracion" (click)="cerrarMenus()" class="chrome-menu-item">
-            <span class="item-icon">✏️</span> Personalizar perfil
+          <button *ngIf="tienePermiso('configuracion.view')" routerLink="/app/configuracion" (click)="cerrarMenus()" class="chrome-menu-item">
+            <span class="item-icon"><i class="fas fa-pen"></i></span> Personalizar perfil
           </button>
-          <button routerLink="/app/configuracion" (click)="cerrarMenus()" class="chrome-menu-item">
-            <span class="item-icon">⚙️</span> Configuración de la cuenta
+          <button *ngIf="tienePermiso('configuracion.view')" routerLink="/app/configuracion" (click)="cerrarMenus()" class="chrome-menu-item">
+            <span class="item-icon"><i class="fas fa-gear"></i></span> Configuración de la cuenta
           </button>
         </div>
 
         <div class="chrome-menu-section border-top">
-          <button routerLink="/auth/creacion-usuarios" (click)="cerrarMenus()" class="chrome-menu-item">
-            <span class="item-icon">👤➕</span> Añadir nuevo perfil
+          <button *ngIf="tienePermiso('usuarios.create')" routerLink="/auth/crear-usuario" (click)="cerrarMenus()" class="chrome-menu-item">
+            <span class="item-icon"><i class="fas fa-user-plus"></i></span> Añadir nuevo perfil
           </button>
-          <button routerLink="/app/configuracion" (click)="cerrarMenus()" class="chrome-menu-item">
-            <span class="item-icon">👥</span> Gestionar usuarios de Gestock
+          <button *ngIf="tienePermiso('usuarios.view') || tienePermiso('roles.view')" routerLink="/app/gestion/roles-yusuarios" (click)="cerrarMenus()" class="chrome-menu-item">
+            <span class="item-icon"><i class="fas fa-users-gear"></i></span> Gestionar usuarios de Gestock
           </button>
         </div>
 
         <div class="chrome-menu-section border-top">
           <button (click)="cerrarSesion()" class="chrome-menu-item danger">
-            <span class="item-icon">🚪</span> Cerrar sesión
+            <span class="item-icon"><i class="fas fa-right-from-bracket"></i></span> Cerrar sesión
           </button>
         </div>
 

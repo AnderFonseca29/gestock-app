@@ -7,7 +7,7 @@
         <h2>Gestión de Roles, Usuarios y Permisos</h2>
         <p class="text-subtitle">Administración de accesos, control de actividad y seguridad del sistema</p>
       </div>
-      <button class="btn-action" (click)="abrirModalCrear()">
+      <button class="btn-action" (click)="abrirModalCrear()" *ngIf="tienePermiso('usuarios.create')">
         <i class="fas fa-user-plus"></i> Registrar Nuevo Usuario
       </button>
     </div>
@@ -72,9 +72,14 @@
                 </td>
                 <td><span class="horas-badge">{{ user.horasTrabajadas }} hrs</span></td>
                 <td class="text-center">
-                  <button class="btn-config" (click)="seleccionarUsuario(user)">
-                    <i class="fas fa-key"></i> Configurar Roles
-                  </button>
+                  <div class="acciones-usuario">
+                    <button *ngIf="tienePermiso('roles.edit') || tienePermiso('usuarios.edit')" class="btn-config" (click)="seleccionarUsuario(user)">
+                      <i class="fas fa-key"></i> Configurar Roles
+                    </button>
+                    <button *ngIf="tienePermiso('usuarios.password') && user.id !== usuarioActualId" class="btn-password" (click)="abrirModalPassword(user)">
+                      <i class="fas fa-lock"></i> Cambiar Contraseña
+                    </button>
+                  </div>
                 </td>
               </tr>
             }
@@ -98,28 +103,33 @@
       <form [formGroup]="nuevoUsuarioForm" (ngSubmit)="guardarNuevoUsuario()" class="mt-4">
         <div class="row-inputs">
           <div class="input-group">
-            <label class="form-label">🏷️ Nombre Completo *</label>
+            <label class="form-label"><i class="fas fa-tags"></i> Nombre Completo *</label>
             <input type="text" formControlName="nombre" class="dark-input w-100" placeholder="Ej: Sofía Martínez">
           </div>
 
           <div class="input-group">
-            <label class="form-label">✉️ Correo Electrónico *</label>
+            <label class="form-label"><i class="fas fa-envelope"></i> Correo Electrónico *</label>
             <input type="email" formControlName="email" class="dark-input w-100" placeholder="correo@gestock.com">
           </div>
 
           <div class="input-group">
-            <label class="form-label">🛡️ Rol Inicial *</label>
+            <label class="form-label"><i class="fas fa-phone"></i> Teléfono Móvil</label>
+            <input type="tel" formControlName="telefono" class="dark-input w-100" placeholder="Ej: 315 400 1111" inputmode="numeric">
+            <small class="form-note">Usado para la recuperación de contraseña por SMS.</small>
+          </div>
+
+          <div class="input-group">
+            <label class="form-label"><i class="fas fa-shield-halved"></i> Rol Inicial *</label>
             <select formControlName="rol" class="dark-input w-100 select-field">
               <option value="" disabled selected>Selecciona un rol</option>
-              <option value="Administrador">Administrador</option>
-              <option value="Auditor">Auditor</option>
-              <option value="Supervisor">Supervisor</option>
-              <option value="Operario">Operario</option>
+              @for (rol of rolesBasicos; track rol.id) {
+                <option [value]="rol.nombre">{{ rol.nombre }}</option>
+              }
             </select>
           </div>
 
           <div class="input-group">
-            <label class="form-label">⏱️ Horas Estimadas de Trabajo *</label>
+            <label class="form-label"><i class="fas fa-clock"></i> Horas Estimadas de Trabajo *</label>
             <input type="number" formControlName="horasTrabajadas" class="dark-input w-100" placeholder="Ej: 40" min="1" max="60">
           </div>
         </div>
@@ -146,24 +156,23 @@
       <form [formGroup]="rolForm" (ngSubmit)="guardarRol()" class="mt-4">
         <div class="row-inputs">
           <div class="input-group">
-            <label class="form-label">🛡️ Rol Principal del Sistema</label>
+            <label class="form-label"><i class="fas fa-shield-halved"></i> Rol Principal del Sistema</label>
             <select formControlName="nombreRol" class="dark-input w-100 select-field" (change)="onRolSelectChange($event)">
-              <option value="Administrador">Administrador</option>
-              <option value="Auditor">Auditor</option>
-              <option value="Supervisor">Supervisor</option>
-              <option value="Operario">Operario</option>
+              @for (rol of rolesBasicos; track rol.id) {
+                <option [value]="rol.nombre">{{ rol.nombre }}</option>
+              }
             </select>
           </div>
 
           <div class="input-group">
-            <label class="form-label">💬 Observación de Seguridad</label>
+            <label class="form-label"><i class="fas fa-comment-dots"></i> Observación de Seguridad</label>
             <input type="text" formControlName="descripcion" class="dark-input w-100" placeholder="Ej: Permisos actualizados por auditoría">
           </div>
         </div>
 
         <div class="permissions-section">
           <div class="permission-header-info">
-            <label class="form-label">🔐 Módulos y Permisos del Sistema (Interactivos)</label>
+            <label class="form-label"><i class="fas fa-lock"></i> Módulos y Permisos del Sistema (Interactivos)</label>
             <span class="text-subtitle-sm">Marca o desmarca las secciones a las que este rol tendrá acceso según el menú lateral.</span>
           </div>
           
@@ -181,10 +190,63 @@
 
         <div class="form-actions">
           <button type="submit" class="btn-submit">
-            💾 Guardar Cambios de Permisos
+            <i class="fas fa-floppy-disk"></i> Guardar Cambios de Permisos
           </button>
         </div>
       </form>
+    </div>
+  }
+
+  <!-- MODAL DE CAMBIO DE CONTRASEÑA -->
+  @if (usuarioPassword) {
+    <div class="modal-overlay" (click)="cerrarModalPassword()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3><i class="fas fa-lock"></i> Cambiar Contraseña</h3>
+          <button class="modal-close" (click)="cerrarModalPassword()" aria-label="Cerrar">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <p class="modal-subtitle">
+          Nueva contraseña para <strong class="text-highlight">{{ usuarioPassword.nombre }}</strong>
+          ({{ usuarioPassword.email }}). El usuario deberá volver a iniciar sesión.
+        </p>
+
+        <form [formGroup]="passwordForm" (ngSubmit)="guardarCambioPassword()">
+          <div class="row-inputs">
+            <div class="input-group">
+              <label class="form-label"><i class="fas fa-shield-halved"></i> Nueva Contraseña *</label>
+              <input type="password" formControlName="nuevaPassword" class="dark-input w-100"
+                     placeholder="Mínimo 8 caracteres, mayúscula, número y símbolo" autocomplete="new-password">
+              <small class="form-note">Requisitos: mínimo 8 caracteres, una mayúscula, un número y un carácter especial.</small>
+            </div>
+
+            <div class="input-group">
+              <label class="form-label"><i class="fas fa-check-double"></i> Confirmar Contraseña *</label>
+              <input type="password" formControlName="confirmarPassword" class="dark-input w-100"
+                     placeholder="Repite la nueva contraseña" autocomplete="new-password">
+              @if (confirmarPasswordValue && !passwordsCoinciden()) {
+                <small class="form-note form-error">Las contraseñas no coinciden.</small>
+              }
+            </div>
+          </div>
+
+          @if (passwordForm.get('nuevaPassword')?.invalid && passwordForm.get('nuevaPassword')?.dirty) {
+            <small class="form-note form-error">
+              La contraseña debe tener al menos 8 caracteres, incluir una mayúscula, un número y un símbolo.
+            </small>
+          }
+
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" (click)="cerrarModalPassword()">Cancelar</button>
+            <button type="submit" class="btn-submit" [disabled]="enviandoPassword">
+              <i class="fas fa-key"></i>
+              {{ enviandoPassword ? 'Guardando...' : 'Guardar Nueva Contraseña' }}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   }
 

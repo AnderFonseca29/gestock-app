@@ -1,6 +1,9 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { InventarioService } from '../services/services';
+import { ToastService } from '../../../../services/toast.service';
+import { AuthService } from '../../../../services/auth';
 
 @Component({
   selector: 'app-lista-productos',
@@ -11,18 +14,23 @@ import { FormsModule } from '@angular/forms';
 })
 export class ListaProductosComponent implements OnInit {
 
-  private productosIniciales: any[] = [
-    { codigo: 'PROD-001', nombre: 'Laptop HP ProBook', categoria: 'Tecnología', bodega: 'Bodega Central', precio: 2500000, stock: 12 },
-    { codigo: 'PROD-002', nombre: 'Mouse Inalámbrico Logitech', categoria: 'Accesorios', bodega: 'Bodega Norte', precio: 65000, stock: 45 },
-    { codigo: 'PROD-003', nombre: 'Silla Ergonómica Ejecutiva', categoria: 'Mobiliario', bodega: 'Bodega Central', precio: 450000, stock: 8 }
-  ];
+  private inventarioService = inject(InventarioService);
+  private toastService = inject(ToastService);
+  private authService = inject(AuthService);
+
+  tienePermiso(codigo: string): boolean {
+    return this.authService.tienePermiso(codigo);
+  }
+
+  private categorias: any[] = [];
+  private bodegas: any[] = [];
 
   productosOriginales: any[] = [];
   filtroBusqueda: string = '';
   menuActivoIndex: number | null = null;
   productoEnEdicion: any = null;
   private productoOriginalSnapshot: any = null;
-  
+
   mensajeNotificacion: string | null = null;
   mensajeAlertaModal: string | null = null;
   productoAEliminar: any = null;
@@ -32,30 +40,42 @@ export class ListaProductosComponent implements OnInit {
 
   ngOnInit() {
     this.cargarProductos();
-  }
-
-  cargarProductos() {
-    const datos = localStorage.getItem('inventario_productos');
-    if (!datos) {
-      localStorage.setItem('inventario_productos', JSON.stringify(this.productosIniciales));
-      this.productosOriginales = [...this.productosIniciales];
-    } else {
-      try {
-        this.productosOriginales = JSON.parse(datos);
-      } catch (e) {
-        this.productosOriginales = [...this.productosIniciales];
-      }
+    if (this.tienePermiso('categorias.view')) {
+      this.inventarioService.obtenerCategorias()
+        .then((data) => { this.categorias = data ?? []; this.cdRef.detectChanges(); })
+        .catch(() => { this.categorias = []; this.cdRef.detectChanges(); });
+    }
+    if (this.tienePermiso('bodegas.view')) {
+      this.inventarioService.obtenerBodegas()
+        .then((data) => { this.bodegas = data ?? []; this.cdRef.detectChanges(); })
+        .catch(() => { this.bodegas = []; this.cdRef.detectChanges(); });
     }
   }
 
+  cargarProductos() {
+    this.inventarioService.obtenerProductos()
+      .then((data) => {
+        this.productosOriginales = data ?? [];
+        this.cdRef.detectChanges();
+      })
+      .catch(() => {
+        this.productosOriginales = [];
+        this.cdRef.detectChanges();
+      });
+  }
+
   get categoriasDisponibles(): string[] {
-    const categorias = this.productosOriginales.map(p => p.categoria);
-    return Array.from(new Set(categorias)).sort();
+    const activas = this.categorias
+      .filter(c => c.estado === 'Activo')
+      .map(c => c.nombre);
+    if (this.productoEnEdicion?.categoria && !activas.includes(this.productoEnEdicion.categoria)) {
+      return [...activas, this.productoEnEdicion.categoria].sort();
+    }
+    return activas.sort();
   }
 
   get bodegasDisponibles(): string[] {
-    const bodegas = this.productosOriginales.map(p => p.bodega);
-    return Array.from(new Set(bodegas)).sort();
+    return this.bodegas.map(b => b.nombre).sort();
   }
 
   get productosFiltrados(): any[] {
@@ -64,7 +84,7 @@ export class ListaProductosComponent implements OnInit {
       return lista;
     }
     const texto = this.filtroBusqueda.toLowerCase().trim();
-    return lista.filter(p => 
+    return lista.filter(p =>
       (p.nombre && p.nombre.toLowerCase().includes(texto)) ||
       (p.codigo && p.codigo.toLowerCase().includes(texto)) ||
       (p.categoria && p.categoria.toLowerCase().includes(texto)) ||
@@ -87,72 +107,52 @@ export class ListaProductosComponent implements OnInit {
     document.body.style.overflow = 'auto';
   }
 
-  registrarAuditoria(accion: 'CREAR' | 'ACTUALIZAR' | 'ELIMINAR', producto: any, usuario: string = 'Administrador') {
-    const nuevoRegistro = {
-      id: `#${Date.now().toString().slice(-3)}`,
-      usuario: usuario,
-      accion: accion,
-      entidad: `Producto: ${producto.nombre}`,
-      detalles: `Bodega: ${producto.bodega} | Cantidad: ${producto.stock} un.`,
-      fechaHora: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }),
-      estado: 'Completado',
-      jsonDetalle: producto
-    };
-
-    const llaves = ['sistema_auditorias', 'auditorias'];
-    llaves.forEach(key => {
-      const actual = JSON.parse(localStorage.getItem(key) || '[]');
-      actual.unshift(nuevoRegistro);
-      localStorage.setItem(key, JSON.stringify(actual));
-    });
-  }
-
   guardarEdicion(form: any) {
     if (form.valid && this.productoEnEdicion) {
-      const productoLimpio = {
-        ...this.productoEnEdicion,
-        precio: Number(this.productoEnEdicion.precio),
-        stock: Number(this.productoEnEdicion.stock)
+      const prod = this.productoEnEdicion;
+      const precioNumerico = Number(prod.precio);
+      const stockNumerico = Number(prod.stock);
+
+      if (this.productoOriginalSnapshot && verificarSinCambios({
+        codigo: prod.codigo,
+        nombre: prod.nombre,
+        categoria: prod.categoria,
+        bodega: prod.bodega,
+        precio: precioNumerico,
+        stock: stockNumerico
+      }, this.productoOriginalSnapshot)) {
+        this.cerrarModal();
+        this.mensajeAlertaModal = 'No se realizaron modificaciones en el producto.';
+        return;
+      }
+
+      const categoriaId = this.categorias.find(c => c.nombre === prod.categoria)?.id ?? null;
+      const bodegaId = this.bodegas.find(b => b.nombre === prod.bodega)?.id ?? null;
+
+      const payload = {
+        codigo: prod.codigo,
+        nombre: prod.nombre,
+        categoriaId,
+        bodegaId,
+        precio: precioNumerico,
+        stock: stockNumerico
       };
 
-      const indexReal = this.productosOriginales.findIndex(p => p.codigo === productoLimpio.codigo);
-      
-      if (indexReal !== -1 && this.productoOriginalSnapshot) {
-        if (verificarSinCambios(productoLimpio, this.productoOriginalSnapshot)) {
+      this.inventarioService.actualizarProducto(prod.id, payload)
+        .then((actualizado) => {
+          this.reemplazarProducto(prod.id, {
+            ...actualizado,
+            categoria: prod.categoria,
+            bodega: prod.bodega
+          });
           this.cerrarModal();
-          this.mensajeAlertaModal = 'No se realizaron modificaciones en el producto.';
-          return; 
-        }
-      }
-
-      if (indexReal !== -1) {
-        this.productosOriginales[indexReal] = productoLimpio;
-        this.registrarAuditoria('ACTUALIZAR', productoLimpio);
-
-        console.group(`✏️ PRODUCTO ACTUALIZADO [ ACCIÓN: ACTUALIZAR ]`);
-        console.log('Datos Anteriores:', this.productoOriginalSnapshot);
-        console.log('Datos Nuevos (Modificados):', productoLimpio);
-        console.log('=== JSON COMPLETO ===');
-        console.log(JSON.stringify(productoLimpio, null, 2));
-        console.groupEnd();
-
-      } else {
-        this.productosOriginales.unshift(productoLimpio);
-        this.registrarAuditoria('CREAR', productoLimpio);
-
-        console.group(`✨ PRODUCTO CREADO [ ACCIÓN: CREAR ]`);
-        console.log('=== JSON COMPLETO ===');
-        console.log(JSON.stringify(productoLimpio, null, 2));
-        console.groupEnd();
-      }
-
-      localStorage.setItem('inventario_productos', JSON.stringify(this.productosOriginales));
-      this.productosOriginales = [...this.productosOriginales];
-      
-      this.cerrarModal();
-      
-      // Muestra la notificación de inmediato y fuerza el refresco visual de Angular
-      this.mostrarNotificacion('¡Producto actualizado exitosamente!');
+          this.toastService.mostrar('Producto actualizado exitosamente.', 'success', 'Producto actualizado');
+          this.cdRef.detectChanges();
+        })
+        .catch(() => {
+          this.cerrarModal();
+          this.cdRef.detectChanges();
+        });
     }
   }
 
@@ -171,23 +171,20 @@ export class ListaProductosComponent implements OnInit {
     if (!this.productoAEliminar) return;
 
     const prod = this.productoAEliminar;
-    this.productosOriginales = this.productosOriginales.filter(p => p.codigo !== prod.codigo);
-    
-    localStorage.setItem('inventario_productos', JSON.stringify(this.productosOriginales));
-    this.productosOriginales = [...this.productosOriginales];
-    
-    this.registrarAuditoria('ELIMINAR', prod);
-
-    console.group(`🗑️ PRODUCTO ELIMINADO [ ACCIÓN: ELIMINAR ]`);
-    console.log('El siguiente producto fue retirado del inventario:');
-    console.log(JSON.stringify(prod, null, 2));
-    console.groupEnd();
-
-    this.productoAEliminar = null;
-    document.body.style.overflow = 'auto';
-
-    // Muestra la notificación de inmediato y fuerza el refresco visual de Angular
-    this.mostrarNotificacion('¡Producto eliminado exitosamente!');
+    this.inventarioService.eliminarProducto(prod.id)
+      .then(() => {
+        this.productosOriginales = this.productosOriginales.filter(p => p.id !== prod.id);
+        this.productosOriginales = [...this.productosOriginales];
+        this.productoAEliminar = null;
+        document.body.style.overflow = 'auto';
+        this.toastService.mostrar('Producto eliminado exitosamente.', 'success', 'Producto eliminado');
+        this.cdRef.detectChanges();
+      })
+      .catch(() => {
+        this.productoAEliminar = null;
+        document.body.style.overflow = 'auto';
+        this.cdRef.detectChanges();
+      });
   }
 
   mostrarNotificacion(mensaje: string) {
@@ -201,6 +198,14 @@ export class ListaProductosComponent implements OnInit {
         this.cdRef.detectChanges();
       }
     }, 3500);
+  }
+
+  private reemplazarProducto(id: number, actualizado: any) {
+    const indexReal = this.productosOriginales.findIndex(p => p.id === id);
+    if (indexReal !== -1) {
+      this.productosOriginales[indexReal] = actualizado;
+    }
+    this.productosOriginales = [...this.productosOriginales];
   }
 }
 

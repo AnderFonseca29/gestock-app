@@ -1,7 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ApiService } from '../../services/api.service';
+import { ToastService } from '../../services/toast.service';
+import { AuthService } from '../../services/auth';
+
+function valorBooleano(valor: string | undefined, defecto: boolean): boolean {
+  if (valor === undefined || valor === null || valor === '') return defecto;
+  return valor === 'true' || valor === '1';
+}
+
+function valorNumero(valor: string | undefined, defecto: number): number {
+  if (valor === undefined || valor === null || valor === '') return defecto;
+  const numero = Number(valor);
+  return Number.isFinite(numero) ? numero : defecto;
+}
 
 export interface ConfiguracionGestock {
   notificacionesEmail: boolean;
@@ -44,6 +57,23 @@ export interface SesionActiva {
   timestamp: string;
 }
 
+// Estructura de sesión devuelta por el backend
+export interface SesionBackend {
+  id: number;
+  usuario_id: number;
+  ip: string | null;
+  user_agent: string | null;
+  dispositivo: string | null;
+  navegador: string | null;
+  fecha_inicio: string;
+  fecha_cierre: string | null;
+  ultimo_acceso: string;
+  estado: string;
+  es_actual: boolean;
+  usuario_nombre?: string;
+  usuario_email?: string;
+}
+
 @Component({
   selector: 'app-configuracion',
   standalone: true,
@@ -51,8 +81,16 @@ export interface SesionActiva {
   templateUrl: './configuracion.html',
   styleUrl: './configuracion.css'
 })
-export class ConfiguracionComponent {
+export class ConfiguracionComponent implements OnInit {
   tabActiva: 'notificaciones' | 'seguridad' | 'backup' | 'sesiones' = 'notificaciones';
+
+  private authService = inject(AuthService);
+
+  puedeEditar(): boolean {
+    return this.authService.tienePermiso('configuracion.edit');
+  }
+
+  private cdr = inject(ChangeDetectorRef);
   
   // Control del Modal de Guardado
   mostrarModalGuardar: boolean = false;
@@ -94,7 +132,7 @@ export class ConfiguracionComponent {
       descripcion: 'Retraso reportado en la zona de transferencia de pista por condiciones climáticas en Yopal.',
       fecha: '21/08/2026 - 02:30 PM',
       leida: false,
-      icono: '⚠️'
+      icono: 'fas fa-triangle-exclamation'
     },
     {
       id: '2',
@@ -103,7 +141,7 @@ export class ConfiguracionComponent {
       descripcion: 'El paquete con guía #ENV-9011 ha completado la fase de recolección e inició tránsito.',
       fecha: '21/08/2026 - 11:15 AM',
       leida: false,
-      icono: '🚚'
+      icono: 'fas fa-truck'
     },
     {
       id: '3',
@@ -112,7 +150,7 @@ export class ConfiguracionComponent {
       descripcion: 'El producto SKU-4029 alcanzó el umbral mínimo en la Bodega Central.',
       fecha: '20/08/2026 - 09:45 AM',
       leida: true,
-      icono: '📦'
+      icono: 'fas fa-boxes-stacked'
     },
     {
       id: '4',
@@ -121,96 +159,91 @@ export class ConfiguracionComponent {
       descripcion: 'Se autorizó la sustitución de mercancía averiada para el envío #ENV-8700.',
       fecha: '19/08/2026 - 04:20 PM',
       leida: true,
-      icono: '✅'
+      icono: 'fas fa-circle-check'
     }
   ];
 
   // Lista ampliada de sesiones activas con múltiples dispositivos y ubicaciones simuladas
   activeSessions: SesionActiva[] = [];
 
-  constructor(private router: Router) {
+  private apiService = inject(ApiService);
+  private toastService = inject(ToastService);
+
+  constructor() {
     this.cargarSesionesActivas();
+  }
+
+  ngOnInit(): void {
+    this.cargarConfiguracion();
   }
 
   cambiarTab(tab: 'notificaciones' | 'seguridad' | 'backup' | 'sesiones'): void {
     this.tabActiva = tab;
   }
 
-  // --- MÉTODOS DE SESIONES ACTIVAS ---
-  cargarSesionesActivas(): void {
-    const sessionData = localStorage.getItem('gestock_session');
-    let loginTime = 'Hace un momento';
-    
-    if (sessionData) {
-      try {
-        const parsed = JSON.parse(sessionData);
-        if (parsed.timestamp) {
-          const date = new Date(parsed.timestamp);
-          loginTime = `Conectado el ${date.toLocaleDateString()} a las ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    this.activeSessions = [
-      {
-        id: '1',
-        device: 'Computador Escritorio (Windows)',
-        browser: 'Google Chrome',
-        ip: '190.60.22.14 (Local)',
-        location: 'Yopal, Casanare, Colombia',
-        current: true,
-        timestamp: loginTime
-      },
-      {
-        id: '2',
-        device: 'Laptop Portátil (MacBook Pro)',
-        browser: 'Mozilla Firefox',
-        ip: '186.29.114.5',
-        location: 'Bogotá D.C., Colombia',
-        current: false,
-        timestamp: 'Hace 45 minutos'
-      },
-      {
-        id: '3',
-        device: 'Dispositivo Móvil (Android - Samsung Galaxy)',
-        browser: 'Chrome Mobile',
-        ip: '190.60.22.89',
-        location: 'Yopal, Casanare, Colombia',
-        current: false,
-        timestamp: 'Hace 2 horas'
-      },
-      {
-        id: '4',
-        device: 'Tablet (iPad Air)',
-        browser: 'Safari',
-        ip: '181.130.8.22',
-        location: 'Villavicencio, Meta, Colombia',
-        current: false,
-        timestamp: 'Ayer a las 06:15 PM'
-      },
-      {
-        id: '5',
-        device: 'Estación de Trabajo - Bodega Central',
-        browser: 'Microsoft Edge',
-        ip: '190.60.22.105',
-        location: 'Yopal, Casanare, Colombia',
-        current: false,
-        timestamp: 'Hace 3 días'
-      }
-    ];
+  // --- CONFIGURACIÓN DESDE EL BACKEND ---
+  cargarConfiguracion(): void {
+    this.apiService
+      .get<Record<string, string>>('/configuracion')
+      .then((datos) => {
+        this.config = {
+          notificacionesEmail: valorBooleano(datos['notificacionesEmail'], this.config.notificacionesEmail),
+          resumenSemanal: valorBooleano(datos['resumenSemanal'], this.config.resumenSemanal),
+          seguridadActiva: valorBooleano(datos['seguridadActiva'], this.config.seguridadActiva),
+          dosFactores: valorBooleano(datos['dosFactores'], this.config.dosFactores),
+          tiempoSesion: valorNumero(datos['tiempoSesion'], this.config.tiempoSesion),
+          expiracionPassword: valorNumero(datos['expiracionPassword'], this.config.expiracionPassword),
+          copiasSeguridad: valorBooleano(datos['copiasSeguridad'], this.config.copiasSeguridad),
+          backupAutomatico: valorBooleano(datos['backupAutomatico'], this.config.backupAutomatico),
+          frecuenciaBackup: (datos['frecuenciaBackup'] as ConfiguracionGestock['frecuenciaBackup']) || this.config.frecuenciaBackup
+        };
+        this.cdr.detectChanges();
+      })
+      .catch(() => {
+        this.toastService.mostrar('No se pudo cargar la configuración del sistema.', 'error', 'Configuración');
+      });
   }
 
-  revocarSesion(id: string): void {
-    if (id === '1') {
-      localStorage.removeItem('gestock_session');
-      console.log('%c[GESTOCK] Sesión actual cerrada por seguridad.', 'color: #f59e0b; font-weight: bold;');
-      this.router.navigate(['/auth/login']);
-    } else {
-      this.activeSessions = this.activeSessions.filter(s => s.id !== id);
-      console.log(`%c[GESTOCK] Sesión ${id} revocada exitosamente.`, 'color: #34d399; font-weight: bold;');
+  // --- MÉTODOS DE SESIONES ACTIVAS ---
+  cargarSesionesActivas(): void {
+    this.apiService
+      .get<SesionBackend[]>('/sesiones')
+      .then((sesiones) => {
+        this.activeSessions = (sesiones ?? []).map((s) => ({
+          id: String(s.id),
+          device: s.dispositivo ?? 'Dispositivo desconocido',
+          browser: s.navegador ?? 'Navegador desconocido',
+          ip: s.ip ?? '-',
+          location: '-',
+          current: Boolean(s.es_actual),
+          timestamp: this.formatearActividad(s.ultimo_acceso || s.fecha_inicio)
+        }));
+        this.cdr.detectChanges();
+      })
+      .catch(() => {
+        this.activeSessions = [];
+        this.toastService.mostrar('No se pudieron cargar las sesiones activas.', 'error', 'Configuración');
+        this.cdr.detectChanges();
+      });
+  }
+
+  private formatearActividad(fechaStr: string): string {
+    const fecha = new Date(fechaStr);
+    if (isNaN(fecha.getTime())) {
+      return '-';
     }
+    return `Conectado el ${fecha.toLocaleDateString()} a las ${fecha.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  }
+
+  async revocarSesion(id: string): Promise<void> {
+    try {
+      await this.apiService.delete(`/sesiones/${id}`);
+      this.activeSessions = this.activeSessions.filter((s) => s.id !== id);
+      this.toastService.mostrar('La sesión fue revocada correctamente.', 'success', 'Sesión revocada');
+    } catch {
+      this.toastService.mostrar('No se pudo revocar la sesión.', 'error', 'Sesión revocada');
+    }
+    this.cdr.detectChanges();
   }
 
   // Marcar notificación individual como leída
@@ -235,11 +268,30 @@ export class ConfiguracionComponent {
   }
 
   confirmarGuardado(): void {
-    this.guardadoExitoso = true;
+    this.apiService
+      .put('/configuracion', {
+        notificacionesEmail: this.config.notificacionesEmail,
+        resumenSemanal: this.config.resumenSemanal,
+        seguridadActiva: this.config.seguridadActiva,
+        dosFactores: this.config.dosFactores,
+        tiempoSesion: this.config.tiempoSesion,
+        expiracionPassword: this.config.expiracionPassword,
+        copiasSeguridad: this.config.copiasSeguridad,
+        backupAutomatico: this.config.backupAutomatico,
+        frecuenciaBackup: this.config.frecuenciaBackup
+      })
+      .then(() => {
+        this.guardadoExitoso = true;
+        this.toastService.mostrar('La configuración fue guardada correctamente.', 'success', 'Configuración');
+        this.cdr.detectChanges();
+      })
+      .catch(() => {
+        this.toastService.mostrar('No se pudieron guardar los cambios de configuración.', 'error', 'Configuración');
+        this.cdr.detectChanges();
+      });
   }
 
   finalizarGuardado(): void {
-    console.log('Configuración guardada exitosamente:', this.config);
     this.cerrarModalGuardar();
   }
 
@@ -264,6 +316,7 @@ export class ConfiguracionComponent {
       this.cargandoBackup = false;
       this.ultimoBackupFecha = new Date().toLocaleTimeString();
       this.mostrarModalBackupExitoso = true;
+      this.cdr.detectChanges();
     }, 1800);
   }
 

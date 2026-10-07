@@ -1,24 +1,27 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../services/auth';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
 export class LoginComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
   loginForm!: FormGroup;
-  mostrarModalRol: boolean = false;
   errorMessage: string = '';
-  
-  private readonly ADMIN_SUPERIOR_EMAIL = 'admin@gestock.com';
+  enviando: boolean = false;
+  mostrarPassword: boolean = false;
+  shakeAnimacion: boolean = false;
 
   ngOnInit() {
     this.loginForm = this.fb.group({
@@ -26,59 +29,82 @@ export class LoginComponent implements OnInit {
       password: ['', Validators.required],
       recordar: [false]
     });
+
+    const recordado = typeof localStorage !== 'undefined' ? localStorage.getItem('gestock_recordar_email') : null;
+    if (recordado) {
+      this.loginForm.patchValue({ email: recordado, recordar: true });
+    }
+
+    this.loginForm.valueChanges.subscribe(() => {
+      this.errorMessage = '';
+    });
+  }
+
+  get emailInvalid(): boolean {
+    const control = this.loginForm.controls['email'];
+    return control.invalid && control.touched;
+  }
+
+  get passwordInvalid(): boolean {
+    const control = this.loginForm.controls['password'];
+    return control.invalid && control.touched;
+  }
+
+  get mensajeEmailError(): string {
+    const control = this.loginForm.controls['email'];
+    if (control.hasError('required')) return 'El correo es obligatorio.';
+    if (control.hasError('email')) return 'Ingresa un correo válido.';
+    return '';
+  }
+
+  get mensajePasswordError(): string {
+    const control = this.loginForm.controls['password'];
+    if (control.hasError('required')) return 'La contraseña es obligatoria.';
+    return '';
+  }
+
+  private animarError(): void {
+    this.shakeAnimacion = true;
+    setTimeout(() => (this.shakeAnimacion = false), 500);
+  }
+
+  irAlInicio(): void {
+    this.router.navigate(['/']);
   }
 
   procesarLogin() {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
-      console.warn('El formulario tiene errores de validación.');
       return;
     }
 
-    const emailIngresado = this.loginForm.value.email.trim().toLowerCase();
-    console.log('Intentando iniciar sesión con:', emailIngresado);
-
-    if (emailIngresado === this.ADMIN_SUPERIOR_EMAIL) {
-      localStorage.setItem('user_role', 'super_admin');
-      localStorage.setItem('user_email', emailIngresado);
-      localStorage.setItem('gestock_usuario_sesion', JSON.stringify({ 
-        email: emailIngresado, 
-        rol: 'Administrador', 
-        nombre: 'Administrador Principal' 
-      }));
-      
-      this.enrutarARegistroEmpresa();
-    } else {
-      this.mostrarModalRol = true;
-    }
-  }
-
-  confirmarAcceso(tipoRol: 'admin' | 'usuario') {
     const email = this.loginForm.value.email.trim().toLowerCase();
-    const nombreRol = tipoRol === 'admin' ? 'Administrador' : 'Auditor General';
-    
-    localStorage.setItem('user_email', email);
-    localStorage.setItem('user_role', tipoRol);
-    localStorage.setItem('gestock_usuario_sesion', JSON.stringify({ 
-      email: email, 
-      rol: nombreRol, 
-      nombre: 'Usuario' 
-    }));
+    const password = this.loginForm.value.password;
+    const recordar = this.loginForm.value.recordar;
 
-    this.mostrarModalRol = false;
-    this.enrutarARegistroEmpresa();
-  }
+    this.enviando = true;
+    this.errorMessage = '';
 
-  cancelarSeleccionRol() {
-    this.mostrarModalRol = false;
-  }
+    this.authService.login(email, password).then((resultado) => {
+      this.enviando = false;
+      if (!resultado.ok) {
+        this.loginForm.patchValue({ password: '' });
+        this.errorMessage = resultado.mensaje || 'No se pudo iniciar sesión.';
+        this.animarError();
+        return;
+      }
 
-  private enrutarARegistroEmpresa() {
-    console.log('Redirigiendo a registrar-empresa...');
-    
-    this.router.navigate(['/app/registrar-empresa']).catch(err => {
-      console.error('No se encontró /app/registrar-empresa, intentando ruta raíz...', err);
-      this.router.navigate(['/registrar-empresa']);
+      if (typeof localStorage !== 'undefined') {
+        if (recordar) {
+          localStorage.setItem('gestock_recordar_email', email);
+        } else {
+          localStorage.removeItem('gestock_recordar_email');
+        }
+      }
+
+      const rutaInicial = this.authService.obtenerRutaInicialPorRol();
+      this.router.navigate([rutaInicial]);
+      this.cdr.detectChanges();
     });
   }
 }

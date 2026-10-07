@@ -1,8 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 :host {
   font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-  color: #f5f5f7;
+  color: var(--text-primary);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,17 +12,29 @@
   max-width: 440px;
   padding: 1.5rem;
   perspective: 1000px;
+  animation: fadeInScale 0.5s var(--ease-out) forwards;
+}
+
+/* Animaciones */
+@keyframes fadeInScale {
+  0%   { opacity: 0; transform: scale(0.95) translateY(12px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .recovery-card {
   position: relative;
-  background: rgba(22, 22, 26, 0.75);
+  background: var(--bg-surface);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-light);
   border-radius: 28px;
   padding: 2.5rem 2rem;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
   transform-style: preserve-3d;
   transform: rotateX(var(--rotate-x, 0deg)) rotateY(var(--rotate-y, 0deg));
   transition: transform 0.15s ease-out, border-color 0.4s ease, box-shadow 0.4s ease;
@@ -32,8 +42,8 @@
 }
 
 .recovery-card:hover {
-  border-color: rgba(41, 151, 255, 0.4);
-  box-shadow: 0 35px 70px rgba(0, 119, 237, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 35px 70px rgba(59, 130, 246, 0.12);
 }
 
 .glow-overlay {
@@ -45,7 +55,7 @@
   pointer-events: none;
   background: radial-gradient(
     600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(41, 151, 255, 0.12),
+    rgba(59, 130, 246, 0.06),
     transparent 40%
   );
   transition: opacity 0.3s ease;
@@ -56,17 +66,149 @@
   margin-bottom: 2rem;
 }
 
+.btn-back-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  margin: 0 0 1.25rem 0;
+  transition: color 0.25s ease;
+}
+
+.btn-back-group:hover {
+  color: var(--accent);
+}
+
+@keyframes shakeAnim {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-8px); }
+  40%      { transform: translateX(8px); }
+  60%      { transform: translateX(-5px); }
+  80%      { transform: translateX(5px); }
+}
+
+.recovery-card.shake-anim {
+  animation: shakeAnim 0.5s ease;
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 12px;
+  color: #b91c1c;
+  font-size: 0.85rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  animation: fadeInUp 0.3s ease;
+}
+
+.demo-code-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px dashed rgba(16, 185, 129, 0.45);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  animation: fadeInUp 0.3s ease;
+}
+
+.demo-code-box > i {
+  margin-top: 0.15rem;
+  color: #059669;
+}
+
+.demo-code-box p { margin: 0.2rem 0 0 0; }
+
+.demo-code-box strong { color: #047857; }
+
+.demo-code {
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #047857;
+  background: rgba(16, 185, 129, 0.15);
+  border-radius: 6px;
+  padding: 0.1rem 0.4rem;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.toggle-password:hover { color: var(--accent); }
+
+.form-extra {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-extra .btn-link { margin-top: 1rem; }
+
+.form-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.1rem 0 1.1rem;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.form-divider::before,
+.form-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(119, 131, 143, 0.28);
+}
+
+.hint-text {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.field-hint {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: left;
+}
+
 .brand-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.4rem 0.9rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--accent-light);
+  border: 1px solid var(--border-light);
   border-radius: 980px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #2997ff;
+  color: var(--accent);
   margin-bottom: 1rem;
 }
 
@@ -74,14 +216,14 @@
   font-size: 1.85rem;
   font-weight: 700;
   margin: 0 0 0.5rem 0;
-  background: linear-gradient(180deg, #ffffff 0%, #a1a1a6 100%);
+  background: linear-gradient(180deg, #0f172a 0%, #475569 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
-  color: #86868b;
+  color: var(--text-muted);
   font-size: 0.88rem;
   margin: 0;
 }
@@ -97,7 +239,11 @@
   flex-direction: column;
   gap: 0.4rem;
   transition: transform 0.2s ease;
+  animation: fadeInUp 0.5s var(--ease-out) backwards;
 }
+
+.form-group:nth-child(2) { animation-delay: 0.06s; }
+.form-group:nth-child(3) { animation-delay: 0.12s; }
 
 .form-group.is-focused {
   transform: scale(1.01);
@@ -106,12 +252,12 @@
 .form-group label {
   font-size: 0.8rem;
   font-weight: 500;
-  color: #a1a1a6;
+  color: var(--text-secondary);
   transition: color 0.3s ease;
 }
 
 .form-group.is-focused label {
-  color: #2997ff;
+  color: var(--accent);
 }
 
 .input-wrapper {
@@ -131,10 +277,10 @@
 .input-wrapper input {
   width: 100%;
   padding: 0.85rem 1rem 0.85rem 2.75rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 14px;
-  color: #ffffff;
+  color: var(--text-primary);
   font-size: 0.9rem;
   outline: none;
   box-sizing: border-box;
@@ -142,14 +288,14 @@
 }
 
 .input-wrapper input:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: var(--bg-subtle);
+  border-color: rgba(59, 130, 246, 0.35);
 }
 
 .input-wrapper input:focus {
-  border-color: #2997ff;
-  background: rgba(41, 151, 255, 0.08);
-  box-shadow: 0 0 0 4px rgba(41, 151, 255, 0.2);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
 }
 
 .code-input {
@@ -162,8 +308,8 @@
   margin-top: 0.5rem;
   width: 100%;
   padding: 0.95rem;
-  background: linear-gradient(180deg, #0077ed 0%, #0066cc 100%);
-  color: #ffffff;
+  background: var(--accent);
+  color: var(--text-inverse);
   border: none;
   border-radius: 14px;
   font-size: 0.95rem;
@@ -174,13 +320,13 @@
   justify-content: center;
   gap: 0.6rem;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 20px rgba(0, 119, 237, 0.35);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
 }
 
 .apple-btn-submit:hover {
   transform: translateY(-2px);
-  background: linear-gradient(180deg, #1485ff 0%, #0072e5 100%);
-  box-shadow: 0 8px 25px rgba(0, 119, 237, 0.5);
+  background: var(--accent-hover);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
 }
 
 .btn-arrow {
@@ -207,7 +353,7 @@
 .btn-link {
   background: transparent;
   border: none;
-  color: #86868b;
+  color: var(--text-muted);
   font-size: 0.8rem;
   margin-top: 0.5rem;
   cursor: pointer;
@@ -215,29 +361,29 @@
 }
 
 .btn-link:hover {
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .card-footer {
   margin-top: 2rem;
   text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--border-light);
   padding-top: 1.25rem;
 }
 
 .card-footer p {
   margin: 0;
   font-size: 0.82rem;
-  color: #86868b;
+  color: var(--text-muted);
 }
 
 .login-link {
-  color: #2997ff;
+  color: var(--accent);
   text-decoration: none;
   font-weight: 500;
 }
 
 .login-link:hover {
-  color: #64b5ff;
+  color: var(--accent-hover);
   text-decoration: underline;
 }

@@ -1,6 +1,38 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ApiService } from '../../../services/api.service';
+import { ToastService } from '../../../services/toast.service';
+import { AuthService } from '../../../services/auth';
+
+interface ProductoApi {
+  id: number;
+  codigo: string;
+  nombre: string;
+}
+
+interface BodegaApi {
+  id: number;
+  nombre: string;
+  codigo: string;
+}
+
+interface MovimientoApi {
+  id: number;
+  producto_id: number | null;
+  bodega_id: number | null;
+  tipo: 'ENTRADA' | 'SALIDA' | 'TRANSFERENCIA';
+  cantidad: number;
+  motivo: string;
+  responsable: string;
+  observaciones: string | null;
+  estado: 'Validado' | 'Discrepancia';
+  usuario_id: number | null;
+  fecha: string;
+  sku?: string | null;
+  producto?: string | null;
+  bodega?: string | null;
+}
 
 interface RecepcionItem {
   id: string;
@@ -8,7 +40,18 @@ interface RecepcionItem {
   sku: string;
   producto: string;
   cantidad: number;
+  tipo: 'ENTRADA' | 'SALIDA' | 'TRANSFERENCIA';
+  motivo: string;
+  responsable: string;
+  observaciones: string;
+  estado: 'Validado' | 'Discrepancia';
+}
+
+interface NuevoMovimientoForm {
+  productoId: number | null;
+  bodegaId: number | null;
   tipo: 'ENTRADA' | 'SALIDA';
+  cantidad: number;
   motivo: string;
   responsable: string;
   observaciones: string;
@@ -23,92 +66,90 @@ interface RecepcionItem {
   styleUrls: ['./recepcion-mercancias.css']
 })
 export class RecepcionMercanciasComponent implements OnInit {
-  
+
+  private api = inject(ApiService);
+  private toast = inject(ToastService);
+  private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
+
+  tienePermiso(codigo: string): boolean {
+    return this.authService.tienePermiso(codigo);
+  }
+
   filtroTipo: string = 'TODOS';
   filtroEstado: string = 'TODOS';
   listaRecepciones: RecepcionItem[] = [];
+
+  productos: ProductoApi[] = [];
+  bodegas: BodegaApi[] = [];
 
   menuAccionesAbierto: boolean = false;
   modalActivo: boolean = false;
   modalTitulo: string = '';
 
-  nuevoItem: RecepcionItem = {
-    id: '',
-    fecha: '',
-    sku: '',
-    producto: '',
-    cantidad: 1,
+  nuevoItem: NuevoMovimientoForm = {
+    productoId: null,
+    bodegaId: null,
     tipo: 'ENTRADA',
+    cantidad: 1,
     motivo: 'Compra',
     responsable: '',
     observaciones: '',
     estado: 'Validado'
   };
 
-  ngOnInit() {
-    const datosGuardados = localStorage.getItem('gestock_movimientos');
-    if (datosGuardados) {
-      try {
-        this.listaRecepciones = JSON.parse(datosGuardados);
-      } catch (e) {
-        console.error('Error al parsear localStorage:', e);
-        this.generarDatosMultinacional();
-      }
-    } else {
-      this.generarDatosMultinacional();
-    }
+  async ngOnInit() {
+    await Promise.all([this.cargarMovimientos(), this.cargarProductos(), this.cargarBodegas()]);
   }
 
-  generarDatosMultinacional() {
-    const productosBase = [
-      { sku: 'SKU-LP-01', desc: 'Laptop Enterprise 15" i7' },
-      { sku: 'SKU-SR-02', desc: 'Servidor Rack 2U Xeon' },
-      { sku: 'SKU-SW-03', desc: 'Switch Core 24 Puertos' },
-      { sku: 'SKU-MN-04', desc: 'Monitor UltraWide 34"' },
-      { sku: 'SKU-TC-05', desc: 'Teclado Mecánico RGB Pro' }
-    ];
-    const motivos = ['Compra', 'Venta', 'Devolución', 'Transferencia', 'Ajuste'];
-    const responsables = ['Carlos Mendoza', 'Ana María Gómez', 'Luis Fernando Díaz', 'Diana Sofía R.', 'Roberto Carlos Pérez'];
-    const tipos: ('ENTRADA' | 'SALIDA')[] = ['ENTRADA', 'SALIDA'];
-    const estados: ('Validado' | 'Discrepancia')[] = ['Validado', 'Validado', 'Discrepancia'];
-
-    for (let i = 1; i <= 15; i++) {
-      const p = productosBase[Math.floor(Math.random() * productosBase.length)];
-      const tipo = tipos[Math.floor(Math.random() * tipos.length)];
-      const estado = estados[Math.floor(Math.random() * estados.length)];
-      const motivo = motivos[Math.floor(Math.random() * motivos.length)];
-      const resp = responsables[Math.floor(Math.random() * responsables.length)];
-
-      this.listaRecepciones.push({
-        id: `MOV-2026-${8000 + i}`,
-        fecha: `2026-08-25 ${String(Math.floor(Math.random() * 10) + 8).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
-        sku: p.sku,
-        producto: `${p.desc} (Lote #${i})`,
-        cantidad: Math.floor(Math.random() * 100) + 5,
-        tipo: tipo,
-        motivo: motivo,
-        responsable: resp,
-        observaciones: `Factura/Remisión #FAC-${9000 + i} - OK`,
-        estado: estado
-      });
-    }
-    this.sincronizarStorage();
+  async cargarProductos() {
+    const data = await this.api.get<ProductoApi[]>('/productos');
+    this.productos = data ?? [];
+    this.cdr.detectChanges();
   }
 
-  sincronizarStorage() {
-    localStorage.setItem('gestock_movimientos', JSON.stringify(this.listaRecepciones));
+  async cargarBodegas() {
+    const data = await this.api.get<BodegaApi[]>('/bodegas');
+    this.bodegas = data ?? [];
+    this.cdr.detectChanges();
+  }
+
+  async cargarMovimientos() {
+    const data = await this.api.get<{ movimientos: MovimientoApi[] }>('/movimientos', {
+      tipo: this.filtroTipo === 'TODOS' ? undefined : this.filtroTipo,
+      estado: this.filtroEstado === 'TODOS' ? undefined : this.filtroEstado,
+    });
+    this.listaRecepciones = (data?.movimientos ?? []).map((m) => this.mapearMovimiento(m));
+    this.cdr.detectChanges();
+  }
+
+  private mapearMovimiento(m: MovimientoApi): RecepcionItem {
+    const iso = m.fecha ? String(m.fecha) : '';
+    return {
+      id: `MOV-${m.id}`,
+      fecha: iso ? `${iso.slice(0, 10)} ${iso.slice(11, 16)}` : '',
+      sku: m.sku ?? '',
+      producto: m.producto ?? '',
+      cantidad: m.cantidad,
+      tipo: m.tipo,
+      motivo: m.motivo,
+      responsable: m.responsable,
+      observaciones: m.observaciones ?? '',
+      estado: m.estado
+    };
   }
 
   get recepcionesFiltradas(): RecepcionItem[] {
-    return this.listaRecepciones.filter(item => {
-      const cumpleTipo = this.filtroTipo === 'TODOS' || item.tipo === this.filtroTipo;
-      const cumpleEstado = this.filtroEstado === 'TODOS' || item.estado === this.filtroEstado;
-      return cumpleTipo && cumpleEstado;
-    });
+    return this.listaRecepciones;
   }
 
   filtrarPorTipo(tipo: string) {
     this.filtroTipo = tipo;
+    this.cargarMovimientos();
+  }
+
+  aplicarFiltros() {
+    this.cargarMovimientos();
   }
 
   toggleMenuAcciones() {
@@ -117,16 +158,12 @@ export class RecepcionMercanciasComponent implements OnInit {
 
   abrirFormulario(tipo: 'ENTRADA' | 'SALIDA') {
     this.menuAccionesAbierto = false;
-    const ahora = new Date();
-    const fechaStr = ahora.toISOString().slice(0, 10) + ' ' + ahora.toTimeString().slice(0, 5);
-    
+
     this.nuevoItem = {
-      id: tipo === 'ENTRADA' ? `IN-2026-${Math.floor(Math.random() * 900) + 1000}` : `OUT-2026-${Math.floor(Math.random() * 900) + 1000}`,
-      fecha: fechaStr,
-      sku: '',
-      producto: '',
-      cantidad: 1,
+      productoId: null,
+      bodegaId: null,
       tipo: tipo,
+      cantidad: 1,
       motivo: tipo === 'ENTRADA' ? 'Compra' : 'Venta',
       responsable: '',
       observaciones: '',
@@ -140,25 +177,39 @@ export class RecepcionMercanciasComponent implements OnInit {
     this.modalActivo = false;
   }
 
-  guardarMovimiento() {
-    if (!this.nuevoItem.sku || !this.nuevoItem.producto || !this.nuevoItem.responsable) {
-      alert('Por favor complete los campos obligatorios.');
+  async guardarMovimiento() {
+    if (!this.nuevoItem.productoId || !this.nuevoItem.responsable || !this.nuevoItem.cantidad || this.nuevoItem.cantidad <= 0) {
+      this.toast.mostrar('Por favor complete los campos obligatorios.', 'error', 'Validación');
       return;
     }
 
-    this.listaRecepciones.unshift({ ...this.nuevoItem });
+    try {
+      await this.api.post<MovimientoApi>('/movimientos', {
+        productoId: this.nuevoItem.productoId,
+        bodegaId: this.nuevoItem.bodegaId,
+        tipo: this.nuevoItem.tipo,
+        cantidad: this.nuevoItem.cantidad,
+        motivo: this.nuevoItem.motivo,
+        responsable: this.nuevoItem.responsable,
+        observaciones: this.nuevoItem.observaciones || null,
+        estado: this.nuevoItem.estado
+      });
 
-    this.sincronizarStorage();
-
-    console.log('%c[GESTOCK] Nuevo Movimiento Registrado (JSON):', 'color: #38bdf8; font-weight: bold;');
-    console.log(JSON.stringify(this.nuevoItem, null, 2));
-
-    this.modalActivo = false;
+      this.toast.mostrar('Movimiento registrado correctamente.', 'success', 'Registro exitoso');
+      this.modalActivo = false;
+      await this.cargarMovimientos();
+      this.cdr.detectChanges();
+    } catch {
+      // El interceptor de la API ya muestra el mensaje de error.
+      this.cdr.detectChanges();
+    }
   }
 
   generarInforme(item: RecepcionItem) {
-    console.log('%c[GESTOCK] Detalle del movimiento seleccionado:', 'color: #34d399; font-weight: bold;');
-    console.log(JSON.stringify(item, null, 2));
-    alert(`Detalle impreso en consola:\nSKU: ${item.sku}\nProducto: ${item.producto}`);
+    this.toast.mostrar(
+      `SKU: ${item.sku} | Producto: ${item.producto} | Cantidad: ${item.cantidad} un. | ${item.observaciones}`,
+      'info',
+      `Detalle ${item.id}`
+    );
   }
 }

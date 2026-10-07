@@ -1,0 +1,55 @@
+{
+  "name": "gestock-backend",
+  "version": "1.0.0",
+  "description": "API REST de GESTOCK - Sistema de gestión de inventario (Node.js + Express + PostgreSQL)",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "db:migrate": "tsx src/db/migrate.ts",
+    "db:seed": "tsx src/db/seed.ts",
+    "db:diagramas": "tsx src/db/seedDiagramas.ts",
+    "diagramas:verify": "tsx src/diagramas/verify.ts",
+    "db:setup": "tsx src/db/migrate.ts && tsx src/db/seed.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "gestock",
+    "inventario",
+    "api",
+    "express",
+    "postgresql"
+  ],
+  "author": "Gestock",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^10.0.8",
+    "pg": "^8.13.1",
+    "swagger-ui-express": "^5.0.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^20.17.19",
+    "@types/pg": "^8.11.10",
+    "@types/supertest": "^6.0.2",
+    "@types/swagger-ui-express": "^4.1.7",
+    "supertest": "^7.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "~6.0.2",
+    "vitest": "^4.0.8"
+  },
+  "packageManager": "npm@11.13.0"
+}

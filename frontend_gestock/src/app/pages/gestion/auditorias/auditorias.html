@@ -43,6 +43,8 @@
     <div class="filtros-derecha">
       <select [(ngModel)]="filtroAccion" class="select-estilizado">
         <option value="TODOS">Todas las acciones</option>
+        <option value="LOGIN">LOGIN</option>
+        <option value="LOGOUT">LOGOUT</option>
         <option value="CREAR">CREAR</option>
         <option value="ACTUALIZAR">ACTUALIZAR</option>
         <option value="ELIMINAR">ELIMINAR</option>
@@ -71,7 +73,7 @@
             <td>
               <div class="celda-usuario">
                 <span class="punto-verde"></span>
-                <strong>{{ item.usuario }}</strong>
+                <strong>{{ item.usuario_nombre }}</strong>
               </div>
             </td>
             <td>
@@ -108,7 +110,7 @@
       <div class="modal-body">
         <div class="modal-fila-info">
           <span class="info-label">Usuario Responsable:</span>
-          <span class="info-valor">{{ auditoriaSeleccionada.usuario }}</span>
+          <span class="info-valor">{{ auditoriaSeleccionada.usuario_nombre }}</span>
         </div>
         <div class="modal-fila-info">
           <span class="info-label">Entidad / Módulo:</span>
@@ -116,16 +118,11 @@
         </div>
         <div class="modal-fila-info">
           <span class="info-label">Descripción Operación:</span>
-          <span class="info-valor">{{ auditoriaSeleccionada.detalles }}</span>
+          <span class="info-valor">{{ auditoriaSeleccionada.descripcion }}</span>
         </div>
         <div class="modal-fila-info">
           <span class="info-label">Fecha y Hora:</span>
           <span class="info-valor">{{ auditoriaSeleccionada.fechaHora }}</span>
-        </div>
-
-        <div class="json-box-container" *ngIf="auditoriaSeleccionada.jsonDetalle">
-          <label class="json-label">Datos Específicos del Producto / Cambio (JSON):</label>
-          <pre class="json-content">{{ auditoriaSeleccionada.jsonDetalle | json }}</pre>
         </div>
       </div>
 

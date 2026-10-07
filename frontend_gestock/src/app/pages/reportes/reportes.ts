@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { ApiService } from '../../services/api.service';
 import { 
   KpiResumen, 
   CategoriaReporte, 
@@ -9,6 +10,69 @@ import {
   MovimientosResumen,
   BodegaReporte 
 } from '../../models/reportes';
+
+interface ReporteInventarioRow {
+  categoria: string;
+  cantidad: string | number;
+  valor: string | number;
+}
+
+interface ReporteMovimientoRow {
+  fecha: string;
+  tipo: string;
+  total: string | number;
+  cantidad: string | number;
+}
+
+interface MovimientoListado {
+  id: number;
+  tipo: string;
+  cantidad: number;
+  sku?: string | null;
+  producto?: string | null;
+}
+
+interface ProductoReporte {
+  id: number;
+  codigo: string;
+  nombre: string;
+  precio: number;
+  costo: number;
+  stock: number;
+  stock_min: number;
+  estado: string;
+  categoria?: string | null;
+  bodega?: string | null;
+}
+
+interface BodegaBackend {
+  id: number;
+  nombre: string;
+  codigo: string;
+  ciudad: string | null;
+  direccion: string | null;
+  responsable: string | null;
+  telefono: string | null;
+  capacidad: number;
+  ocupado: number;
+  activa: boolean;
+}
+
+interface BodegaAgregada {
+  id: number;
+  nombre: string;
+  ubicacion: string;
+  estado: 'Activa' | 'Inactiva';
+  responsable: string;
+  direccion: string;
+  capacidad: number;
+  ocupado: number;
+  cantidad: number;
+  valor: number;
+  top: { nombre: string; stock: number; valor: number }[];
+}
+
+const PALETA_COLORES = ['#007bff', '#ffc107', '#28a745', '#dc3545', '#9c27b0', '#17a2b8', '#fd7e14', '#6f42c1'];
 
 @Component({
   selector: 'app-reportes',
@@ -18,93 +82,39 @@ import {
   styleUrls: ['./reportes.css']
 })
 export class ReportesComponent implements OnInit {
+  private api = inject(ApiService);
+  private cdr = inject(ChangeDetectorRef);
+
   tabActiva: 'inventarios' | 'movimientos' | 'bodega' = 'inventarios';
 
   // Control de interfaz
   bodegaExpandidaId: number | null = null;
   mostrarModalConfirmacion: boolean = false;
 
-  // Datos
+  // Datos (cargados desde la API)
   kpis: KpiResumen = {
-    valorTotal: 52496,
-    costeTotal: 34436,
-    margenGanancia: 18060,
-    porcentajeMargen: 34.4
+    valorTotal: 0,
+    costeTotal: 0,
+    margenGanancia: 0,
+    porcentajeMargen: 0
   };
 
-  categorias: CategoriaReporte[] = [
-    { nombre: 'Electrónica', cantidadProductos: 8, totalValor: 34259, porcentaje: 63.4, colorHex: '#007bff' },
-    { nombre: 'Mobiliario', cantidadProductos: 4, totalValor: 7710, porcentaje: 14.7, colorHex: '#ffc107' },
-    { nombre: 'Periférico', cantidadProductos: 4, totalValor: 7369, porcentaje: 14.0, colorHex: '#28a745' },
-    { nombre: 'Herramientas', cantidadProductos: 2, totalValor: 1372, porcentaje: 4.4, colorHex: '#dc3545' },
-    { nombre: 'Limpieza', cantidadProductos: 1, totalValor: 828, porcentaje: 1.6, colorHex: '#9c27b0' }
-  ];
+  categorias: CategoriaReporte[] = [];
 
   movimientosKpi: MovimientosResumen = {
-    totalEntradas: 130,
-    totalSalidas: 25
+    totalEntradas: 0,
+    totalSalidas: 0
   };
 
-  productosMovimiento: ProductoMovimiento[] = [
-    { nombre: 'Resma de Papel A4 500h', sku: 'PAPEL-A4-500', entradas: 100, salidas: 0, balance: 100 },
-    { nombre: 'Batería Portátil 20000mAh', sku: 'BAT-POR-20K', entradas: 20, salidas: 0, balance: 20 },
-    { nombre: 'Mouse Inalámbrico Logitech', sku: 'MOU-LOG-001', entradas: 0, salidas: 12, balance: -12 },
-    { nombre: 'Laptop Dell Inspiron 15', sku: 'LAP-DEL-001', entradas: 0, salidas: 5, balance: -5 }
-  ];
+  productosMovimiento: ProductoMovimiento[] = [];
 
-  bodegas: BodegaReporte[] = [
-    { 
-      id: 1, 
-      nombre: 'Bodega Principal', 
-      ubicacion: 'Zona Norte', 
-      estado: 'Activa', 
-      cantidadProductos: 120, 
-      valorTotal: 32500, 
-      porcentajeValorTotal: 61.9,
-      responsable: 'Carlos Mendoza',
-      direccion: 'Calle 10 # 15-30, Zona Industrial',
-      capacidadOcupada: 78,
-      topProductos: [
-        { nombre: 'Laptop Dell Inspiron 15', stock: 15, valor: 12500 },
-        { nombre: 'Monitor LG 27"', stock: 30, valor: 9000 },
-        { nombre: 'Teclado Mecánico RGB', stock: 45, valor: 4500 }
-      ]
-    },
-    { 
-      id: 2, 
-      nombre: 'Bodega Secundaria', 
-      ubicacion: 'Zona Sur', 
-      estado: 'Activa', 
-      cantidadProductos: 45, 
-      valorTotal: 12000, 
-      porcentajeValorTotal: 22.8,
-      responsable: 'Ana María Gómez',
-      direccion: 'Carrera 40 # 22-05',
-      capacidadOcupada: 42,
-      topProductos: [
-        { nombre: 'Escritorio Ergonómico', stock: 10, valor: 6000 },
-        { nombre: 'Silla de Oficina Ejecutiva', stock: 12, valor: 4200 }
-      ]
-    },
-    { 
-      id: 3, 
-      nombre: 'Almacén Central', 
-      ubicacion: 'Centro', 
-      estado: 'Activa', 
-      cantidadProductos: 25, 
-      valorTotal: 7996, 
-      porcentajeValorTotal: 15.3,
-      responsable: 'Jorge Luis Pérez',
-      direccion: 'Avenida Bolivar # 8-12',
-      capacidadOcupada: 25,
-      topProductos: [
-        { nombre: 'Resma de Papel A4', stock: 200, valor: 1500 },
-        { nombre: 'Toner Impresora HP', stock: 15, valor: 3200 }
-      ]
-    }
-  ];
+  bodegas: BodegaReporte[] = [];
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.cargarInventario();
+    this.cargarMovimientos();
+    this.cargarBodegas();
+  }
 
   cambiarTab(tab: 'inventarios' | 'movimientos' | 'bodega'): void {
     this.tabActiva = tab;
@@ -112,6 +122,161 @@ export class ReportesComponent implements OnInit {
 
   toggleDetalleBodega(id: number): void {
     this.bodegaExpandidaId = this.bodegaExpandidaId === id ? null : id;
+  }
+
+  // --- CARGA DE DATOS DESDE LA API ---
+  cargarInventario(): void {
+    this.api.get<ReporteInventarioRow[]>('/reportes/inventario').then(
+      (filas) => {
+        const lista = filas || [];
+        const totalValor = lista.reduce((acc, r) => acc + Number(r.valor), 0);
+        this.categorias = lista.map((r, idx) => ({
+          nombre: r.categoria,
+          cantidadProductos: Number(r.cantidad),
+          totalValor: Number(r.valor),
+          porcentaje: totalValor > 0 ? Math.round((Number(r.valor) / totalValor) * 1000) / 10 : 0,
+          colorHex: PALETA_COLORES[idx % PALETA_COLORES.length]
+        }));
+        this.cdr.detectChanges();
+      },
+      () => {
+        this.categorias = [];
+        this.cdr.detectChanges();
+      }
+    );
+
+    this.api.get<ProductoReporte[]>('/productos').then(
+      (productos) => {
+        const activos = (productos || []).filter((p) => p.estado === 'Activo');
+        const valorTotal = activos.reduce((acc, p) => acc + Number(p.precio) * Number(p.stock), 0);
+        const costeTotal = activos.reduce((acc, p) => acc + Number(p.costo || p.precio) * Number(p.stock), 0);
+        const margenGanancia = valorTotal - costeTotal;
+        this.kpis = {
+          valorTotal,
+          costeTotal,
+          margenGanancia,
+          porcentajeMargen: valorTotal > 0 ? Math.round((margenGanancia / valorTotal) * 1000) / 10 : 0
+        };
+        this.cdr.detectChanges();
+      },
+      () => {
+        const totalValor = this.categorias.reduce((acc, c) => acc + c.totalValor, 0);
+        this.kpis = { valorTotal: totalValor, costeTotal: totalValor, margenGanancia: 0, porcentajeMargen: 0 };
+        this.cdr.detectChanges();
+      }
+    );
+  }
+
+  cargarMovimientos(): void {
+    this.api.get<ReporteMovimientoRow[]>('/reportes/movimientos').then(
+      (filas) => {
+        const lista = filas || [];
+        this.movimientosKpi = {
+          totalEntradas: lista.filter((r) => r.tipo === 'ENTRADA').reduce((acc, r) => acc + Number(r.cantidad), 0),
+          totalSalidas: lista.filter((r) => r.tipo === 'SALIDA').reduce((acc, r) => acc + Number(r.cantidad), 0)
+        };
+        this.cdr.detectChanges();
+      },
+      () => {
+        this.movimientosKpi = { totalEntradas: 0, totalSalidas: 0 };
+        this.cdr.detectChanges();
+      }
+    );
+
+    this.api.get<any>('/movimientos').then(
+      (resp) => {
+        const lista = (Array.isArray(resp) ? resp : resp?.movimientos) || [];
+        const mapa = new Map<string, { nombre: string; sku: string; entradas: number; salidas: number }>();
+        lista.forEach((m: any) => {
+          const clave = m.producto || m.sku || `Movimiento #${m.id}`;
+          const registro = mapa.get(clave) || {
+            nombre: m.producto || m.sku || clave,
+            sku: m.sku || '',
+            entradas: 0,
+            salidas: 0
+          };
+          if (m.tipo === 'ENTRADA') {
+            registro.entradas += Number(m.cantidad);
+          } else if (m.tipo === 'SALIDA') {
+            registro.salidas += Number(m.cantidad);
+          }
+          mapa.set(clave, registro);
+        });
+
+        this.productosMovimiento = Array.from(mapa.values())
+          .map((m) => ({ nombre: m.nombre, sku: m.sku, entradas: m.entradas, salidas: m.salidas, balance: m.entradas - m.salidas }))
+          .filter((m) => m.entradas !== 0 || m.salidas !== 0)
+          .sort((a, b) => Math.abs(b.balance) - Math.abs(a.balance))
+          .slice(0, 10);
+        this.cdr.detectChanges();
+      },
+      () => {
+        this.productosMovimiento = [];
+        this.cdr.detectChanges();
+      }
+    );
+  }
+
+  cargarBodegas(): void {
+    this.api.get<BodegaBackend[]>('/bodegas').then(
+      (bodegas) => {
+        const listaBodegas: BodegaAgregada[] = (bodegas || []).map((b) => ({
+          id: b.id,
+          nombre: b.nombre,
+          ubicacion: b.ciudad || '',
+          estado: (b.activa ? 'Activa' : 'Inactiva') as 'Activa' | 'Inactiva',
+          responsable: b.responsable || '',
+          direccion: b.direccion || '',
+          capacidad: b.capacidad,
+          ocupado: Number(b.ocupado),
+          cantidad: 0,
+          valor: 0,
+          top: []
+        }));
+        this.cdr.detectChanges();
+
+        this.api.get<ProductoReporte[]>('/productos').then(
+          (productos) => {
+            const nombreAId = new Map<string, number>(listaBodegas.map((bg) => [bg.nombre, bg.id]));
+
+            (productos || []).forEach((p) => {
+              const idBodega = p.bodega ? nombreAId.get(p.bodega) ?? null : null;
+              if (idBodega === null) return;
+              const bg = listaBodegas.find((x) => x.id === idBodega);
+              if (!bg) return;
+              bg.cantidad += 1;
+              const valor = Number(p.precio) * Number(p.stock);
+              bg.valor += valor;
+              bg.top.push({ nombre: p.nombre, stock: Number(p.stock), valor });
+            });
+
+            const totalGlobal = listaBodegas.reduce((acc, bg) => acc + bg.valor, 0);
+            this.bodegas = listaBodegas.map((bg) => ({
+              id: bg.id,
+              nombre: bg.nombre,
+              ubicacion: bg.ubicacion,
+              estado: bg.estado,
+              cantidadProductos: bg.cantidad,
+              valorTotal: bg.valor,
+              porcentajeValorTotal: totalGlobal > 0 ? Math.round((bg.valor / totalGlobal) * 1000) / 10 : 0,
+              responsable: bg.responsable,
+              direccion: bg.direccion,
+              capacidadOcupada: bg.capacidad > 0 ? Math.round((bg.ocupado / bg.capacidad) * 100) : 0,
+              topProductos: bg.top.sort((a, b) => b.stock - a.stock).slice(0, 3)
+            }));
+            this.cdr.detectChanges();
+          },
+          () => {
+            this.bodegas = [];
+            this.cdr.detectChanges();
+          }
+        );
+      },
+      () => {
+        this.bodegas = [];
+        this.cdr.detectChanges();
+      }
+    );
   }
 
   // --- LÓGICA DEL MODAL Y EXPORTACIÓN ---
@@ -152,11 +317,11 @@ export class ReportesComponent implements OnInit {
 
     // Tabla de Bodegas / Contenido
     if (this.tabActiva === 'bodega') {
-      const rows: any[] = [];
+      const rows: (string | number)[][] = [];
       this.bodegas.forEach(b => {
         rows.push([
           b.nombre,
-          b.ubicacion,
+          b.ubicacion || 'N/A',
           b.responsable || 'N/A',
           `${b.cantidadProductos} unds`,
           `$${b.valorTotal.toLocaleString()}`,

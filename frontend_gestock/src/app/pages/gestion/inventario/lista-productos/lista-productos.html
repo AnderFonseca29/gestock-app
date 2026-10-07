@@ -14,7 +14,7 @@
   <!-- BARRA DE BÚSQUEDA -->
   <div class="contenedor-barra-busqueda">
     <div class="envoltorio-input-busqueda">
-      <span class="icono-busqueda">🔍</span>
+      <span class="icono-busqueda"><i class="fas fa-magnifying-glass"></i></span>
       <input 
         type="text" 
         class="input-busqueda" 
@@ -49,7 +49,7 @@
               <span class="insignia-categoria">{{ prod.categoria }}</span>
             </td>
             <td data-label="Bodega">
-              <span class="texto-bodega-info">📍 {{ prod.bodega }}</span>
+              <span class="texto-bodega-info"><i class="fas fa-location-dot"></i> {{ prod.bodega }}</span>
             </td>
             <td data-label="Precio">{{ prod.precio | currency:'USD':'symbol':'1.0-0' }}</td>
             <td data-label="Stock">
@@ -58,11 +58,11 @@
               </span>
             </td>
             <td data-label="Acciones" class="celda-acciones">
-              <button class="btn-accion-interactiva btn-editar-prod" (click)="abrirModalEditar(prod)" title="Editar producto">
-                ✏️ Editar
+              <button *ngIf="tienePermiso('productos.edit')" class="btn-accion-interactiva btn-editar-prod" (click)="abrirModalEditar(prod)" title="Editar producto">
+                <i class="fas fa-pen"></i> Editar
               </button>
-              <button class="btn-accion-interactiva btn-eliminar-prod" (click)="confirmarEliminacion(prod)" title="Eliminar producto">
-                🗑️ Eliminar
+              <button *ngIf="tienePermiso('productos.delete')" class="btn-accion-interactiva btn-eliminar-prod" (click)="confirmarEliminacion(prod)" title="Eliminar producto">
+                <i class="fas fa-trash"></i> Eliminar
               </button>
             </td>
           </tr>
@@ -160,7 +160,7 @@
               Cancelar
             </button>
             <button type="submit" class="btn-modal-enviar" [disabled]="formEdicion.invalid">
-              💾 Guardar Cambios
+              <i class="fas fa-floppy-disk"></i> Guardar Cambios
             </button>
           </div>
         </form>
@@ -172,7 +172,7 @@
   @if (productoAEliminar) {
     <div class="superposicion-modal-superior">
       <div class="tarjeta-modal-avanzada animate-slide-up" style="max-width: 420px; text-align: center;">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+        <div style="font-size: 3rem; margin-bottom: 1rem;"><i class="fas fa-triangle-exclamation"></i></div>
         <div class="cabecera-modal-avanzada">
           <h3>¿Estás seguro?</h3>
           <p>Vas a eliminar permanentemente el producto <strong>"{{ productoAEliminar.nombre }}"</strong> del inventario.</p>
@@ -182,7 +182,7 @@
             Cancelar
           </button>
           <button type="button" class="btn-modal-enviar btn-peligro-eliminar" (click)="ejecutarEliminacion()">
-            🗑️ Sí, Eliminar
+            <i class="fas fa-trash"></i> Sí, Eliminar
           </button>
         </div>
       </div>
@@ -193,7 +193,7 @@
   @if (mensajeAlertaModal) {
     <div class="superposicion-modal-superior">
       <div class="tarjeta-modal-avanzada animate-slide-up" style="max-width: 400px; text-align: center;">
-        <div style="font-size: 2.8rem; margin-bottom: 0.75rem;">⚠️</div>
+        <div style="font-size: 2.8rem; margin-bottom: 0.75rem;"><i class="fas fa-triangle-exclamation"></i></div>
         <div class="cabecera-modal-avanzada">
           <h3>Aviso Importante</h3>
           <p>{{ mensajeAlertaModal }}</p>
@@ -211,7 +211,7 @@
   @if (mensajeNotificacion) {
     <div class="superposicion-modal-superior animate-slide-up">
       <div class="tarjeta-aviso-superior">
-        <div class="icono-aviso-grande">✨</div>
+        <div class="icono-aviso-grande"><i class="fas fa-wand-magic-sparkles"></i></div>
         <div class="cabecera-aviso-superior">
           <h3>Notificación del Sistema</h3>
           <p>{{ mensajeNotificacion }}</p>

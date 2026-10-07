@@ -1,65 +1,88 @@
 <div class="auth-container">
   <div class="apple-card auth-card">
     <div class="card-header">
-      <div class="brand-logo">📦 Gestock</div>
+      <div class="brand-logo"><span class="brand-icon"><i class="fas fa-boxes-stacked"></i></span> Gestock</div>
       <h1>Creación de Usuario</h1>
       <p class="subtitle">Registra nuevos miembros y asigna permisos dentro de la plataforma.</p>
     </div>
 
-    <!-- PASO 1: Formulario de Registro (HU001, HU002, HU003) -->
-    <form *ngIf="pasoActual === 1" (ngSubmit)="solicitarRegistro()" class="apple-form">
+    <button type="button" class="btn-back" (click)="volver()">
+      <span class="btn-arrow">&larr;</span> Volver
+    </button>
+
+    <!-- PASO 1: Formulario de Registro -->
+    <form *ngIf="pasoActual === 1" (ngSubmit)="solicitarRegistro()" class="apple-form" #formRegistro="ngForm">
       <div class="form-group">
-        <label for="nombre">Nombre Completo</label>
+        <label for="nombre">Nombre Completo *</label>
         <div class="input-container">
           <input type="text" id="nombre" name="nombre" [(ngModel)]="nuevoUsuario.nombre" placeholder="Ej. Carlos Mendoza" required>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="correo">Correo Electrónico</label>
+        <label for="apellido">Apellido *</label>
         <div class="input-container">
-          <input type="email" id="correo" name="correo" [(ngModel)]="nuevoUsuario.correo" placeholder="usuario@gestock.com" required>
+          <input type="text" id="apellido" name="apellido" [(ngModel)]="nuevoUsuario.apellido" placeholder="Ej. Mendoza López" required>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="password">Contraseña Inicial</label>
+        <label for="email">Correo Electrónico</label>
         <div class="input-container">
-          <input type="password" id="password" name="password" [(ngModel)]="nuevoUsuario.password" placeholder="••••••••" required>
+          <input type="email" id="email" name="email" [(ngModel)]="nuevoUsuario.email" placeholder="usuario@gestock.com" required>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="rol">Asignación de Rol (HU003)</label>
+        <label for="telefono">Teléfono Móvil</label>
+        <div class="input-container">
+          <input type="tel" id="telefono" name="telefono" [(ngModel)]="nuevoUsuario.telefono" placeholder="315 400 1111" inputmode="numeric">
+        </div>
+        <small class="field-note">Se usa para la recuperación de contraseña por SMS.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <div class="input-container">
+          <input type="password" id="password" name="password" [(ngModel)]="nuevoUsuario.password" placeholder="Mínimo 6 caracteres" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmar">Confirmar Contraseña</label>
+        <div class="input-container">
+          <input type="password" id="confirmar" name="confirmar" [(ngModel)]="nuevoUsuario.confirmar" placeholder="Repite tu contraseña" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="rolId">Rol del usuario *</label>
         <div class="select-container">
-          <select id="rol" name="rol" [(ngModel)]="nuevoUsuario.rol">
-            <option *ngFor="let rol of roles" [value]="rol">{{ rol }}</option>
+          <select id="rolId" name="rolId" [(ngModel)]="nuevoUsuario.rolId" required>
+            <option *ngFor="let rol of roles" [ngValue]="rol.id">{{ rol.nombre }}</option>
           </select>
         </div>
       </div>
 
-      <button type="submit" class="apple-btn-primary">
-        <span>Enviar Código de Verificación</span>
+      <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+
+      <button type="submit" class="apple-btn-primary" [disabled]="enviando">
+        <span>Continuar</span>
         <span class="btn-arrow">&rarr;</span>
       </button>
     </form>
 
-    <!-- PASO 2: Verificación de Código por Correo (HU004) -->
+    <!-- PASO 2: Confirmación -->
     <div *ngIf="pasoActual === 2" class="verification-step">
       <div class="info-box">
-        <span class="info-icon">✉️</span>
-        <p>Hemos enviado un código de confirmación a <strong>{{ nuevoUsuario.correo }}</strong></p>
+        <span class="info-icon"><i class="fas fa-envelope"></i></span>
+        <p>Se creará la cuenta para <strong>{{ nuevoUsuario.email }}</strong> con acceso inmediato a la plataforma.</p>
       </div>
 
-      <div class="form-group">
-        <label for="codigo">Código de Verificación (6 dígitos)</label>
-        <div class="input-container">
-          <input type="text" id="codigo" name="codigo" [(ngModel)]="codigoVerificacion" maxlength="6" placeholder="123456" class="code-input">
-        </div>
-      </div>
+      <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
 
-      <button type="button" class="apple-btn-primary" (click)="confirmarCodigo()">
-        <span>Completar Registro</span>
+      <button type="button" class="apple-btn-primary" (click)="confirmarCodigo()" [disabled]="enviando">
+        <span>{{ enviando ? 'Registrando...' : 'Confirmar y Crear Usuario' }}</span>
       </button>
       <button type="button" class="btn-link" (click)="pasoActual = 1">Volver atrás</button>
     </div>

@@ -87,24 +87,24 @@ export class PaginaComponent implements AfterViewInit, OnDestroy {
       subtitulo: 'Transformación y desarrollo tecnológico',
       contenidoHtml: `
         <p>Un aliado tecnológico enfocado en desarrollar e implementar proyectos de transformación tecnológica y digital a la medida de las necesidades del cliente.</p>
-        <div style="text-align: center; font-size: 2.5rem; margin-top: 1rem;">👥</div>
+        <div style="text-align: center; font-size: 2.5rem; margin-top: 1rem;"><i class="fas fa-users" style="font-size:2.5rem;"></i></div>
       `
     },
     5: {
       titulo: 'Reseñas de Usuarios',
-      subtitulo: '⭐ 4.8 Ranking de estrellas',
+      subtitulo: '<i class="fas fa-star"></i> 4.8 Ranking de estrellas',
       contenidoHtml: `
         <div style="display: flex; flex-direction: column; gap: 0.75rem;">
           <div style="background: #1e293b; padding: 0.75rem; border-radius: 8px;">
-            <strong>Maria Gonzalez ⭐⭐⭐⭐⭐</strong>
+            <strong>Maria Gonzalez <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></strong>
             <p style="margin: 0.2rem 0 0 0; font-size: 0.85rem; color: #cbd5e1;">"Antes perdía muchas ventas por no controlar el inventario. Ahora sé exactamente qué tengo."</p>
           </div>
           <div style="background: #1e293b; padding: 0.75rem; border-radius: 8px;">
-            <strong>Roberto Bolañoz ⭐⭐⭐⭐⭐</strong>
+            <strong>Roberto Bolañoz <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></strong>
             <p style="margin: 0.2rem 0 0 0; font-size: 0.85rem; color: #cbd5e1;">"Con Gestock pude organizar mis ventas y ahora facturo 40% más que antes."</p>
           </div>
           <div style="background: #1e293b; padding: 0.75rem; border-radius: 8px;">
-            <strong>Rodolfo Hernandez ⭐⭐⭐⭐⭐</strong>
+            <strong>Rodolfo Hernandez <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></strong>
             <p style="margin: 0.2rem 0 0 0; font-size: 0.85rem; color: #cbd5e1;">"Gestock me ayudó a entender cuáles servicios me dan más ganancia."</p>
           </div>
         </div>
@@ -115,8 +115,12 @@ export class PaginaComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     if (!this.isBrowser) return;
 
-    this.init3DScene();
-    this.setupScrollAnimations();
+    try {
+      this.init3DScene();
+      this.setupScrollAnimations();
+    } catch (err) {
+      console.warn('[GESTOCK] La animación 3D no pudo inicializarse, la página continúa funcionando.', err);
+    }
   }
 
   private init3DScene(): void {
@@ -292,6 +296,10 @@ export class PaginaComponent implements AfterViewInit, OnDestroy {
     const cards = document.querySelectorAll('.feature-card');
     if (!cards.length) return;
 
+    if (!this.boxGroup || !this.innerItem || !this.particlesGroup || !this.coreLight) {
+      return;
+    }
+
     const pMaterial = (this.particlesGroup.children[0] as THREE.Points).material as THREE.PointsMaterial;
 
     const tl = gsap.timeline({
@@ -345,12 +353,18 @@ export class PaginaComponent implements AfterViewInit, OnDestroy {
     this.tarjetaSeleccionada = null;
   }
 
+  scrollASeccion(id: string): void {
+    if (!this.isBrowser) return;
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   irAlSistema(): void {
     if (this.authService.estaAutenticado()) {
-      console.log('🔗 [NAVEGACIÓN] Usuario autenticado. Redirigiendo a /app...');
+      console.log('[NAVEGACIÓN] Usuario autenticado. Redirigiendo a /app...');
       this.router.navigate(['/app']);
     } else {
-      console.warn('🔒 [ACCESO DENEGADO] Debe registrarse o iniciar sesión.');
+      console.warn('[ACCESO DENEGADO] Debe registrarse o iniciar sesión.');
       this.irALogin();
     }
   }

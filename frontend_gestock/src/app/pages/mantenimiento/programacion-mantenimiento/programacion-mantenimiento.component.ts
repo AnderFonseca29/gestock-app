@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ApiService } from '../../../services/api.service';
+import { ToastService } from '../../../services/toast.service';
 
 interface Mantenimiento {
   id: number;
@@ -10,14 +12,27 @@ interface Mantenimiento {
   estado: string;
 }
 
+interface MantenimientoBackend {
+  id: number;
+  equipo: string;
+  tipo: string;
+  fecha_programada: string;
+  estado: string;
+  descripcion?: string | null;
+}
+
 @Component({
   selector: 'app-programacion-mantenimiento',
   standalone: true,
-  imports: [CommonModule, FormsModule], // Importantes para *ngFor, [ngClass] y [(ngModel)]
+  imports: [CommonModule, FormsModule],
   templateUrl: './programacion-mantenimiento.component.html',
   styleUrl: './programacion-mantenimiento.component.css',
 })
-export class ProgramacionMantenimientoComponent {
+export class ProgramacionMantenimientoComponent implements OnInit {
+
+  private api = inject(ApiService);
+  private toast = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
 
   // Modelo del formulario
   nuevoMantenimiento = {
@@ -26,36 +41,57 @@ export class ProgramacionMantenimientoComponent {
     fecha: ''
   };
 
-  // Datos de prueba para la tabla
-  programaciones: Mantenimiento[] = [
-    { id: 101, equipo: 'Montacargas #1', tipo: 'Preventivo', fecha: '2026-08-25', estado: 'Pendiente' },
-    { id: 102, equipo: 'Banda Transportadora B', tipo: 'Correctivo', fecha: '2026-08-22', estado: 'En Proceso' },
-    { id: 103, equipo: 'Generador Principal', tipo: 'Predictivo', fecha: '2026-08-20', estado: 'Completado' }
-  ];
+  // Programaciones cargadas desde la API
+  programaciones: Mantenimiento[] = [];
+
+  ngOnInit(): void {
+    this.cargarProgramaciones();
+  }
+
+  cargarProgramaciones(): void {
+    this.api.get<MantenimientoBackend[]>('/mantenimientos').then(
+      (lista) => {
+        this.programaciones = (lista || []).map((m) => ({
+          id: m.id,
+          equipo: m.equipo,
+          tipo: m.tipo,
+          fecha: m.fecha_programada ? String(m.fecha_programada).slice(0, 10) : '',
+          estado: m.estado
+        }));
+        this.cdr.detectChanges();
+      },
+      () => {
+        this.programaciones = [];
+        this.cdr.detectChanges();
+      }
+    );
+  }
 
   // Función para procesar el formulario
   guardarProgramacion(): void {
-    if (!this.nuevoMantenimiento.equipo || !this.nuevoMantenimiento.fecha) return;
+    if (!this.nuevoMantenimiento.equipo.trim() || !this.nuevoMantenimiento.fecha) {
+      this.toast.mostrar('Por favor complete los campos obligatorios.', 'error');
+      return;
+    }
 
-    const nuevoItem: Mantenimiento = {
-      id: this.programaciones.length + 101,
-      equipo: this.nuevoMantenimiento.equipo,
+    this.api.post<MantenimientoBackend>('/mantenimientos', {
+      equipo: this.nuevoMantenimiento.equipo.trim(),
       tipo: this.nuevoMantenimiento.tipo,
-      fecha: this.nuevoMantenimiento.fecha,
-      estado: 'Pendiente'
-    };
-
-    // Agregar a la tabla y reiniciar el formulario
-    this.programaciones.unshift(nuevoItem);
-    
-    // [MODIFICACIÓN GESTOCK] - Registro detallado en consola con formato JSON
-    console.log('%c[GESTOCK] Nuevo Mantenimiento Registrado (JSON):', 'color: #38bdf8; font-weight: bold;');
-    console.log(JSON.stringify(nuevoItem, null, 2));
-
-    this.nuevoMantenimiento = {
-      equipo: '',
-      tipo: 'Preventivo',
-      fecha: ''
-    };
+      fecha_programada: this.nuevoMantenimiento.fecha
+    }).then(
+      () => {
+        this.toast.mostrar('Mantenimiento programado correctamente.', 'success', 'Mantenimiento');
+        this.nuevoMantenimiento = {
+          equipo: '',
+          tipo: 'Preventivo',
+          fecha: ''
+        };
+        this.cargarProgramaciones();
+        this.cdr.detectChanges();
+      },
+      () => {
+        // El interceptor muestra el toast de error automáticamente.
+      }
+    );
   }
 }

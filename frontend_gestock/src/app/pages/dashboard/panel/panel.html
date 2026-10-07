@@ -1,12 +1,12 @@
 <div class="panel-layout" (click)="cerrarMenu()">
   <div class="panel-header">
     <div class="panel-header-title">
-      <span class="panel-header-icon">📊</span>
+      <span class="panel-header-icon"><i class="fas fa-chart-line"></i></span>
       <div>
         <h1>Panel</h1>
         <!-- Subtítulo con el indicador dinámico de la empresa actual -->
         <p class="panel-subtitle">
-          Resumen general del sistema de inventario — <span class="empresa-badge">🏢 {{ empresaActual?.nombre }}</span>
+          Resumen general del sistema de inventario — <span class="empresa-badge"><i class="fas fa-building"></i> {{ empresaActual?.nombre }}</span>
         </p>
       </div>
     </div>
@@ -22,40 +22,40 @@
   <!-- Cuadrícula de Estadísticas -->
   <div class="stats-section">
     <div class="stat-card accent-blue">
-      <div class="stat-icon">🏷️</div>
+      <div class="stat-icon"><i class="fas fa-tags"></i></div>
       <h3>Total precios</h3>
       <p>{{ empresaActual?.totalPrecios }}</p>
       <span class="subtext positive">{{ empresaActual?.totalPrecios }} activos</span>
     </div>
 
     <div class="stat-card accent-green">
-      <div class="stat-icon">💰</div>
+      <div class="stat-icon"><i class="fas fa-coins"></i></div>
       <h3>Valor de inventario</h3>
       <p>${{ empresaActual?.valorInventario | number }}</p>
       <span class="subtext positive">▲ 12% vs mes anterior</span>
     </div>
 
     <div class="stat-card accent-amber">
-      <div class="stat-icon">⚠️</div>
+      <div class="stat-icon"><i class="fas fa-triangle-exclamation"></i></div>
       <h3>Alertas de stock</h3>
       <p>{{ empresaActual?.alertasStock }}</p>
       <span class="subtext warning">2 bajo · 2 agotado</span>
     </div>
 
     <div class="stat-card accent-purple">
-      <div class="stat-icon">🏬</div>
+      <div class="stat-icon"><i class="fas fa-store"></i></div>
       <h3>Bodegas activas</h3>
       <p>{{ empresaActual?.bodegasActivas }}</p>
     </div>
 
     <div class="stat-card accent-cyan">
-      <div class="stat-icon">👥</div>
+      <div class="stat-icon"><i class="fas fa-users"></i></div>
       <h3>Usuarios activos</h3>
       <p>4</p>
     </div>
 
     <div class="stat-card accent-pink">
-      <div class="stat-icon">📈</div>
+      <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
       <h3>Tasa de ocupación</h3>
       <p>63%</p>
     </div>
@@ -65,7 +65,7 @@
   <div class="panel-grid">
     <div class="section-block">
       <div class="section-block-header">
-        <h3><span class="section-icon warning-icon">⚠️</span> Producto con stock bajo</h3>
+        <h3><span class="section-icon warning-icon"><i class="fas fa-triangle-exclamation"></i></span> Producto con stock bajo</h3>
         <span class="section-badge warning">2 alertas</span>
       </div>
       <ul>
@@ -90,7 +90,7 @@
 
     <div class="section-block">
       <div class="section-block-header">
-        <h3><span class="section-icon">🕘</span> Últimos movimientos</h3>
+        <h3><span class="section-icon"><i class="fas fa-clock"></i></span> Últimos movimientos</h3>
       </div>
       <ul>
         <li>

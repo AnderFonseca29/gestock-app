@@ -1,9 +1,10 @@
 .inventory-container {
   padding: 16px 24px;
-  color: #f8fafc;
+  color: #0f172a;
   box-sizing: border-box;
   width: 100%;
   position: relative;
+  animation: fadeInUp 0.5s var(--ease-out);
 }
 
 .section-header {
@@ -16,13 +17,13 @@
 .section-header h2 {
   font-size: 1.35rem;
   font-weight: 700;
-  color: #f8fafc;
+  color: #0f172a;
   margin: 0 0 2px 0;
 }
 
 .section-header p {
   font-size: 0.83rem;
-  color: #94a3b8;
+  color: #64748b;
   margin: 0;
 }
 
@@ -41,7 +42,7 @@
   font-size: 0.85rem;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-  transition: background 0.2s;
+  transition: background 0.25s;
 }
 
 .btn-primary-action:hover {
@@ -52,10 +53,10 @@
   position: absolute;
   right: 0;
   top: 42px;
-  background-color: #131b2e;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
   width: 190px;
   z-index: 100;
   overflow: hidden;
@@ -65,7 +66,7 @@
 .dropdown-item {
   padding: 10px 14px;
   font-size: 0.83rem;
-  color: #e2e8f0;
+  color: #0f172a;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -74,8 +75,8 @@
 }
 
 .dropdown-item:hover {
-  background-color: rgba(59, 130, 246, 0.15);
-  color: #38bdf8;
+  background-color: #eff6ff;
+  color: #2563eb;
 }
 
 /* Tarjetas de Filtro */
@@ -87,29 +88,30 @@
 }
 
 .process-card {
-  background-color: #131b2e;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 12px 16px;
   display: flex;
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .process-card:hover {
   border-color: #3b82f6;
-  background-color: rgba(59, 130, 246, 0.05);
+  background-color: #f8fafc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .active-card {
   border-color: #3b82f6 !important;
-  background-color: rgba(59, 130, 246, 0.08) !important;
+  background-color: #eff6ff !important;
 }
 
 .process-icon {
-  background: rgba(59, 130, 246, 0.15);
+  background: #dbeafe;
   color: #3b82f6;
   font-size: 1.1rem;
   padding: 8px;
@@ -122,13 +124,13 @@
 .process-card h4 {
   font-size: 0.88rem;
   font-weight: 600;
-  color: #f8fafc;
+  color: #0f172a;
   margin: 0 0 2px 0;
 }
 
 .process-card p {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: #64748b;
   margin: 0;
 }
 
@@ -137,8 +139,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #131b2e;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
   padding: 10px 16px;
   border-radius: 8px;
   margin-bottom: 16px;
@@ -152,14 +154,14 @@
 
 .filter-group label {
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: #64748b;
   font-weight: 500;
 }
 
 .status-select {
-  background-color: #0d121d;
-  color: #f8fafc;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #ffffff;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 0.83rem;
@@ -167,28 +169,33 @@
   cursor: pointer;
 }
 
+.status-select:focus {
+  border-color: #3b82f6;
+}
+
 .status-select option {
-  background-color: #131b2e;
-  color: #f8fafc;
+  background-color: #ffffff;
+  color: #0f172a;
 }
 
 .counter-badge {
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .counter-badge strong {
-  color: #38bdf8;
+  color: #2563eb;
 }
 
 /* Tabla con Sticky Header Funcional */
 .table-card {
-  background-color: #131b2e;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
   overflow-y: auto;
   max-height: 52vh;
   position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .data-table {
@@ -202,14 +209,14 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  background-color: #131b2e;
+  background-color: #ffffff;
 }
 
 .data-table th {
-  color: #94a3b8;
+  color: #64748b;
   font-weight: 600;
   padding: 12px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid #e2e8f0;
   text-transform: uppercase;
   font-size: 0.72rem;
   letter-spacing: 0.05em;
@@ -217,13 +224,18 @@
 
 .data-table td {
   padding: 10px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  color: #e2e8f0;
+  border-bottom: 1px solid #f1f5f9;
+  color: #0f172a;
+  transition: background-color 0.15s ease;
+}
+
+.data-table tbody tr:hover td {
+  background-color: #f8fafc;
 }
 
 .badge-code {
-  background-color: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
+  background-color: #dbeafe;
+  color: #2563eb;
   padding: 3px 6px;
   border-radius: 4px;
   font-family: monospace;
@@ -237,8 +249,8 @@
   font-weight: 700;
 }
 
-.type-entry { background-color: rgba(14, 165, 233, 0.15); color: #38bdf8; }
-.type-exit { background-color: rgba(249, 115, 22, 0.15); color: #fb923c; }
+.type-entry { background-color: rgba(14, 165, 233, 0.15); color: #0284c7; }
+.type-exit { background-color: rgba(249, 115, 22, 0.15); color: #ea580c; }
 
 .status-badge {
   padding: 3px 8px;
@@ -247,8 +259,8 @@
   font-weight: 600;
 }
 
-.status-green { background-color: rgba(16, 185, 129, 0.15); color: #34d399; }
-.status-yellow { background-color: rgba(245, 158, 11, 0.15); color: #fb923c; }
+.status-green { background-color: rgba(16, 185, 129, 0.15); color: #059669; }
+.status-yellow { background-color: rgba(245, 158, 11, 0.15); color: #d97706; }
 
 .action-btn {
   background: transparent;
@@ -258,13 +270,13 @@
   padding: 4px;
   border-radius: 4px;
 }
-.action-btn:hover { background-color: rgba(255, 255, 255, 0.08); }
+.action-btn:hover { background-color: #e2e8f0; }
 
 /* Estilos de la Ventana Modal / Formulario */
 .modal-backdrop {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(15, 23, 42, 0.3);
   backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
@@ -289,16 +301,16 @@
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 0.8rem;
-  color: #cbd5e1;
+  color: #475569;
 }
 
 .modal-card {
-  background-color: #131b2e;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   width: 450px;
   max-width: 90%;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
   overflow: hidden;
 }
 
@@ -307,19 +319,19 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .modal-header h3 {
   font-size: 1rem;
-  color: #f8fafc;
+  color: #0f172a;
   margin: 0;
 }
 
 .close-btn {
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: #64748b;
   font-size: 1.1rem;
   cursor: pointer;
 }
@@ -335,20 +347,21 @@
 .form-group label {
   display: block;
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: #475569;
   margin-bottom: 6px;
 }
 
 .form-input {
   width: 100%;
-  background-color: #0d121d;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #f8fafc;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
   padding: 9px 12px;
   border-radius: 6px;
   font-size: 0.85rem;
   outline: none;
   box-sizing: border-box;
+  transition: border-color 0.25s ease;
 }
 
 .form-input:focus {
@@ -369,13 +382,18 @@
 }
 
 .btn-secondary {
-  background-color: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #94a3b8;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
   padding: 8px 14px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.83rem;
+  transition: background-color 0.25s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #e2e8f0;
 }
 
 .btn-primary {
@@ -387,7 +405,19 @@
   cursor: pointer;
   font-weight: 600;
   font-size: 0.83rem;
+  transition: background-color 0.25s ease;
 }
 .btn-primary:hover {
   background-color: #2563eb;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

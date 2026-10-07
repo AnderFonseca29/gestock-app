@@ -1,6 +1,25 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, Renderer2, ElementRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ApiService } from '../../../services/api.service';
+import { ToastService } from '../../../services/toast.service';
+
+interface AuditoriaRow {
+  id: number;
+  usuario_id: number | null;
+  usuario_nombre: string | null;
+  accion: string;
+  modulo: string;
+  entidad: string | null;
+  registro_id: string | null;
+  descripcion: string;
+  fecha: string;
+}
+
+interface AuditoriaVista extends AuditoriaRow {
+  fechaHora: string;
+  estado: string;
+}
 
 @Component({
   selector: 'app-auditorias',
@@ -9,103 +28,94 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './auditorias.html',
   styleUrls: ['./auditorias.css']
 })
-export class AuditoriasComponent implements OnInit, OnDestroy {
+export class AuditoriasComponent implements OnInit {
+  private api: ApiService | null;
+  private toastService = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
 
-  listaAuditorias: any[] = [];
-  auditoriaSeleccionada: any = null;
+  constructor() {
+    try {
+      this.api = inject(ApiService);
+    } catch {
+      this.api = null;
+    }
+  }
+
+  listaAuditorias: AuditoriaVista[] = [];
+  auditoriaSeleccionada: AuditoriaVista | null = null;
   filtroAccion: string = 'TODOS';
   filtroBusqueda: string = '';
-  
-  mensajeNotificacion: string | null = null;
-  private intervaloActualizacion: any;
 
-  constructor(
-    private cdRef: ChangeDetectorRef,
-    private renderer: Renderer2,
-    private elRef: ElementRef
-  ) {}
-
-  ngOnInit() {
+  ngOnInit(): void {
     this.cargarAuditorias();
-    this.intervaloActualizacion = setInterval(() => {
-      this.cargarAuditoriasSilencioso();
-    }, 4000);
   }
 
-  ngOnDestroy() {
-    if (this.intervaloActualizacion) {
-      clearInterval(this.intervaloActualizacion);
+  cargarAuditorias(): void {
+    if (!this.api) {
+      return;
     }
-  }
-
-  cargarAuditorias() {
-    const datos = localStorage.getItem('sistema_auditorias');
-    if (!datos) {
-      const auditoriasIniciales = [
-        {
-          id: '#1',
-          usuario: 'Administrador',
-          accion: 'CREAR',
-          entidad: 'Producto: Laptop HP ProBook',
-          detalles: 'Bodega: Bodega Central | Cantidad: 12 un.',
-          fechaHora: 'Aug 26, 2026, 2:39 PM',
-          estado: 'Completado',
-          jsonDetalle: {
-            codigo: 'PROD-001',
-            nombre: 'Laptop HP ProBook',
-            categoria: 'Tecnología',
-            bodega: 'Bodega Central',
-            precio: 2500000,
-            stock: 12
-          }
-        }
-      ];
-      localStorage.setItem('sistema_auditorias', JSON.stringify(auditoriasIniciales));
-      this.listaAuditorias = auditoriasIniciales;
-    } else {
-      try {
-        this.listaAuditorias = JSON.parse(datos);
-      } catch (e) {
+    this.api.get<{ auditorias: AuditoriaRow[]; modulos: string[] }>('/auditorias').then(
+      (respuesta) => {
+        const filas = respuesta?.auditorias ?? [];
+        this.listaAuditorias = filas.map((fila) => this.aVista(fila));
+        this.cdr.detectChanges();
+      },
+      () => {
         this.listaAuditorias = [];
+        this.cdr.detectChanges();
       }
-    }
+    );
   }
 
-  cargarAuditoriasSilencioso() {
-    const datos = localStorage.getItem('sistema_auditorias');
-    if (datos) {
-      try {
-        const parsed = JSON.parse(datos);
-        if (parsed.length !== this.listaAuditorias.length) {
-          this.listaAuditorias = parsed;
-        }
-      } catch (e) {}
-    }
+  private aVista(fila: AuditoriaRow): AuditoriaVista {
+    return {
+      ...fila,
+      fechaHora: this.formatearFecha(fila.fecha),
+      estado: 'Completado'
+    };
   }
 
-  get auditoriasFiltradas(): any[] {
-    return this.listaAuditorias.filter(item => {
+  private formatearFecha(fecha: string): string {
+    if (!fecha) {
+      return '';
+    }
+    const d = new Date(fecha);
+    if (isNaN(d.getTime())) {
+      return String(fecha);
+    }
+    return d.toLocaleString('es-CO', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  get auditoriasFiltradas(): AuditoriaVista[] {
+    const texto = this.filtroBusqueda.toLowerCase().trim();
+    return this.listaAuditorias.filter((item) => {
       const cumpleFiltroAccion = this.filtroAccion === 'TODOS' || item.accion === this.filtroAccion;
-      const texto = this.filtroBusqueda.toLowerCase().trim();
-      const cumpleBusqueda = !texto || 
-        (item.usuario && item.usuario.toLowerCase().includes(texto)) ||
-        (item.entidad && item.entidad.toLowerCase().includes(texto)) ||
-        (item.detalles && item.detalles.toLowerCase().includes(texto));
+      const cumpleBusqueda =
+        !texto ||
+        (item.usuario_nombre !== null && item.usuario_nombre.toLowerCase().includes(texto)) ||
+        (item.entidad !== null && item.entidad.toLowerCase().includes(texto)) ||
+        (item.descripcion && item.descripcion.toLowerCase().includes(texto));
 
       return cumpleFiltroAccion && cumpleBusqueda;
     });
   }
 
   contarExitosas(): number {
-    return this.listaAuditorias.filter(i => i.estado === 'Completado').length;
+    return this.listaAuditorias.filter((i) => i.estado === 'Completado').length;
   }
 
-  limpiarFiltros() {
+  limpiarFiltros(): void {
     this.filtroBusqueda = '';
     this.filtroAccion = 'TODOS';
   }
 
-  exportarReporte() {
+  exportarReporte(): void {
     const jsonStr = JSON.stringify(this.listaAuditorias, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
@@ -115,86 +125,32 @@ export class AuditoriasComponent implements OnInit, OnDestroy {
     a.click();
     window.URL.revokeObjectURL(url);
 
-    // Disparar mensaje de éxito flotante de forma inmediata
-    this.mostrarNotificacion('¡Reporte de auditoría exportado exitosamente!');
+    this.toastService.mostrar('¡Reporte de auditoría exportado exitosamente!', 'success', 'Exportación completada');
   }
 
-  mostrarNotificacion(mensaje: string) {
-    this.mensajeNotificacion = mensaje;
-    this.cdRef.detectChanges();
-    this.renderizarToastVisual(mensaje);
-
-    setTimeout(() => {
-      if (this.mensajeNotificacion === mensaje) {
-        this.mensajeNotificacion = null;
-        this.cdRef.detectChanges();
-        this.removerToastVisual();
-      }
-    }, 3500);
-  }
-
-  private renderizarToastVisual(mensaje: string) {
-    let toastContainer = this.elRef.nativeElement.querySelector('.superposicion-modal-superior-dinamico');
-    if (!toastContainer) {
-      toastContainer = this.renderer.createElement('div');
-      this.renderer.addClass(toastContainer, 'superposicion-modal-superior-dinamico');
-      this.renderer.addClass(toastContainer, 'animate-slide-up');
-      
-      const tarjeta = this.renderer.createElement('div');
-      this.renderer.addClass(tarjeta, 'tarjeta-aviso-superior');
-      
-      const icono = this.renderer.createElement('div');
-      this.renderer.addClass(icono, 'icono-aviso-grande');
-      icono.innerHTML = '✨';
-      
-      const contenido = this.renderer.createElement('div');
-      this.renderer.addClass(contenido, 'cabecera-aviso-superior');
-      
-      const titulo = this.renderer.createElement('h3');
-      titulo.innerText = 'Notificación del Sistema';
-      
-      const texto = this.renderer.createElement('p');
-      this.renderer.setAttribute(texto, 'id', 'texto-mensaje-dinamico');
-      texto.innerText = mensaje;
-      
-      this.renderer.appendChild(contenido, titulo);
-      this.renderer.appendChild(contenido, texto);
-      this.renderer.appendChild(tarjeta, icono);
-      this.renderer.appendChild(tarjeta, contenido);
-      this.renderer.appendChild(toastContainer, tarjeta);
-      this.renderer.appendChild(this.elRef.nativeElement, toastContainer);
-    } else {
-      const textoEl = toastContainer.querySelector('#texto-mensaje-dinamico');
-      if (textoEl) textoEl.innerText = mensaje;
-    }
-  }
-
-  private removerToastVisual() {
-    const toastContainer = this.elRef.nativeElement.querySelector('.superposicion-modal-superior-dinamico');
-    if (toastContainer) {
-      this.renderer.removeChild(this.elRef.nativeElement, toastContainer);
-    }
-  }
-
-  verDetalleAuditoria(item: any) {
+  verDetalleAuditoria(item: AuditoriaVista): void {
     this.auditoriaSeleccionada = item;
     document.body.style.overflow = 'hidden';
-
-    console.log("=== JSON DETALLE DE AUDITORÍA SELECCIONADA ===");
-    console.log(JSON.stringify(item, null, 2));
   }
 
-  cerrarModalDetalle() {
+  cerrarModalDetalle(): void {
     this.auditoriaSeleccionada = null;
     document.body.style.overflow = 'auto';
   }
 
   obtenerClaseAccion(accion: string): string {
     switch (accion) {
-      case 'CREAR': return 'badge-crear';
-      case 'ACTUALIZAR': return 'badge-actualizar';
-      case 'ELIMINAR': return 'badge-eliminar';
-      default: return 'badge-default';
+      case 'CREAR':
+      case 'ACTIVAR':
+        return 'badge-crear';
+      case 'ACTUALIZAR':
+      case 'AUTORIZAR':
+        return 'badge-actualizar';
+      case 'ELIMINAR':
+      case 'DESACTIVAR':
+        return 'badge-eliminar';
+      default:
+        return 'badge-default';
     }
   }
 }

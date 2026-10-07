@@ -1,72 +1,62 @@
-<div class="login-card" *ngIf="!mostrarModalRol">
-  <button class="btn-back">← Volver al inicio</button>
-  
+<div class="login-card" [class.shake-anim]="shakeAnimacion">
+  <button type="button" class="btn-back" routerLink="/" (click)="irAlInicio()">← Volver al inicio</button>
+
   <div class="brand-badge">
-    📦 Gestock
+    <span class="brand-icon"><i class="fas fa-boxes-stacked"></i></span> Gestock
   </div>
 
   <h2>Iniciar Sesión</h2>
   <p class="subtitle">Ingresa tus datos para acceder al sistema de gestión.</p>
 
-  <form [formGroup]="loginForm" (ngSubmit)="procesarLogin()">
+  <form [formGroup]="loginForm" (ngSubmit)="procesarLogin()" novalidate>
     <div class="form-group">
       <label>Correo Electrónico</label>
       <div class="input-wrapper">
-        <span class="icon">✉️</span>
-        <input type="email" formControlName="email" placeholder="correo@ejemplo.com" />
+        <span class="icon"><i class="fas fa-envelope"></i></span>
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="correo@ejemplo.com"
+          autocomplete="email"
+          [class.input-error]="emailInvalid" />
       </div>
+      <span *ngIf="emailInvalid" class="field-error">{{ mensajeEmailError }}</span>
     </div>
 
     <div class="form-group">
       <label>Contraseña</label>
       <div class="input-wrapper">
-        <span class="icon">🔒</span>
-        <input type="password" formControlName="password" placeholder="••••••••" />
+        <span class="icon"><i class="fas fa-lock"></i></span>
+        <input
+          [type]="mostrarPassword ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          [class.input-error]="passwordInvalid" />
+        <button type="button" class="toggle-password" (click)="mostrarPassword = !mostrarPassword" [attr.aria-label]="mostrarPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+          <i [class]="mostrarPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+        </button>
       </div>
+      <span *ngIf="passwordInvalid" class="field-error">{{ mensajePasswordError }}</span>
     </div>
 
     <div class="form-options">
       <label class="checkbox-label">
         <input type="checkbox" formControlName="recordar" /> Recordar este dispositivo
       </label>
-      <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+      <a routerLink="/auth/recuperar-contrasena" class="forgot-link">¿Olvidaste tu contraseña?</a>
     </div>
 
-    <button type="submit" class="btn-submit" [disabled]="loginForm.invalid">
-      Acceder a la Plataforma →
+    <div *ngIf="errorMessage" class="error-banner">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>{{ errorMessage }}</span>
+      <a routerLink="/auth/recuperar-contrasena" class="error-recovery-link">¿Restablecer contraseña?</a>
+    </div>
+
+    <button type="submit" class="btn-submit" [disabled]="loginForm.invalid || enviando">
+      <i *ngIf="enviando" class="fas fa-circle-notch fa-spin"></i>
+      <span>{{ enviando ? 'Ingresando...' : 'Acceder a la Plataforma' }}</span>
+      <i *ngIf="!enviando" class="fas fa-arrow-right btn-submit-arrow"></i>
     </button>
   </form>
-</div>
-
-<!-- Modal para Seleccionar Tipo de Acceso / Rol -->
-<div class="modal-backdrop" *ngIf="mostrarModalRol">
-  <div class="role-modal-card">
-    <div class="modal-badge">🔐 Configuración de Acceso</div>
-    <h3>¿Cómo deseas ingresar?</h3>
-    <p class="modal-subtitle">Detectamos que estás accediendo con un usuario secundario ({{ loginForm.value.email }}). Elige tu perfil de trabajo:</p>
-
-    <div class="role-options">
-      <!-- Opción 1: Modo Administrador de Empresa -->
-      <button class="role-card" (click)="confirmarAcceso('admin')">
-        <div class="role-icon">🛡️</div>
-        <div class="role-info">
-          <h4>Ingresar como Administrador</h4>
-          <p>Acceso total a configuraciones, reportes y gestión de la empresa.</p>
-        </div>
-      </button>
-
-      <!-- Opción 2: Modo Usuario Estándar / Operador -->
-      <button class="role-card" (click)="confirmarAcceso('usuario')">
-        <div class="role-icon">👤</div>
-        <div class="role-info">
-          <h4>Ingresar como Usuario Nuevo / Estándar</h4>
-          <p>Acceso restringido a tareas operativas diarias e inventario básico.</p>
-        </div>
-      </button>
-    </div>
-
-    <button class="btn-cancel-modal" (click)="cancelarSeleccionRol()">
-      ← Regresar al login
-    </button>
-  </div>
 </div>

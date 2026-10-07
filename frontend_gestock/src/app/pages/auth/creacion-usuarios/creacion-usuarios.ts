@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService, RolUsuario } from '../../../services/auth';
+import { UsuarioService } from '../../../services/usuario.service';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-creacion-usuarios',
@@ -12,71 +13,111 @@ import { AuthService, RolUsuario } from '../../../services/auth';
   styleUrl: './creacion-usuarios.css'
 })
 export class CreacionUsuariosComponent {
-  private authService = inject(AuthService);
+  private usuarioService = inject(UsuarioService);
+  private toastService = inject(ToastService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   pasoActual: number = 1;
-  codigoVerificacion: string = '';
-  codigoCorrecto: string = '123456';
+  enviando: boolean = false;
   errorMessage: string = '';
+  roles: any[] = [];
+
+  volver(): void {
+    if (history.length > 1) {
+      this.router.navigateByUrl('/app/gestion/roles-yusuarios').then((navegado) => {
+        if (!navegado) {
+          window.history.back();
+        }
+      });
+    } else {
+      this.router.navigate(['/app/panel']);
+    }
+  }
 
   nuevoUsuario = {
-    nombre: 'erick',
-    correo: 'operador@gmail.com',
-    password: '12345678',
-    rol: 'Operador'
+    nombre: '',
+    apellido: '',
+    email: '',
+    telefono: '',
+    password: '',
+    confirmar: '',
+    rolId: null as number | null
   };
 
-  roles = ['Administrador', 'Operador', 'Técnico de Mantenimiento', 'Auditor'];
+  ngOnInit() {
+    this.usuarioService.obtenerRolesBasicos().then(
+      (roles) => {
+        this.roles = roles;
+        this.cdr.detectChanges();
+      },
+      () => {
+        this.roles = [];
+        this.cdr.detectChanges();
+      }
+    );
+  }
 
-  private mapaRoles: Record<string, RolUsuario> = {
-    'Administrador': 'Administrador',
-    'Operador': 'Operario',
-    'Técnico de Mantenimiento': 'Supervisor',
-    'Auditor': 'Auditor'
-  };
-
-  // Método requerido por (ngSubmit)="solicitarRegistro()" en el HTML
   solicitarRegistro(): void {
     this.errorMessage = '';
 
-    if (!this.nuevoUsuario.correo || !this.nuevoUsuario.password || !this.nuevoUsuario.nombre) {
-      this.errorMessage = '⚠️ Todos los campos son obligatorios.';
+    if (!this.nuevoUsuario.nombre || !this.nuevoUsuario.email || !this.nuevoUsuario.password || !this.nuevoUsuario.rolId) {
+      this.errorMessage = 'Todos los campos son obligatorios.';
+      return;
+    }
+    if (!this.emailValido(this.nuevoUsuario.email)) {
+      this.errorMessage = 'Ingresa un correo electrónico válido.';
+      return;
+    }
+    if (this.nuevoUsuario.password.length < 6) {
+      this.errorMessage = 'La contraseña debe tener al menos 6 caracteres.';
+      return;
+    }
+    if (this.nuevoUsuario.password !== this.nuevoUsuario.confirmar) {
+      this.errorMessage = 'Las contraseñas no coinciden.';
       return;
     }
 
-    if (this.nuevoUsuario.password.length < 3) {
-      this.errorMessage = '⚠️ La contraseña debe tener al menos 3 caracteres.';
+    const telefonoValido = (t: string): boolean => !t || t.replace(/\D/g, '').length >= 7;
+    if (!telefonoValido(this.nuevoUsuario.telefono)) {
+      this.errorMessage = 'Ingresa un número de teléfono válido (mínimo 7 dígitos).';
       return;
     }
 
-    // Pasa al paso 2 (Ingreso del código 2FA)
     this.pasoActual = 2;
   }
 
-  // Método requerido por (click)="confirmarCodigo()" en el HTML
   confirmarCodigo(): void {
-    this.errorMessage = '';
-
-    if (this.codigoVerificacion.trim() !== this.codigoCorrecto) {
-      this.errorMessage = '⚠️ Código de verificación incorrecto. Usa 123456.';
+    if (this.enviando) {
       return;
     }
+    this.errorMessage = '';
+    this.enviando = true;
 
-    const rolMapeado = this.mapaRoles[this.nuevoUsuario.rol] || 'Operario';
-
-    const exito = this.authService.registrar({
-      nombre: this.nuevoUsuario.nombre,
-      email: this.nuevoUsuario.correo,
+    this.usuarioService.crearUsuario({
+      nombre: this.nuevoUsuario.nombre.trim(),
+      apellido: this.nuevoUsuario.apellido.trim() || undefined,
+      email: this.nuevoUsuario.email.trim().toLowerCase(),
+      telefono: this.nuevoUsuario.telefono.trim() || undefined,
       password: this.nuevoUsuario.password,
-      rol: rolMapeado
-    });
+      rolId: Number(this.nuevoUsuario.rolId)
+    }).then(
+      () => {
+        this.enviando = false;
+        this.toastService.mostrar('Usuario creado correctamente. Ya puede iniciar sesión.', 'success', 'Registro exitoso');
+        this.router.navigate(['/auth/login']);
+        this.cdr.detectChanges();
+      },
+      (err: any) => {
+        this.enviando = false;
+        this.pasoActual = 1;
+        this.errorMessage = err?.error?.message || 'No fue posible registrar el usuario.';
+        this.cdr.detectChanges();
+      }
+    );
+  }
 
-    if (exito) {
-      this.router.navigate(['/auth/login']);
-    } else {
-      this.pasoActual = 1;
-      this.errorMessage = '⚠️ El correo electrónico ya se encuentra registrado.';
-    }
+  private emailValido(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 }

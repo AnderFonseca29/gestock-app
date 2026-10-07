@@ -1,15 +1,15 @@
 .app-sidebar {
   width: 260px;
   height: 100vh;
-  background-color: #0d121d;
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: var(--bg-surface, #ffffff);
+  border-right: 1px solid var(--border-light, #e2e8f0);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   position: sticky;
   top: 0;
   z-index: 100;
-  overflow: hidden; /* Evita que el contenedor principal genere scroll global */
+  overflow: hidden;
 }
 
 /* Marca / Logo superior */
@@ -18,12 +18,12 @@
   align-items: center;
   gap: 12px;
   padding: 24px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--border-light, #e2e8f0);
 }
 
 .brand-icon {
-  background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
+  background: var(--accent-light, #dbeafe);
+  color: var(--accent, #3b82f6);
   padding: 8px;
   border-radius: 8px;
   font-size: 1.1rem;
@@ -32,7 +32,7 @@
 .brand-title {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #f8fafc;
+  color: var(--text-primary, #0f172a);
   letter-spacing: -0.01em;
 }
 
@@ -51,7 +51,7 @@
 .nav-section-title {
   font-size: 0.7rem;
   font-weight: 600;
-  color: #64748b;
+  color: var(--text-muted, #94a3b8);
   letter-spacing: 0.08em;
   margin: 18px 0 8px 10px;
   text-transform: uppercase;
@@ -59,32 +59,92 @@
 
 /* Elementos del menú */
 .nav-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 10px 14px;
-  color: #94a3b8;
+  color: var(--text-secondary, #475569);
   text-decoration: none;
   font-size: 0.88rem;
   font-weight: 500;
   border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+/* Indicador deslizante del elemento activo */
+.nav-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: 0;
+  border-radius: 0 4px 4px 0;
+  background: var(--accent, #3b82f6);
+  transform: translateY(-50%);
+  transition: height 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.03);
-  color: #f8fafc;
+  background-color: var(--accent-soft, rgba(59, 130, 246, 0.1));
+  color: var(--accent-hover, #2563eb);
+  transform: translateX(3px);
+}
+
+.nav-item:hover::before {
+  height: 70%;
 }
 
 .nav-item.active {
-  background-color: #3b82f6; /* Color azul sólido idéntico al de tu captura */
-  color: #ffffff;
+  background-color: var(--accent, #3b82f6);
+  color: var(--text-inverse, #ffffff);
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  transform: none;
+}
+
+.nav-item.active::before {
+  height: 70%;
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .nav-icon {
-  font-size: 1rem;
+  font-size: 1.15rem;
+  width: 1.5rem;
+  text-align: center;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav-item:hover .nav-icon {
+  transform: scale(1.15) rotate(-6deg);
+}
+
+.nav-item.active .nav-icon {
+  animation: icon-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes icon-pop {
+  0%   { transform: scale(0.6); }
+  60%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Animación de entrada del sidebar */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.app-sidebar {
+  animation: fadeInUp 0.4s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
 }
 
 /* Adaptabilidad Responsive (móviles/tablets) */

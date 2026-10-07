@@ -1,9 +1,14 @@
 /* ==========================================================
-   --- 1. ANIMACIONES Y CONFIGURACIÓN GENERAL ---
+   --- 1. ANIMACIONES Y CONFIGURACION GENERAL ---
    ========================================================== */
 @keyframes fadeInScale {
   0% { opacity: 0; transform: scale(0.96) translateY(10px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade {
@@ -12,8 +17,8 @@
 
 .registro-container {
   padding: 2.5rem;
-  background-color: #0b0f19;
-  color: #f1f5f9;
+  background-color: var(--bg-primary, #f1f5f9);
+  color: var(--text-primary, #0f172a);
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   box-sizing: border-box;
@@ -23,18 +28,19 @@
 }
 
 /* ==========================================================
-   --- 2. CABECERA DE LA SECCIÓN ---
+   --- 2. CABECERA DE LA SECCION ---
    ========================================================== */
 .registro-header {
   width: 100%;
   max-width: 900px;
   margin-bottom: 2rem;
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .registro-header h2 {
   font-size: 2rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-primary, #0f172a);
   margin: 0 0 0.5rem 0;
   letter-spacing: -0.5px;
   display: flex;
@@ -43,22 +49,22 @@
 }
 
 .registro-header h2 i {
-  color: #3b82f6;
+  color: var(--accent, #3b82f6);
 }
 
 .text-subtitle {
-  color: #94a3b8;
+  color: var(--text-secondary, #475569);
   font-size: 0.95rem;
   margin: 0;
 }
 
 /* ==========================================================
-   --- 3. MENSAJE TOAST / ÉXITO MODERNO ---
+   --- 3. MENSAJE TOAST / EXITO MODERNO ---
    ========================================================== */
 .toast-success-modern {
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  color: #34d399;
+  background: var(--success-light, #d1fae5);
+  border: 1px solid var(--success, #10b981);
+  color: var(--success, #10b981);
   padding: 1rem 1.25rem;
   border-radius: 14px;
   font-weight: 600;
@@ -66,7 +72,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
   box-sizing: border-box;
 }
 
@@ -74,14 +80,15 @@
    --- 4. TARJETA CONTENEDORA Y FORMULARIO ---
    ========================================================== */
 .form-card {
-  background: linear-gradient(145deg, #1e293b, #131a28);
-  border: 1px solid #334155;
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-light, #e2e8f0);
   border-radius: 24px;
   padding: 2.5rem;
   width: 100%;
   max-width: 900px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.07));
   box-sizing: border-box;
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .form-grid {
@@ -97,7 +104,7 @@
 }
 
 .form-label {
-  color: #cbd5e1;
+  color: var(--text-secondary, #475569);
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -105,9 +112,9 @@
 
 /* Inputs, Selects y Elementos Oscuros */
 .dark-input {
-  background: #0f172a;
-  border: 1px solid #334155;
-  color: #ffffff;
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-default, #cbd5e1);
+  color: var(--text-primary, #0f172a);
   padding: 0.85rem 1rem;
   border-radius: 12px;
   outline: none;
@@ -118,13 +125,12 @@
 }
 
 .dark-input::placeholder {
-  color: #64748b;
+  color: var(--text-muted, #94a3b8);
 }
 
 .dark-input:focus {
-  border-color: #3b82f6;
-  background: #131a28;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  border-color: var(--accent, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 /* Estilo personalizado para los selects */
@@ -139,29 +145,29 @@ select.dark-input {
 }
 
 select.dark-input option {
-  background-color: #0f172a;
-  color: #ffffff;
+  background-color: var(--bg-surface, #ffffff);
+  color: var(--text-primary, #0f172a);
 }
 
 /* ==========================================================
-   --- 5. MENSAJES DE ERROR Y VALIDACIÓN ---
+   --- 5. MENSAJES DE ERROR Y VALIDACION ---
    ========================================================== */
 .error-msg {
-  color: #f87171;
+  color: var(--danger, #ef4444);
   font-size: 0.78rem;
   font-weight: 500;
   margin-top: 2px;
 }
 
 .warning-msg {
-  color: #fbbf24;
+  color: var(--warning, #f59e0b);
   font-size: 0.78rem;
   font-weight: 500;
   margin-top: 2px;
 }
 
 /* ==========================================================
-   --- 6. ACCIONES Y BOTÓN DE ENVÍO ---
+   --- 6. ACCIONES Y BOTON DE ENVIO ---
    ========================================================== */
 .form-actions {
   grid-column: span 2;
@@ -171,7 +177,7 @@ select.dark-input option {
 }
 
 .btn-submit {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: linear-gradient(135deg, var(--accent, #3b82f6), var(--accent-hover, #2563eb));
   color: white;
   border: none;
   padding: 0.9rem 2rem;
@@ -182,7 +188,7 @@ select.dark-input option {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
   transition: all 0.25s ease;
   width: 100%;
   justify-content: center;
@@ -190,19 +196,19 @@ select.dark-input option {
 
 .btn-submit:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(37, 99, 235, 0.6);
+  box-shadow: 0 6px 25px rgba(59, 130, 246, 0.45);
 }
 
 .btn-submit:disabled {
-  background: #1e293b;
-  border: 1px solid #334155;
-  color: #64748b;
+  background: var(--bg-muted, #e2e8f0);
+  border: 1px solid var(--border-light, #e2e8f0);
+  color: var(--text-muted, #94a3b8);
   cursor: not-allowed;
   box-shadow: none;
 }
 
 /* ==========================================================
-   --- 7. DISEÑO RESPONSIVE PARA DISPOSITIVOS MÓVILES (< 768px) ---
+   --- 7. DISENO RESPONSIVE PARA DISPOSITIVOS MOVILES (< 768px) ---
    ========================================================== */
 @media (max-width: 768px) {
   .registro-container {
@@ -214,7 +220,7 @@ select.dark-input option {
   }
 
   .form-grid {
-    grid-template-columns: 1fr; /* Una columna por fila en celulares */
+    grid-template-columns: 1fr;
     gap: 1.2rem;
   }
 

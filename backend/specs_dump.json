@@ -1,0 +1,1537 @@
+[
+ {
+  "numero": 1,
+  "nombre": "Portada",
+  "titulo": "Portada",
+  "categoria": "Generales",
+  "descripcion": "Portada del conjunto: nombre del proyecto y listado de los 34 diagramas."
+ },
+ {
+  "numero": 2,
+  "nombre": "Arquitectura General",
+  "titulo": "Arquitectura General",
+  "categoria": "Generales",
+  "descripcion": "Vista general de la plataforma: Frontend Angular, Backend Node/Express y PostgreSQL."
+ },
+ {
+  "numero": 3,
+  "nombre": "MID Detalle",
+  "titulo": "MID Detalle",
+  "categoria": "Generales",
+  "descripcion": "El MID como capa intermedia: lo que atraviesa la solicitud y lo que nunca toca."
+ },
+ {
+  "numero": 4,
+  "nombre": "Autenticacion Sesion",
+  "titulo": "Autenticacion Sesion",
+  "categoria": "Generales",
+  "descripcion": "Inicio de sesion, generacion de JWT y control de sesiones activas."
+ },
+ {
+  "numero": 5,
+  "nombre": "RBAC Roles Permisos",
+  "titulo": "RBAC Roles Permisos",
+  "categoria": "Generales",
+  "descripcion": "Mapeo RBAC de roles y permisos que protegen cada ruta del sistema."
+ },
+ {
+  "numero": 6,
+  "nombre": "Patron CRUD",
+  "titulo": "Patron CRUD",
+  "categoria": "Generales",
+  "descripcion": "Secuencia base CRUD (crear/leer/actualizar/eliminar) y sus respuestas."
+ },
+ {
+  "numero": 7,
+  "nombre": "Errores Backend",
+  "titulo": "Errores Backend",
+  "categoria": "Generales",
+  "descripcion": "Clasificacion de errores del backend: ApiError y casos del errorHandler."
+ },
+ {
+  "numero": 8,
+  "nombre": "Base Datos",
+  "titulo": "Base Datos",
+  "categoria": "Generales",
+  "descripcion": "Entidades y relaciones de la base de datos Gestock_db."
+ },
+ {
+  "numero": 9,
+  "nombre": "Matriz Trazabilidad",
+  "titulo": "Matriz Trazabilidad",
+  "categoria": "Generales",
+  "descripcion": "Matriz de trazabilidad entre cada diagrama y la lectura del codigo fuente."
+ },
+ {
+  "numero": 10,
+  "nombre": "Controlador Auth",
+  "titulo": "Controlador Auth",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Auth: 7 rutas declaradas en auth.routes.ts y 9 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "auth",
+  "base": "/auth",
+  "rutas": [
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/auth('/login', ...loginMiddlewares",
+    "subruta": "('/login', ...loginMiddlewares",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/auth('/perfil', authenticateToken, authController.perfil",
+    "subruta": "('/perfil', authenticateToken, authController.perfil",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/auth('/logout', authenticateToken, authController.logout",
+    "subruta": "('/logout', authenticateToken, authController.logout",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PUT",
+    "rutaCompleta": "/api/auth('/contrasena', authenticateToken, validateBody(cambiarContrasenaSchema), authController.cambiarContrasena",
+    "subruta": "('/contrasena', authenticateToken, validateBody(cambiarContrasenaSchema), authController.cambiarContrasena",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/auth(\n  '/recuperar',\n  validateBody(solicitarRecuperacionSchema),\n  recuperacionLimiter,\n  authController.solicitarRecuperacion",
+    "subruta": "(\n  '/recuperar',\n  validateBody(solicitarRecuperacionSchema),\n  recuperacionLimiter,\n  authController.solicitarRecuperacion",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/auth(\n  '/recuperar/validar',\n  validateBody(validarCodigoRecuperacionSchema),\n  authController.validarCodigoRecuperacion",
+    "subruta": "(\n  '/recuperar/validar',\n  validateBody(validarCodigoRecuperacionSchema),\n  authController.validarCodigoRecuperacion",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/auth(\n  '/recuperar/restablecer',\n  validateBody(restablecerPasswordSchema),\n  authController.restablecerPassword",
+    "subruta": "(\n  '/recuperar/restablecer',\n  validateBody(restablecerPasswordSchema),\n  authController.restablecerPassword",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "unauthorized",
+    "status": 401,
+    "code": "UNAUTHORIZED",
+    "mensaje": "No autenticado.",
+    "fuente": "auth.controller.ts"
+   },
+   {
+    "tipo": "unauthorized",
+    "status": 401,
+    "code": "UNAUTHORIZED",
+    "mensaje": "Las credenciales ingresadas no son válidas.",
+    "fuente": "auth.service.ts"
+   },
+   {
+    "tipo": "unauthorized",
+    "status": 401,
+    "code": "UNAUTHORIZED",
+    "mensaje": "El usuario no pertenece a esa empresa.",
+    "fuente": "auth.service.ts"
+   },
+   {
+    "tipo": "forbidden",
+    "status": 403,
+    "code": "FORBIDDEN",
+    "mensaje": "Tu cuenta está inactiva. Contacta al administrador.",
+    "fuente": "auth.service.ts"
+   },
+   {
+    "tipo": "forbidden",
+    "status": 403,
+    "code": "FORBIDDEN",
+    "mensaje": "El rol asignado a tu cuenta está inactivo. Contacta al administrador.",
+    "fuente": "auth.service.ts"
+   },
+   {
+    "tipo": "internal",
+    "status": 500,
+    "code": "INTERNAL_ERROR",
+    "mensaje": "No se pudieron cargar los permisos del usuario.",
+    "fuente": "auth.service.ts"
+   },
+   {
+    "tipo": "notFound",
+    "status": 404,
+    "code": "NOT_FOUND",
+    "mensaje": "El usuario no existe.",
+    "fuente": "auth.service.ts"
+   },
+   {
+    "tipo": "unauthorized",
+    "status": 401,
+    "code": "UNAUTHORIZED",
+    "mensaje": "La contraseña actual no es correcta.",
+    "fuente": "auth.service.ts"
+   },
+   {
+    "tipo": "badRequest",
+    "status": 400,
+    "code": "BAD_REQUEST",
+    "mensaje": "El código ingresado no es válido o ha expirado.",
+    "fuente": "auth.service.ts"
+   }
+  ],
+  "tablas": [
+   "sesiones",
+   "usuarios",
+   "roles",
+   "empresas",
+   "rol_permiso",
+   "permisos",
+   "restablecimientos_contrasena",
+   "auditorias"
+  ],
+  "respuestas": {
+   "ok": 4,
+   "created": 0,
+   "noContent": 3
+  },
+  "auditoria": true,
+  "transaccion": false,
+  "multitenant": true
+ },
+ {
+  "numero": 11,
+  "nombre": "Controlador Usuario",
+  "titulo": "Controlador Usuario",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Usuario: 8 rutas declaradas en usuario.routes.ts y 5 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "usuario",
+  "base": "/usuarios",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/usuarios('/', authorizePermission('usuarios.view'), usuarioController.listar",
+    "subruta": "('/', authorizePermission('usuarios.view'), usuarioController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/usuarios('/:id', authorizePermission('usuarios.view'), validateParams(idParamSchema), usuarioController.detalle",
+    "subruta": "('/:id', authorizePermission('usuarios.view'), validateParams(idParamSchema), usuarioController.detalle",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/usuarios('/', authorizePermission('usuarios.create'), validateBody(crearUsuarioSchema), usuarioController.crear",
+    "subruta": "('/', authorizePermission('usuarios.create'), validateBody(crearUsuarioSchema), usuarioController.crear",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PUT",
+    "rutaCompleta": "/api/usuarios('/:id', authorizePermission('usuarios.edit'), validateParams(idParamSchema), validateBody(actualizarUsuarioSchema), usuarioController.actualizar",
+    "subruta": "('/:id', authorizePermission('usuarios.edit'), validateParams(idParamSchema), validateBody(actualizarUsuarioSchema), usuarioController.actualizar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PATCH",
+    "rutaCompleta": "/api/usuarios('/:id/estado', authorizePermission('usuarios.desactivar'), validateParams(idParamSchema), validateBody(cambiarEstadoUsuarioSchema), usuarioController.cambiarEstado",
+    "subruta": "('/:id/estado', authorizePermission('usuarios.desactivar'), validateParams(idParamSchema), validateBody(cambiarEstadoUsuarioSchema), usuarioController.cambiarEstado",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PATCH",
+    "rutaCompleta": "/api/usuarios('/:id/rol', authorizePermission('usuarios.edit'), validateParams(idParamSchema), validateBody(cambiarRolUsuarioSchema), usuarioController.cambiarRol",
+    "subruta": "('/:id/rol', authorizePermission('usuarios.edit'), validateParams(idParamSchema), validateBody(cambiarRolUsuarioSchema), usuarioController.cambiarRol",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PUT",
+    "rutaCompleta": "/api/usuarios('/:id/password', authorizePermission('usuarios.password'), validateParams(idParamSchema), validateBody(cambiarPasswordUsuarioSchema), usuarioController.cambiarPassword",
+    "subruta": "('/:id/password', authorizePermission('usuarios.password'), validateParams(idParamSchema), validateBody(cambiarPasswordUsuarioSchema), usuarioController.cambiarPassword",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "DELETE",
+    "rutaCompleta": "/api/usuarios('/:id', authorizePermission('usuarios.delete'), validateParams(idParamSchema), usuarioController.eliminar",
+    "subruta": "('/:id', authorizePermission('usuarios.delete'), validateParams(idParamSchema), usuarioController.eliminar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "notFound",
+    "status": 404,
+    "code": "NOT_FOUND",
+    "mensaje": "El usuario no existe.",
+    "fuente": "usuario.controller.ts"
+   },
+   {
+    "tipo": "conflict",
+    "status": 409,
+    "code": "CONFLICT",
+    "mensaje": "Ya existe un usuario con ese correo electrónico.",
+    "fuente": "usuario.controller.ts"
+   },
+   {
+    "tipo": "notFound",
+    "status": 404,
+    "code": "NOT_FOUND",
+    "mensaje": "El rol seleccionado no existe.",
+    "fuente": "usuario.controller.ts"
+   },
+   {
+    "tipo": "badRequest",
+    "status": 400,
+    "code": "BAD_REQUEST",
+    "mensaje": "Para cambiar tu propia contraseña usa la opción de tu perfil.",
+    "fuente": "usuario.controller.ts"
+   },
+   {
+    "tipo": "forbidden",
+    "status": 403,
+    "code": "FORBIDDEN",
+    "mensaje": "No puedes eliminar tu propio usuario.",
+    "fuente": "usuario.controller.ts"
+   }
+  ],
+  "tablas": [
+   "usuarios",
+   "roles",
+   "empresas",
+   "rol_permiso",
+   "permisos",
+   "sesiones",
+   "auditorias"
+  ],
+  "respuestas": {
+   "ok": 6,
+   "created": 1,
+   "noContent": 1
+  },
+  "auditoria": true,
+  "transaccion": false,
+  "multitenant": true
+ },
+ {
+  "numero": 12,
+  "nombre": "Controlador Rol",
+  "titulo": "Controlador Rol",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Rol: 8 rutas declaradas en rol.routes.ts y 3 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "rol",
+  "base": "/roles",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/roles('/basicos', authorizePermission('roles.view'), rolController.listarBasico",
+    "subruta": "('/basicos', authorizePermission('roles.view'), rolController.listarBasico",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/roles('/', authorizePermission('roles.view'), rolController.listar",
+    "subruta": "('/', authorizePermission('roles.view'), rolController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/roles('/:id', authorizePermission('roles.view'), validateParams(idParamSchema), rolController.detalle",
+    "subruta": "('/:id', authorizePermission('roles.view'), validateParams(idParamSchema), rolController.detalle",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/roles('/', authorizePermission('roles.create'), validateBody(crearRolSchema), rolController.crear",
+    "subruta": "('/', authorizePermission('roles.create'), validateBody(crearRolSchema), rolController.crear",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PUT",
+    "rutaCompleta": "/api/roles('/:id', authorizePermission('roles.edit'), validateParams(idParamSchema), validateBody(actualizarRolSchema), rolController.actualizar",
+    "subruta": "('/:id', authorizePermission('roles.edit'), validateParams(idParamSchema), validateBody(actualizarRolSchema), rolController.actualizar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PATCH",
+    "rutaCompleta": "/api/roles('/:id/estado', authorizePermission('roles.edit'), validateParams(idParamSchema), validateBody(cambiarEstadoRolSchema), rolController.cambiarEstado",
+    "subruta": "('/:id/estado', authorizePermission('roles.edit'), validateParams(idParamSchema), validateBody(cambiarEstadoRolSchema), rolController.cambiarEstado",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PUT",
+    "rutaCompleta": "/api/roles('/:id/permisos', authorizePermission('roles.asignar_permisos'), validateParams(idParamSchema), validateBody(asignarPermisosSchema), rolController.asignarPermisos",
+    "subruta": "('/:id/permisos', authorizePermission('roles.asignar_permisos'), validateParams(idParamSchema), validateBody(asignarPermisosSchema), rolController.asignarPermisos",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "DELETE",
+    "rutaCompleta": "/api/roles('/:id', authorizePermission('roles.delete'), validateParams(idParamSchema), rolController.eliminar",
+    "subruta": "('/:id', authorizePermission('roles.delete'), validateParams(idParamSchema), rolController.eliminar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "notFound",
+    "status": 404,
+    "code": "NOT_FOUND",
+    "mensaje": "El rol no existe.",
+    "fuente": "rol.controller.ts"
+   },
+   {
+    "tipo": "conflict",
+    "status": 409,
+    "code": "CONFLICT",
+    "mensaje": "Ya existe un rol con ese nombre.",
+    "fuente": "rol.controller.ts"
+   },
+   {
+    "tipo": "conflict",
+    "status": 409,
+    "code": "CONFLICT",
+    "mensaje": "No se puede eliminar un rol que tiene usuarios asignados.",
+    "fuente": "rol.controller.ts"
+   }
+  ],
+  "tablas": [
+   "roles",
+   "rol_permiso",
+   "permisos",
+   "usuarios",
+   "auditorias"
+  ],
+  "respuestas": {
+   "ok": 6,
+   "created": 1,
+   "noContent": 1
+  },
+  "auditoria": true,
+  "transaccion": false,
+  "multitenant": false
+ },
+ {
+  "numero": 13,
+  "nombre": "Controlador Permiso",
+  "titulo": "Controlador Permiso",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Permiso: 2 rutas declaradas en permiso.routes.ts y 0 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "permiso",
+  "base": "/permisos",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/permisos('/', authorizePermission('permisos.view'), permisoController.listar",
+    "subruta": "('/', authorizePermission('permisos.view'), permisoController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/permisos('/modulo/:modulo', authorizePermission('permisos.view'), permisoController.listarPorModulo",
+    "subruta": "('/modulo/:modulo', authorizePermission('permisos.view'), permisoController.listarPorModulo",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [],
+  "tablas": [
+   "permisos"
+  ],
+  "respuestas": {
+   "ok": 2,
+   "created": 0,
+   "noContent": 0
+  },
+  "auditoria": false,
+  "transaccion": false,
+  "multitenant": false
+ },
+ {
+  "numero": 14,
+  "nombre": "Controlador Empresa",
+  "titulo": "Controlador Empresa",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Empresa: 6 rutas declaradas en empresa.routes.ts y 5 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "empresa",
+  "base": "/empresas",
+  "rutas": [
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/empresas('/seleccionar', authorizePermission('empresas.view'), validateBody(seleccionarEmpresaSchema), empresaController.seleccionar",
+    "subruta": "('/seleccionar', authorizePermission('empresas.view'), validateBody(seleccionarEmpresaSchema), empresaController.seleccionar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/empresas('/', authorizePermission('empresas.view'), empresaController.listar",
+    "subruta": "('/', authorizePermission('empresas.view'), empresaController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/empresas('/:id', authorizePermission('empresas.view'), validateParams(idParamSchema), empresaController.detalle",
+    "subruta": "('/:id', authorizePermission('empresas.view'), validateParams(idParamSchema), empresaController.detalle",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/empresas('/', authorizePermission('empresas.create'), validateBody(crearEmpresaSchema), empresaController.crear",
+    "subruta": "('/', authorizePermission('empresas.create'), validateBody(crearEmpresaSchema), empresaController.crear",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PUT",
+    "rutaCompleta": "/api/empresas('/:id', authorizePermission('empresas.edit'), validateParams(idParamSchema), validateBody(actualizarEmpresaSchema), empresaController.actualizar",
+    "subruta": "('/:id', authorizePermission('empresas.edit'), validateParams(idParamSchema), validateBody(actualizarEmpresaSchema), empresaController.actualizar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "DELETE",
+    "rutaCompleta": "/api/empresas('/:id', authorizePermission('empresas.delete'), validateParams(idParamSchema), empresaController.eliminar",
+    "subruta": "('/:id', authorizePermission('empresas.delete'), validateParams(idParamSchema), empresaController.eliminar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "unauthorized",
+    "status": 401,
+    "code": "UNAUTHORIZED",
+    "mensaje": "No se pudo identificar la sesión actual.",
+    "fuente": "empresa.controller.ts"
+   },
+   {
+    "tipo": "notFound",
+    "status": 404,
+    "code": "NOT_FOUND",
+    "mensaje": "La empresa no existe.",
+    "fuente": "empresa.controller.ts"
+   },
+   {
+    "tipo": "forbidden",
+    "status": 403,
+    "code": "FORBIDDEN",
+    "mensaje": "La empresa está inactiva. No puedes seleccionarla.",
+    "fuente": "empresa.controller.ts"
+   },
+   {
+    "tipo": "conflict",
+    "status": 409,
+    "code": "CONFLICT",
+    "mensaje": "Ya existe una empresa con ese NIT.",
+    "fuente": "empresa.controller.ts"
+   },
+   {
+    "tipo": "internal",
+    "status": 500,
+    "code": "INTERNAL_ERROR",
+    "mensaje": "No existe el rol Administrador en el sistema.",
+    "fuente": "empresa.controller.ts"
+   }
+  ],
+  "tablas": [
+   "empresas",
+   "sesiones",
+   "usuarios",
+   "roles",
+   "auditorias",
+   "rol_permiso",
+   "permisos",
+   "restablecimientos_contrasena"
+  ],
+  "respuestas": {
+   "ok": 4,
+   "created": 1,
+   "noContent": 1
+  },
+  "auditoria": true,
+  "transaccion": true,
+  "multitenant": true
+ },
+ {
+  "numero": 15,
+  "nombre": "Controlador Categoria",
+  "titulo": "Controlador Categoria",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Categoria: 5 rutas declaradas en categoria.routes.ts y 2 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "categoria",
+  "base": "/categorias",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/categorias('/', authorizePermission('categorias.view'), categoriaController.listar",
+    "subruta": "('/', authorizePermission('categorias.view'), categoriaController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/categorias('/:id', authorizePermission('categorias.view'), validateParams(idParamSchema), categoriaController.detalle",
+    "subruta": "('/:id', authorizePermission('categorias.view'), validateParams(idParamSchema), categoriaController.detalle",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/categorias('/', authorizePermission('categorias.create'), validateBody(crearCategoriaSchema), categoriaController.crear",
+    "subruta": "('/', authorizePermission('categorias.create'), validateBody(crearCategoriaSchema), categoriaController.crear",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PUT",
+    "rutaCompleta": "/api/categorias('/:id', authorizePermission('categorias.edit'), validateParams(idParamSchema), validateBody(actualizarCategoriaSchema), categoriaController.actualizar",
+    "subruta": "('/:id', authorizePermission('categorias.edit'), validateParams(idParamSchema), validateBody(actualizarCategoriaSchema), categoriaController.actualizar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "DELETE",
+    "rutaCompleta": "/api/categorias('/:id', authorizePermission('categorias.delete'), validateParams(idParamSchema), categoriaController.eliminar",
+    "subruta": "('/:id', authorizePermission('categorias.delete'), validateParams(idParamSchema), categoriaController.eliminar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "notFound",
+    "status": 404,
+    "code": "NOT_FOUND",
+    "mensaje": "La categoría no existe.",
+    "fuente": "categoria.controller.ts"
+   },
+   {
+    "tipo": "conflict",
+    "status": 409,
+    "code": "CONFLICT",
+    "mensaje": "Ya existe una categoría con ese nombre.",
+    "fuente": "categoria.controller.ts"
+   }
+  ],
+  "tablas": [
+   "categorias",
+   "auditorias"
+  ],
+  "respuestas": {
+   "ok": 3,
+   "created": 1,
+   "noContent": 1
+  },
+  "auditoria": true,
+  "transaccion": false,
+  "multitenant": true
+ },
+ {
+  "numero": 16,
+  "nombre": "Controlador Bodega",
+  "titulo": "Controlador Bodega",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Bodega: 5 rutas declaradas en bodega.routes.ts y 2 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "bodega",
+  "base": "/bodegas",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/bodegas('/', authorizePermission('bodegas.view'), bodegaController.listar",
+    "subruta": "('/', authorizePermission('bodegas.view'), bodegaController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/bodegas('/:id', authorizePermission('bodegas.view'), validateParams(idParamSchema), bodegaController.detalle",
+    "subruta": "('/:id', authorizePermission('bodegas.view'), validateParams(idParamSchema), bodegaController.detalle",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/bodegas('/', authorizePermission('bodegas.create'), validateBody(crearBodegaSchema), bodegaController.crear",
+    "subruta": "('/', authorizePermission('bodegas.create'), validateBody(crearBodegaSchema), bodegaController.crear",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PUT",
+    "rutaCompleta": "/api/bodegas('/:id', authorizePermission('bodegas.edit'), validateParams(idParamSchema), validateBody(actualizarBodegaSchema), bodegaController.actualizar",
+    "subruta": "('/:id', authorizePermission('bodegas.edit'), validateParams(idParamSchema), validateBody(actualizarBodegaSchema), bodegaController.actualizar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "DELETE",
+    "rutaCompleta": "/api/bodegas('/:id', authorizePermission('bodegas.delete'), validateParams(idParamSchema), bodegaController.eliminar",
+    "subruta": "('/:id', authorizePermission('bodegas.delete'), validateParams(idParamSchema), bodegaController.eliminar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "notFound",
+    "status": 404,
+    "code": "NOT_FOUND",
+    "mensaje": "La bodega no existe.",
+    "fuente": "bodega.controller.ts"
+   },
+   {
+    "tipo": "conflict",
+    "status": 409,
+    "code": "CONFLICT",
+    "mensaje": "Ya existe una bodega con ese código.",
+    "fuente": "bodega.controller.ts"
+   }
+  ],
+  "tablas": [
+   "bodegas",
+   "auditorias"
+  ],
+  "respuestas": {
+   "ok": 3,
+   "created": 1,
+   "noContent": 1
+  },
+  "auditoria": true,
+  "transaccion": false,
+  "multitenant": true
+ },
+ {
+  "numero": 17,
+  "nombre": "Controlador Producto",
+  "titulo": "Controlador Producto",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Producto: 7 rutas declaradas en producto.routes.ts y 2 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "producto",
+  "base": "/productos",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/productos('/', authorizePermission('productos.view'), productoController.listar",
+    "subruta": "('/', authorizePermission('productos.view'), productoController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/productos('/stock-bajo', authorizePermission('inventario.view'), productoController.stockBajo",
+    "subruta": "('/stock-bajo', authorizePermission('inventario.view'), productoController.stockBajo",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/productos('/:id', authorizePermission('productos.view'), validateParams(idParamSchema), productoController.detalle",
+    "subruta": "('/:id', authorizePermission('productos.view'), validateParams(idParamSchema), productoController.detalle",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/productos('/', authorizePermission('productos.create'), validateBody(crearProductoSchema), productoController.crear",
+    "subruta": "('/', authorizePermission('productos.create'), validateBody(crearProductoSchema), productoController.crear",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PUT",
+    "rutaCompleta": "/api/productos('/:id', authorizePermission('productos.edit'), validateParams(idParamSchema), validateBody(actualizarProductoSchema), productoController.actualizar",
+    "subruta": "('/:id', authorizePermission('productos.edit'), validateParams(idParamSchema), validateBody(actualizarProductoSchema), productoController.actualizar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PATCH",
+    "rutaCompleta": "/api/productos('/:id/estado', authorizePermission('productos.edit'), validateParams(idParamSchema), validateBody(cambiarEstadoProductoSchema), productoController.cambiarEstado",
+    "subruta": "('/:id/estado', authorizePermission('productos.edit'), validateParams(idParamSchema), validateBody(cambiarEstadoProductoSchema), productoController.cambiarEstado",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "DELETE",
+    "rutaCompleta": "/api/productos('/:id', authorizePermission('productos.delete'), validateParams(idParamSchema), productoController.eliminar",
+    "subruta": "('/:id', authorizePermission('productos.delete'), validateParams(idParamSchema), productoController.eliminar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "notFound",
+    "status": 404,
+    "code": "NOT_FOUND",
+    "mensaje": "El producto no existe.",
+    "fuente": "producto.controller.ts"
+   },
+   {
+    "tipo": "conflict",
+    "status": 409,
+    "code": "CONFLICT",
+    "mensaje": "Ya existe un producto con ese código.",
+    "fuente": "producto.controller.ts"
+   }
+  ],
+  "tablas": [
+   "productos",
+   "categorias",
+   "bodegas",
+   "auditorias"
+  ],
+  "respuestas": {
+   "ok": 5,
+   "created": 1,
+   "noContent": 1
+  },
+  "auditoria": true,
+  "transaccion": false,
+  "multitenant": true
+ },
+ {
+  "numero": 18,
+  "nombre": "Controlador Movimiento",
+  "titulo": "Controlador Movimiento",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Movimiento: 4 rutas declaradas en movimiento.routes.ts y 1 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "movimiento",
+  "base": "/movimientos",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/movimientos('/', authorizePermission('movimientos.view'), validateQuery(listarMovimientosSchema), movimientoController.listar",
+    "subruta": "('/', authorizePermission('movimientos.view'), validateQuery(listarMovimientosSchema), movimientoController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/movimientos('/:id', authorizePermission('movimientos.view'), validateParams(idParamSchema), movimientoController.detalle",
+    "subruta": "('/:id', authorizePermission('movimientos.view'), validateParams(idParamSchema), movimientoController.detalle",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/movimientos('/', authorizePermission('recepcion.create'), validateBody(crearMovimientoSchema), movimientoController.crear",
+    "subruta": "('/', authorizePermission('recepcion.create'), validateBody(crearMovimientoSchema), movimientoController.crear",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "DELETE",
+    "rutaCompleta": "/api/movimientos('/:id', authorizePermission('recepcion.delete'), validateParams(idParamSchema), movimientoController.eliminar",
+    "subruta": "('/:id', authorizePermission('recepcion.delete'), validateParams(idParamSchema), movimientoController.eliminar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "notFound",
+    "status": 404,
+    "code": "NOT_FOUND",
+    "mensaje": "El movimiento no existe.",
+    "fuente": "movimiento.controller.ts"
+   }
+  ],
+  "tablas": [
+   "movimientos_inventario",
+   "productos",
+   "bodegas",
+   "auditorias"
+  ],
+  "respuestas": {
+   "ok": 2,
+   "created": 1,
+   "noContent": 1
+  },
+  "auditoria": true,
+  "transaccion": false,
+  "multitenant": true
+ },
+ {
+  "numero": 19,
+  "nombre": "Controlador Recepcion",
+  "titulo": "Controlador Recepcion",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Recepcion: 5 rutas declaradas en recepcion.routes.ts y 2 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "recepcion",
+  "base": "/recepciones",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/recepciones('/', authorizeAnyPermission('recepcion.view', 'historial.view'), recepcionController.listar",
+    "subruta": "('/', authorizeAnyPermission('recepcion.view', 'historial.view'), recepcionController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/recepciones('/:id', authorizeAnyPermission('recepcion.view', 'historial.view'), validateParams(idParamSchema), recepcionController.detalle",
+    "subruta": "('/:id', authorizeAnyPermission('recepcion.view', 'historial.view'), validateParams(idParamSchema), recepcionController.detalle",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/recepciones('/', authorizePermission('recepcion.create'), validateBody(crearRecepcionSchema), recepcionController.crear",
+    "subruta": "('/', authorizePermission('recepcion.create'), validateBody(crearRecepcionSchema), recepcionController.crear",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PUT",
+    "rutaCompleta": "/api/recepciones('/:id', authorizePermission('recepcion.edit'), validateParams(idParamSchema), validateBody(crearRecepcionSchema.partial()), recepcionController.actualizar",
+    "subruta": "('/:id', authorizePermission('recepcion.edit'), validateParams(idParamSchema), validateBody(crearRecepcionSchema.partial()), recepcionController.actualizar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "DELETE",
+    "rutaCompleta": "/api/recepciones('/:id', authorizePermission('recepcion.delete'), validateParams(idParamSchema), recepcionController.eliminar",
+    "subruta": "('/:id', authorizePermission('recepcion.delete'), validateParams(idParamSchema), recepcionController.eliminar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "notFound",
+    "status": 404,
+    "code": "NOT_FOUND",
+    "mensaje": "La recepción no existe.",
+    "fuente": "recepcion.controller.ts"
+   },
+   {
+    "tipo": "unauthorized",
+    "status": 401,
+    "code": "UNAUTHORIZED",
+    "mensaje": "No autenticado.",
+    "fuente": "recepcion.controller.ts"
+   }
+  ],
+  "tablas": [
+   "recepciones",
+   "usuarios",
+   "bodegas",
+   "auditorias"
+  ],
+  "respuestas": {
+   "ok": 3,
+   "created": 1,
+   "noContent": 1
+  },
+  "auditoria": true,
+  "transaccion": false,
+  "multitenant": true
+ },
+ {
+  "numero": 20,
+  "nombre": "Controlador Auditoria",
+  "titulo": "Controlador Auditoria",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Auditoria: 2 rutas declaradas en auditoria.routes.ts y 1 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "auditoria",
+  "base": "/auditorias",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/auditorias('/', authorizePermission('auditoria.view'), auditoriaController.listar",
+    "subruta": "('/', authorizePermission('auditoria.view'), auditoriaController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/auditorias('/:id', authorizePermission('auditoria.view'), validateParams(idParamSchema), auditoriaController.detalle",
+    "subruta": "('/:id', authorizePermission('auditoria.view'), validateParams(idParamSchema), auditoriaController.detalle",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "notFound",
+    "status": 404,
+    "code": "NOT_FOUND",
+    "mensaje": "El registro de auditoría no existe.",
+    "fuente": "auditoria.controller.ts"
+   }
+  ],
+  "tablas": [
+   "auditorias"
+  ],
+  "respuestas": {
+   "ok": 2,
+   "created": 0,
+   "noContent": 0
+  },
+  "auditoria": false,
+  "transaccion": false,
+  "multitenant": false
+ },
+ {
+  "numero": 21,
+  "nombre": "Controlador Incidencia",
+  "titulo": "Controlador Incidencia",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Incidencia: 5 rutas declaradas en incidencia.routes.ts y 2 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "incidencia",
+  "base": "/incidencias",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/incidencias('/', authorizePermission('incidencias.view'), incidenciaController.listar",
+    "subruta": "('/', authorizePermission('incidencias.view'), incidenciaController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/incidencias('/:id', authorizePermission('incidencias.view'), validateParams(idParamSchema), incidenciaController.detalle",
+    "subruta": "('/:id', authorizePermission('incidencias.view'), validateParams(idParamSchema), incidenciaController.detalle",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/incidencias('/', authorizePermission('incidencias.create'), validateBody(crearIncidenciaSchema), incidenciaController.crear",
+    "subruta": "('/', authorizePermission('incidencias.create'), validateBody(crearIncidenciaSchema), incidenciaController.crear",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PUT",
+    "rutaCompleta": "/api/incidencias('/:id', authorizePermission('incidencias.edit'), validateParams(idParamSchema), validateBody(actualizarIncidenciaSchema), incidenciaController.actualizar",
+    "subruta": "('/:id', authorizePermission('incidencias.edit'), validateParams(idParamSchema), validateBody(actualizarIncidenciaSchema), incidenciaController.actualizar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "DELETE",
+    "rutaCompleta": "/api/incidencias('/:id', authorizePermission('incidencias.delete'), validateParams(idParamSchema), incidenciaController.eliminar",
+    "subruta": "('/:id', authorizePermission('incidencias.delete'), validateParams(idParamSchema), incidenciaController.eliminar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "notFound",
+    "status": 404,
+    "code": "NOT_FOUND",
+    "mensaje": "La incidencia no existe.",
+    "fuente": "incidencia.controller.ts"
+   },
+   {
+    "tipo": "unauthorized",
+    "status": 401,
+    "code": "UNAUTHORIZED",
+    "mensaje": "No autenticado.",
+    "fuente": "incidencia.controller.ts"
+   }
+  ],
+  "tablas": [
+   "incidencias",
+   "usuarios",
+   "auditorias"
+  ],
+  "respuestas": {
+   "ok": 3,
+   "created": 1,
+   "noContent": 1
+  },
+  "auditoria": true,
+  "transaccion": false,
+  "multitenant": true
+ },
+ {
+  "numero": 22,
+  "nombre": "Controlador Mantenimiento",
+  "titulo": "Controlador Mantenimiento",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Mantenimiento: 5 rutas declaradas en mantenimiento.routes.ts y 1 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "mantenimiento",
+  "base": "/mantenimientos",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/mantenimientos('/', authorizePermission('mantenimiento.view'), mantenimientoController.listar",
+    "subruta": "('/', authorizePermission('mantenimiento.view'), mantenimientoController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/mantenimientos('/:id', authorizePermission('mantenimiento.view'), validateParams(idParamSchema), mantenimientoController.detalle",
+    "subruta": "('/:id', authorizePermission('mantenimiento.view'), validateParams(idParamSchema), mantenimientoController.detalle",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/mantenimientos('/', authorizePermission('mantenimiento.create'), validateBody(crearMantenimientoSchema), mantenimientoController.crear",
+    "subruta": "('/', authorizePermission('mantenimiento.create'), validateBody(crearMantenimientoSchema), mantenimientoController.crear",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PUT",
+    "rutaCompleta": "/api/mantenimientos('/:id', authorizePermission('mantenimiento.edit'), validateParams(idParamSchema), validateBody(actualizarMantenimientoSchema), mantenimientoController.actualizar",
+    "subruta": "('/:id', authorizePermission('mantenimiento.edit'), validateParams(idParamSchema), validateBody(actualizarMantenimientoSchema), mantenimientoController.actualizar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "DELETE",
+    "rutaCompleta": "/api/mantenimientos('/:id', authorizePermission('mantenimiento.delete'), validateParams(idParamSchema), mantenimientoController.eliminar",
+    "subruta": "('/:id', authorizePermission('mantenimiento.delete'), validateParams(idParamSchema), mantenimientoController.eliminar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "notFound",
+    "status": 404,
+    "code": "NOT_FOUND",
+    "mensaje": "El mantenimiento no existe.",
+    "fuente": "mantenimiento.controller.ts"
+   }
+  ],
+  "tablas": [
+   "mantenimientos",
+   "usuarios",
+   "auditorias"
+  ],
+  "respuestas": {
+   "ok": 3,
+   "created": 1,
+   "noContent": 1
+  },
+  "auditoria": true,
+  "transaccion": false,
+  "multitenant": true
+ },
+ {
+  "numero": 23,
+  "nombre": "Controlador Sesion",
+  "titulo": "Controlador Sesion",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Sesion: 3 rutas declaradas en sesion.routes.ts y 3 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "sesion",
+  "base": "/sesiones",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/sesiones('/', authorizePermission('sesiones.view'), sesionController.listar",
+    "subruta": "('/', authorizePermission('sesiones.view'), sesionController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/sesiones('/cerrar-otras', authorizePermission('sesiones.delete'), sesionController.cerrarOtras",
+    "subruta": "('/cerrar-otras', authorizePermission('sesiones.delete'), sesionController.cerrarOtras",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "DELETE",
+    "rutaCompleta": "/api/sesiones('/:id', authorizePermission('sesiones.delete'), validateParams(idParamSchema), sesionController.eliminar",
+    "subruta": "('/:id', authorizePermission('sesiones.delete'), validateParams(idParamSchema), sesionController.eliminar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "unauthorized",
+    "status": 401,
+    "code": "UNAUTHORIZED",
+    "mensaje": "No se pudo identificar la sesión actual.",
+    "fuente": "sesion.controller.ts"
+   },
+   {
+    "tipo": "notFound",
+    "status": 404,
+    "code": "NOT_FOUND",
+    "mensaje": "La sesión no existe.",
+    "fuente": "sesion.controller.ts"
+   },
+   {
+    "tipo": "forbidden",
+    "status": 403,
+    "code": "FORBIDDEN",
+    "mensaje": "No puedes cerrar la sesión actual desde aquí.",
+    "fuente": "sesion.controller.ts"
+   }
+  ],
+  "tablas": [
+   "sesiones",
+   "usuarios",
+   "auditorias"
+  ],
+  "respuestas": {
+   "ok": 3,
+   "created": 0,
+   "noContent": 0
+  },
+  "auditoria": true,
+  "transaccion": false,
+  "multitenant": true
+ },
+ {
+  "numero": 24,
+  "nombre": "Controlador Notificacion",
+  "titulo": "Controlador Notificacion",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Notificacion: 3 rutas declaradas en notificacion.routes.ts y 1 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "notificacion",
+  "base": "/notificaciones",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/notificaciones('/', authorizePermission('notificaciones.view'), notificacionController.listar",
+    "subruta": "('/', authorizePermission('notificaciones.view'), notificacionController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PATCH",
+    "rutaCompleta": "/api/notificaciones('/:id/leida', authorizePermission('notificaciones.view'), validateParams(idParamSchema), notificacionController.marcarLeida",
+    "subruta": "('/:id/leida', authorizePermission('notificaciones.view'), validateParams(idParamSchema), notificacionController.marcarLeida",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "POST",
+    "rutaCompleta": "/api/notificaciones('/leidas', authorizePermission('notificaciones.view'), notificacionController.marcarTodasLeidas",
+    "subruta": "('/leidas', authorizePermission('notificaciones.view'), notificacionController.marcarTodasLeidas",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "unauthorized",
+    "status": 401,
+    "code": "UNAUTHORIZED",
+    "mensaje": "No autenticado.",
+    "fuente": "notificacion.controller.ts"
+   }
+  ],
+  "tablas": [
+   "notificaciones"
+  ],
+  "respuestas": {
+   "ok": 1,
+   "created": 0,
+   "noContent": 2
+  },
+  "auditoria": false,
+  "transaccion": false,
+  "multitenant": false
+ },
+ {
+  "numero": 25,
+  "nombre": "Controlador Configuracion",
+  "titulo": "Controlador Configuracion",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Configuracion: 2 rutas declaradas en configuracion.routes.ts y 2 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "configuracion",
+  "base": "/configuracion",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/configuracion('/', authorizePermission('configuracion.view'), configuracionController.listar",
+    "subruta": "('/', authorizePermission('configuracion.view'), configuracionController.listar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "PUT",
+    "rutaCompleta": "/api/configuracion('/', authorizePermission('configuracion.edit'), validateBody(configuracionSchema), configuracionController.actualizar",
+    "subruta": "('/', authorizePermission('configuracion.edit'), validateBody(configuracionSchema), configuracionController.actualizar",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [
+   {
+    "tipo": "unauthorized",
+    "status": 401,
+    "code": "UNAUTHORIZED",
+    "mensaje": "No autenticado.",
+    "fuente": "configuracion.controller.ts"
+   },
+   {
+    "tipo": "badRequest",
+    "status": 400,
+    "code": "BAD_REQUEST",
+    "mensaje": "No se enviaron configuraciones para actualizar.",
+    "fuente": "configuracion.controller.ts"
+   }
+  ],
+  "tablas": [
+   "configuracion_sistema",
+   "auditorias"
+  ],
+  "respuestas": {
+   "ok": 2,
+   "created": 0,
+   "noContent": 0
+  },
+  "auditoria": true,
+  "transaccion": false,
+  "multitenant": false
+ },
+ {
+  "numero": 26,
+  "nombre": "Controlador Dashboard",
+  "titulo": "Controlador Dashboard",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Dashboard: 1 rutas declaradas en dashboard.routes.ts y 0 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "dashboard",
+  "base": "/dashboard",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/dashboard('/resumen', authorizePermission('dashboard.view'), dashboardController.resumen",
+    "subruta": "('/resumen', authorizePermission('dashboard.view'), dashboardController.resumen",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [],
+  "tablas": [
+   "productos",
+   "categorias",
+   "bodegas",
+   "movimientos_inventario"
+  ],
+  "respuestas": {
+   "ok": 1,
+   "created": 0,
+   "noContent": 0
+  },
+  "auditoria": false,
+  "transaccion": false,
+  "multitenant": true
+ },
+ {
+  "numero": 27,
+  "nombre": "Controlador Reporte",
+  "titulo": "Controlador Reporte",
+  "categoria": "Controladores",
+  "descripcion": "Controlador Reporte: 5 rutas declaradas en reporte.routes.ts y 0 ramas de error lanzadas con ApiError en el codigo.",
+  "modulo": "reporte",
+  "base": "/reportes",
+  "rutas": [
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/reportes('/inventario', authorizePermission('reportes.view'), reporteController.inventario",
+    "subruta": "('/inventario', authorizePermission('reportes.view'), reporteController.inventario",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/reportes('/movimientos', authorizePermission('reportes.view'), reporteController.movimientos",
+    "subruta": "('/movimientos', authorizePermission('reportes.view'), reporteController.movimientos",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/reportes('/stock', authorizePermission('reportes.view'), reporteController.stock",
+    "subruta": "('/stock', authorizePermission('reportes.view'), reporteController.stock",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/reportes('/auditorias', authorizePermission('reportes.view'), reporteController.auditorias",
+    "subruta": "('/auditorias', authorizePermission('reportes.view'), reporteController.auditorias",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   },
+   {
+    "metodo": "GET",
+    "rutaCompleta": "/api/reportes('/incidencias', authorizePermission('reportes.view'), reporteController.incidencias",
+    "subruta": "('/incidencias', authorizePermission('reportes.view'), reporteController.incidencias",
+    "handler": "handler",
+    "middlewares": [],
+    "permisos": []
+   }
+  ],
+  "errores": [],
+  "tablas": [],
+  "respuestas": {
+   "ok": 5,
+   "created": 0,
+   "noContent": 0
+  },
+  "auditoria": false,
+  "transaccion": false,
+  "multitenant": false
+ },
+ {
+  "numero": 28,
+  "nombre": "Ciclo Completo Ida Vuelta",
+  "titulo": "Ciclo Completo Ida Vuelta",
+  "categoria": "Ciclo y Respuesta",
+  "descripcion": "Ciclo completo de una solicitud: IDA por el MID y VUELTA directa al cliente."
+ },
+ {
+  "numero": 29,
+  "nombre": "Retorno Sin MID",
+  "titulo": "Retorno Sin MID",
+  "categoria": "Ciclo y Respuesta",
+  "descripcion": "Formato de respuestas 2xx y manejo de errores en el interceptor del cliente."
+ },
+ {
+  "numero": 30,
+  "nombre": "Publicos Sin MID",
+  "titulo": "Publicos Sin MID",
+  "categoria": "Servidor y Acceso",
+  "descripcion": "Rutas publicas sin autenticacion: login y recuperacion de contrasena."
+ },
+ {
+  "numero": 31,
+  "nombre": "Pipeline app ts",
+  "titulo": "Pipeline app ts",
+  "categoria": "Servidor y Acceso",
+  "descripcion": "Pipeline de creacion de la app Express: middlewares, rate limit y errorHandler."
+ },
+ {
+  "numero": 32,
+  "nombre": "Rutas Frontend Protegidas",
+  "titulo": "Rutas Frontend Protegidas",
+  "categoria": "Frontend",
+  "descripcion": "Rutas del frontend protegidas por permisos."
+ },
+ {
+  "numero": 33,
+  "nombre": "Mapa Paginas Endpoints",
+  "titulo": "Mapa Paginas Endpoints",
+  "categoria": "Frontend",
+  "descripcion": "Mapa de paginas del frontend y su relacion con los endpoints del backend."
+ },
+ {
+  "numero": 34,
+  "nombre": "Errores Cliente",
+  "titulo": "Errores Cliente",
+  "categoria": "Frontend",
+  "descripcion": "Manejo de errores en el cliente: toasts, sesion expirada y respuestas del backend."
+ }
+]

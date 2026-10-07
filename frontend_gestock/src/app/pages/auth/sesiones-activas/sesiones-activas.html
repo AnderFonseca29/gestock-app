@@ -1,7 +1,7 @@
 <div class="admin-wrapper">
   <!-- Pantalla de Acceso Denegado si no es Administrador -->
   <div *ngIf="!esAdmin" class="apple-card access-denied">
-    <span class="denied-icon">🚫</span>
+    <span class="denied-icon"><i class="fas fa-ban"></i></span>
     <h2>Acceso Restringido</h2>
     <p>Solo los usuarios con rol de <strong>Administrador</strong> tienen permisos para gestionar las sesiones globales de Gestock.</p>
   </div>
@@ -21,7 +21,7 @@
     <!-- HU013: Notificación de Inicio de Sesión Inusual -->
     <section *ngIf="alertas.length > 0" class="alerts-section">
       <div class="alert-card" *ngFor="let alt of alertas">
-        <div class="alert-icon">⚠️</div>
+        <div class="alert-icon"><i class="fas fa-triangle-exclamation"></i></div>
         <div class="alert-content">
           <h4>{{ alt.mensaje }}</h4>
           <p><strong>Ubicación:</strong> {{ alt.ubicacion }} | <strong>IP:</strong> {{ alt.ip }} ({{ alt.fecha }})</p>
@@ -42,8 +42,8 @@
       <div class="sessions-list">
         <div *ngFor="let s of sesiones" class="session-item" [class.is-current]="s.esActual">
           <div class="device-icon">
-            <span *ngIf="s.dispositivo.includes('Mac') || s.dispositivo.includes('Windows')">💻</span>
-            <span *ngIf="s.dispositivo.includes('iPhone')">📱</span>
+            <span *ngIf="s.dispositivo.includes('Mac') || s.dispositivo.includes('Windows')"><i class="fas fa-laptop"></i></span>
+            <span *ngIf="s.dispositivo.includes('iPhone')"><i class="fas fa-mobile-screen"></i></span>
           </div>
 
           <div class="session-details">

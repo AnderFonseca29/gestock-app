@@ -1,0 +1,129 @@
+<div class="diagramas-container animate-fade">
+
+  <!-- Cabecera de la sección -->
+  <div class="diagramas-header">
+    <div>
+      <h2>Diagramas de Arquitectura</h2>
+      <p class="text-subtitle">
+        Documentación visual de GESTOCK desde PostgreSQL: arquitectura, controladores con su manejo de errores,
+        flujos de ida y vuelta. Cada diagrama corresponde a la estructura definida en el prompt del generador.
+      </p>
+    </div>
+    <div class="diagramas-toolbar">
+      <div class="envoltorio-input-busqueda">
+        <span class="icono-busqueda"><i class="fas fa-magnifying-glass"></i></span>
+        <input
+          type="text"
+          class="input-busqueda"
+          placeholder="Buscar por número, título o categoría..."
+          [(ngModel)]="filtroBusqueda" />
+      </div>
+      <span class="diagramas-count">
+        <i class="fas fa-diagram-project"></i> {{ totalDiagramas }} Diagramas
+      </span>
+    </div>
+  </div>
+
+  <!-- Cargando -->
+  @if (cargando()) {
+    <div class="diagramas-cargando">
+      <div class="spinner"></div>
+      <p>Cargando diagramas desde la base de datos...</p>
+    </div>
+  } @else if (grupos().length === 0) {
+    <div class="diagramas-vacio">
+      <i class="fas fa-diagram-project"></i>
+      <p>No se encontraron diagramas con ese criterio de búsqueda.</p>
+      <button class="btn-limpiar" (click)="filtroBusqueda = ''">
+        <i class="fas fa-rotate-left"></i> Limpiar búsqueda
+      </button>
+    </div>
+  } @else {
+    <!-- Grupos por categoría (división del prompt: generales, controladores, ciclos, servidor, frontend) -->
+    @for (grupo of grupos(); track grupo.categoria) {
+      <section class="grupo-diagramas">
+        <div class="grupo-titulo">
+          <span class="grupo-icono"><i class="fas fa-layer-group"></i></span>
+          <h3>{{ grupo.categoria }}</h3>
+          <span class="grupo-contador">{{ grupo.diagramas.length }} diagrama(s)</span>
+        </div>
+
+        <div class="diagramas-grid">
+          @for (d of grupo.diagramas; track d.id) {
+            <article class="diagrama-card" (click)="abrir(d)">
+              <div class="diagrama-miniatura">
+                @if (urlPara(d.id)) {
+                  <img [src]="urlPara(d.id)" [alt]="d.titulo" loading="lazy" />
+                } @else {
+                  <div class="miniatura-cargando"><i class="fas fa-spinner fa-spin"></i></div>
+                }
+                <span class="diagrama-numero-badge">#{{ d.numero }}</span>
+              </div>
+              <div class="diagrama-info">
+                <h4>{{ d.titulo }}</h4>
+                <p>{{ d.descripcion }}</p>
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+    }
+  }
+
+</div>
+
+<!-- ========================================== -->
+<!-- VISOR INDIVIDUAL (lightbox con navegación) -->
+<!-- ========================================== -->
+@if (seleccionado(); as sel) {
+  <div class="visor-overlay animate-fade" (click)="cerrar()">
+    <div class="visor" (click)="$event.stopPropagation()">
+      <div class="visor-barra">
+        <div class="visor-titulo">
+          <span class="badge-categoria">{{ sel.categoria }}</span>
+          <strong>{{ sel.numero }}. {{ sel.titulo }}</strong>
+          <span class="visor-posicion">{{ indiceActual + 1 }} / {{ totalDiagramas }}</span>
+        </div>
+        <div class="visor-controles">
+          <button class="btn-visor" title="Alejar" (click)="reducirZoom()">
+            <i class="fas fa-magnifying-glass-minus"></i>
+          </button>
+          <span class="visor-zoom">{{ (zoom() * 100) | number: '1.0-0' }}%</span>
+          <button class="btn-visor" title="Acercar" (click)="aumentarZoom()">
+            <i class="fas fa-magnifying-glass-plus"></i>
+          </button>
+          <button class="btn-visor" title="Restablecer zoom" (click)="restablecerZoom()">
+            <i class="fas fa-expand"></i>
+          </button>
+        </div>
+        <button class="visor-cerrar" title="Cerrar (Esc)" (click)="cerrar()">
+          <i class="fas fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="visor-cuerpo">
+        @if (urlSeleccionado) {
+          <img
+            class="visor-imagen"
+            [src]="urlSeleccionado"
+            [alt]="sel.titulo"
+            [style.transform]="'scale(' + zoom() + ')'" />
+        } @else {
+          <div class="miniatura-cargando"><i class="fas fa-spinner fa-spin"></i></div>
+        }
+      </div>
+
+      <div class="visor-pie">
+        <span class="visor-pie-texto">{{ sel.descripcion }}</span>
+        <div class="visor-navegacion">
+          <button class="btn-nav" (click)="irAnterior()">
+            <i class="fas fa-chevron-left"></i> Anterior
+          </button>
+          <button class="btn-nav" (click)="irSiguiente()">
+            Siguiente <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

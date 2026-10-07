@@ -9,7 +9,7 @@
         <p class="empresas-subtitle" style="margin-bottom: 1.25rem;">Configure los datos iniciales de su organización para acceder al sistema Gestock.</p>
 
         <div class="form-group">
-          <label for="nombre">Nombre de la Empresa</label>
+          <label for="nombre">Nombre de la Empresa *</label>
           <input 
             id="nombre" 
             type="text" 
@@ -22,7 +22,7 @@
         </div>
 
         <div class="form-group">
-          <label for="email">Email de contacto</label>
+          <label for="email">Email de contacto *</label>
           <input 
             id="email" 
             type="email" 
@@ -51,9 +51,37 @@
           </select>
         </div>
 
+        <p class="modal-divider" style="margin: 1rem 0 0.5rem;">Credenciales del administrador inicial</p>
+
+        <div class="form-group">
+          <label for="adminEmail">Email del administrador *</label>
+          <input 
+            id="adminEmail" 
+            type="email" 
+            formControlName="adminEmail" 
+            placeholder="admin@miempresa.com" 
+          />
+          <div *ngIf="nuevaEmpresaForm.get('adminEmail')?.invalid && nuevaEmpresaForm.get('adminEmail')?.touched" class="error-text" style="color: #f87171; font-size: 0.75rem; margin-top: 0.25rem;">
+            Ingrese un correo válido.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="adminPassword">Contraseña del administrador *</label>
+          <input 
+            id="adminPassword" 
+            type="password" 
+            formControlName="adminPassword" 
+            placeholder="Mínimo 8 caracteres, con mayúscula, número y símbolo" 
+          />
+          <div *ngIf="nuevaEmpresaForm.get('adminPassword')?.invalid && nuevaEmpresaForm.get('adminPassword')?.touched" class="error-text" style="color: #f87171; font-size: 0.75rem; margin-top: 0.25rem;">
+            La contraseña debe tener al menos 8 caracteres.
+          </div>
+        </div>
+
         <div class="modal-footer">
           <button type="button" class="btn-secondary" (click)="cerrarModalCrear()">Cancelar</button>
-          <button type="submit" class="btn-primary" [disabled]="nuevaEmpresaForm.invalid">Crear Empresa →</button>
+          <button type="submit" class="btn-primary" [disabled]="nuevaEmpresaForm.invalid || isLoading()">Crear Empresa →</button>
         </div>
       </form>
     </div>

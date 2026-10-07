@@ -1,0 +1,106 @@
+<div class="categorias-container animate-fade">
+
+  <!-- Cabecera de la sección -->
+  <div class="categorias-header">
+    <div>
+      <h2>Gestión de Categorías</h2>
+      <p class="text-subtitle">Crea y administra las categorías que se usan para clasificar los productos del inventario.</p>
+    </div>
+    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+      <span class="categorias-count">{{ categorias().length }} Categorías</span>
+      <button class="btn-nueva" (click)="abrirCrear()" *ngIf="puedeCrear">
+        <i class="fas fa-folder-plus"></i> + Nueva Categoría
+      </button>
+    </div>
+  </div>
+
+  <!-- Cuadrícula de tarjetas -->
+  @if (categorias().length > 0) {
+    <div class="categorias-grid">
+      @for (cat of categorias(); track cat.id) {
+        <div class="categoria-card" [ngClass]="{ 'inactiva': cat.estado === 'Inactivo' }">
+          <div class="categoria-icono"><i class="fas fa-folder-open"></i></div>
+          <div class="categoria-info">
+            <h3>{{ cat.nombre }}</h3>
+            <p class="categoria-descripcion">{{ cat.descripcion || 'Sin descripción' }}</p>
+            <div class="categoria-estado-row">
+              <span class="badge-estado" [ngClass]="{ 'activo': cat.estado === 'Activo' }">
+                {{ cat.estado }}
+              </span>
+              <label class="switch" title="Activar / Desactivar categoría" *ngIf="puedeEditar">
+                <input type="checkbox" [checked]="cat.estado === 'Activo'" (change)="toggleEstado(cat)">
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+          <div class="categoria-acciones" *ngIf="puedeEditar || puedeEliminar">
+            <button class="btn-accion btn-editar" title="Editar categoría" (click)="abrirEditar(cat)" *ngIf="puedeEditar">
+              <i class="fas fa-pen"></i>
+            </button>
+            <button class="btn-accion btn-eliminar" title="Eliminar categoría" (click)="eliminar(cat)" *ngIf="puedeEliminar">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="categorias-vacio">
+      <i class="fas fa-folder-open"></i>
+      <p>No hay categorías registradas.</p>
+      <button class="btn-nueva" (click)="abrirCrear()" *ngIf="puedeCrear">
+        <i class="fas fa-folder-plus"></i> Crear la primera categoría
+      </button>
+    </div>
+  }
+
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL DE CREAR / EDITAR CATEGORÍA          -->
+<!-- ========================================== -->
+<div class="modal-overlay animate-fade" *ngIf="mostrarModal()">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>
+        <i class="fas" [ngClass]="editandoId() == null ? 'fa-folder-plus' : 'fa-pen'"></i>
+        {{ editandoId() == null ? 'Nueva Categoría' : 'Editar Categoría' }}
+      </h3>
+      <p class="text-subtitle-sm">El nombre aparecerá en los formularios de productos</p>
+    </div>
+
+    <form #f="ngForm" (ngSubmit)="guardar(f)" class="modal-form">
+      <div class="input-group full-width">
+        <label class="form-label">Nombre de la Categoría *</label>
+        <input
+          type="text"
+          name="nombre"
+          [(ngModel)]="formCategoria.nombre"
+          class="dark-input w-100"
+          placeholder="Ej. Herramientas Eléctricas"
+          required
+          minlength="2"
+          maxlength="120">
+      </div>
+
+      <div class="input-group full-width">
+        <label class="form-label">Descripción</label>
+        <textarea
+          name="descripcion"
+          [(ngModel)]="formCategoria.descripcion"
+          class="dark-input w-100"
+          rows="3"
+          maxlength="255"
+          placeholder="Describe brevemente qué productos se agrupan aquí (opcional)"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-cancelar" (click)="mostrarModal.set(false)">Cancelar</button>
+        <button type="submit" class="btn-crear" [disabled]="!f.valid">
+          <i class="fas fa-save"></i>
+          {{ editandoId() == null ? 'Crear Categoría' : 'Guardar Cambios' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

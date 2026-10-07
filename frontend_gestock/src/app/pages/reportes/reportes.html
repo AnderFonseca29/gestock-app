@@ -52,7 +52,7 @@
       <button [class.active]="tabActiva === 'bodega'" (click)="cambiarTab('bodega')">Por bodega</button>
     </div>
     <button class="btn-primary" (click)="abrirModalConfirmacion()">
-      📥 Exportar {{ tabActiva === 'movimientos' ? 'movimientos' : 'inventario' }}
+      <i class="fas fa-download"></i> Exportar {{ tabActiva === 'movimientos' ? 'movimientos' : 'inventario' }}
     </button>
   </div>
 
@@ -182,7 +182,7 @@
   <div class="modal-backdrop" (click)="cerrarModalConfirmacion()">
     <div class="modal-card" (click)="$event.stopPropagation()">
       <div class="modal-icon-container">
-        <span class="modal-icon">📄</span>
+        <span class="modal-icon"><i class="fas fa-file-lines"></i></span>
       </div>
       <h3 class="modal-title">¿Confirmar exportación?</h3>
       <p class="modal-description">

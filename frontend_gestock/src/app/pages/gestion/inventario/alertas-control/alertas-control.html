@@ -2,8 +2,8 @@
   <!-- Cabecera Principal -->
   <div class="header-section">
     <div>
-      <h2>Auditoría del Sistema</h2>
-      <p class="text-subtitle">Registro y monitoreo de actividades, acciones y accesos de los usuarios</p>
+      <h2>Alertas de Stock Bajo</h2>
+      <p class="text-subtitle">Productos con existencias en o por debajo del stock mínimo registrado</p>
     </div>
     <div>
       <button class="btn-exportar" (click)="exportarReporte()">
@@ -17,15 +17,15 @@
     <div class="card-metrica">
       <div class="icono-cuadro bg-azul-oscuro"></div>
       <div class="metrica-info">
-        <span class="numero-grande">{{ listaAuditorias.length }}</span>
-        <span class="etiqueta-metrica">Total Registros</span>
+        <span class="numero-grande">{{ listaAlertas.length }}</span>
+        <span class="etiqueta-metrica">Total Alertas</span>
       </div>
     </div>
     <div class="card-metrica">
       <div class="icono-cuadro bg-verde-oscuro"></div>
       <div class="metrica-info">
-        <span class="numero-grande">{{ contarExitosas() }}</span>
-        <span class="etiqueta-metrica">Acciones Exitosas</span>
+        <span class="numero-grande">{{ contarCriticos() }}</span>
+        <span class="etiqueta-metrica">Stock en Cero</span>
       </div>
     </div>
   </div>
@@ -33,15 +33,15 @@
   <!-- Barra de Búsqueda y Filtros desplegable -->
   <div class="filtros-barra">
     <div class="input-grupo-busqueda">
-      <input type="text" [(ngModel)]="filtroBusqueda" class="input-estilizado" placeholder="Buscar por usuario o entidad...">
+      <input type="text" [(ngModel)]="filtroBusqueda" class="input-estilizado" placeholder="Buscar por código, producto o bodega...">
     </div>
 
     <div class="filtros-derecha">
       <select [(ngModel)]="filtroAccion" class="select-estilizado">
-        <option value="TODOS">Todas las acciones</option>
-        <option value="CREAR">CREAR</option>
-        <option value="ACTUALIZAR">ACTUALIZAR</option>
-        <option value="ELIMINAR">ELIMINAR</option>
+        <option value="TODOS">Todas las bodegas</option>
+        @for (bod of bodegasDisponibles; track bod) {
+          <option [value]="bod">{{ bod }}</option>
+        }
       </select>
       <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar</button>
     </div>
@@ -53,21 +53,21 @@
       <table class="dark-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>USUARIO</th>
-            <th>ACCIÓN REALIZADA</th>
-            <th>MÓDULO / ENTIDAD</th>
-            <th>FECHA Y HORA</th>
+            <th>CÓDIGO</th>
+            <th>PRODUCTO</th>
+            <th>NIVEL DE ALERTA</th>
+            <th>BODEGA</th>
+            <th>STOCK ACTUAL / MÍNIMO</th>
             <th>ESTADO</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of auditoriasFiltradas" class="fila-tabla-clic" (click)="verDetalleAuditoria(item)" title="Haz clic para ver detalles completos">
-            <td><span class="insignia-id">{{ item.id }}</span></td>
+          <tr *ngFor="let item of alertasFiltradas" class="fila-tabla-clic" (click)="verDetalleAlerta(item)" title="Haz clic para ver detalles completos">
+            <td><span class="insignia-id">{{ item.codigo }}</span></td>
             <td>
               <div class="celda-usuario">
                 <span class="punto-verde"></span>
-                <strong>{{ item.usuario }}</strong>
+                <strong>{{ item.nombre }}</strong>
               </div>
             </td>
             <td>
@@ -75,16 +75,16 @@
                 {{ item.accion }}
               </span>
             </td>
-            <td><span class="texto-entidad">{{ item.entidad }}</span></td>
-            <td><span class="texto-fecha">{{ item.fechaHora }}</span></td>
+            <td><span class="texto-entidad">{{ item.bodega }}</span></td>
+            <td><span class="texto-fecha">{{ item.stock }} un. / mín. {{ item.stockMin }} un.</span></td>
             <td>
               <span class="badge-estado">
                 <span class="punto-estado"></span> {{ item.estado }}
               </span>
             </td>
           </tr>
-          <tr *ngIf="auditoriasFiltradas.length === 0">
-            <td colspan="6" class="vacio-tabla">No se encontraron registros de auditoría.</td>
+          <tr *ngIf="alertasFiltradas.length === 0">
+            <td colspan="6" class="vacio-tabla">No hay productos con stock bajo.</td>
           </tr>
         </tbody>
       </table>
@@ -92,36 +92,44 @@
   </div>
 
   <!-- Modal Detallado al Hacer Clic -->
-  <div class="superposicion-modal" *ngIf="auditoriaSeleccionada" (click)="cerrarModalDetalle()">
+  <div class="superposicion-modal" *ngIf="alertaSeleccionada" (click)="cerrarModalDetalle()">
     <div class="tarjeta-modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>Detalle de Registro {{ auditoriaSeleccionada.id }}</h3>
-        <span class="badge-accion" [ngClass]="obtenerClaseAccion(auditoriaSeleccionada.accion)">
-          {{ auditoriaSeleccionada.accion }}
+        <h3>Detalle de Alerta {{ alertaSeleccionada.codigo }}</h3>
+        <span class="badge-accion" [ngClass]="obtenerClaseAccion(alertaSeleccionada.accion)">
+          {{ alertaSeleccionada.accion }}
         </span>
       </div>
 
       <div class="modal-body">
         <div class="modal-fila-info">
-          <span class="info-label">Usuario Responsable:</span>
-          <span class="info-valor">{{ auditoriaSeleccionada.usuario }}</span>
+          <span class="info-label">Producto:</span>
+          <span class="info-valor">{{ alertaSeleccionada.nombre }}</span>
         </div>
         <div class="modal-fila-info">
-          <span class="info-label">Entidad / Módulo:</span>
-          <span class="info-valor">{{ auditoriaSeleccionada.entidad }}</span>
+          <span class="info-label">Bodega:</span>
+          <span class="info-valor">{{ alertaSeleccionada.bodega }}</span>
         </div>
         <div class="modal-fila-info">
           <span class="info-label">Descripción Operación:</span>
-          <span class="info-valor">{{ auditoriaSeleccionada.detalles }}</span>
+          <span class="info-valor">{{ alertaSeleccionada.detalles }}</span>
         </div>
         <div class="modal-fila-info">
-          <span class="info-label">Fecha y Hora:</span>
-          <span class="info-valor">{{ auditoriaSeleccionada.fechaHora }}</span>
+          <span class="info-label">Stock Actual:</span>
+          <span class="info-valor">{{ alertaSeleccionada.stock }} un.</span>
+        </div>
+        <div class="modal-fila-info">
+          <span class="info-label">Stock Mínimo:</span>
+          <span class="info-valor">{{ alertaSeleccionada.stockMin }} un.</span>
+        </div>
+        <div class="modal-fila-info">
+          <span class="info-label">Estado:</span>
+          <span class="info-valor">{{ alertaSeleccionada.estado }}</span>
         </div>
 
-        <div class="json-box-container" *ngIf="auditoriaSeleccionada.jsonDetalle">
-          <label class="json-label">Datos Específicos del Producto / Cambio (JSON):</label>
-          <pre class="json-content">{{ auditoriaSeleccionada.jsonDetalle | json }}</pre>
+        <div class="json-box-container" *ngIf="alertaSeleccionada.jsonDetalle">
+          <label class="json-label">Datos Específicos del Producto (JSON):</label>
+          <pre class="json-content">{{ alertaSeleccionada.jsonDetalle | json }}</pre>
         </div>
       </div>
 

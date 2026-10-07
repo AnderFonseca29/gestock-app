@@ -1,6 +1,6 @@
 <aside class="app-sidebar">
   <div class="sidebar-brand">
-    <span class="brand-icon">📦</span>
+    <span class="brand-icon"><i class="fas fa-boxes-stacked"></i></span>
     <span class="brand-title">Gestock</span>
   </div>
 
@@ -9,11 +9,11 @@
     <ng-container *ngIf="tieneItemsVisibles('PANEL')">
       <div class="nav-section-title">PANEL</div>
       <ng-container *ngFor="let item of menuItems">
-        <a *ngIf="item.section === 'PANEL' && esPermitido(item.rolesPermitidos)" 
+        <a *ngIf="item.section === 'PANEL' && esPermitido(item.permisos)" 
            [routerLink]="item.route" 
            routerLinkActive="active" 
            class="nav-item">
-          <span class="nav-icon">{{ item.icon }}</span>
+          <span class="nav-icon"><i [class]="item.icon"></i></span>
           <span class="nav-text">{{ item.label }}</span>
         </a>
       </ng-container>
@@ -22,11 +22,11 @@
     <ng-container *ngIf="tieneItemsVisibles('GESTIÓN')">
       <div class="nav-section-title">GESTIÓN</div>
       <ng-container *ngFor="let item of menuItems">
-        <a *ngIf="item.section === 'GESTIÓN' && esPermitido(item.rolesPermitidos)" 
+        <a *ngIf="item.section === 'GESTIÓN' && esPermitido(item.permisos)" 
            [routerLink]="item.route" 
            routerLinkActive="active" 
            class="nav-item">
-          <span class="nav-icon">{{ item.icon }}</span>
+          <span class="nav-icon"><i [class]="item.icon"></i></span>
           <span class="nav-text">{{ item.label }}</span>
         </a>
       </ng-container>
@@ -35,11 +35,24 @@
     <ng-container *ngIf="tieneItemsVisibles('MANTENIMIENTO')">
       <div class="nav-section-title">MANTENIMIENTO</div>
       <ng-container *ngFor="let item of menuItems">
-        <a *ngIf="item.section === 'MANTENIMIENTO' && esPermitido(item.rolesPermitidos)" 
+        <a *ngIf="item.section === 'MANTENIMIENTO' && esPermitido(item.permisos)" 
            [routerLink]="item.route" 
            routerLinkActive="active" 
            class="nav-item">
-          <span class="nav-icon">{{ item.icon }}</span>
+          <span class="nav-icon"><i [class]="item.icon"></i></span>
+          <span class="nav-text">{{ item.label }}</span>
+        </a>
+      </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="tieneItemsVisibles('DOCUMENTACIÓN')">
+      <div class="nav-section-title">DOCUMENTACIÓN</div>
+      <ng-container *ngFor="let item of menuItems">
+        <a *ngIf="item.section === 'DOCUMENTACIÓN' && esPermitido(item.permisos)" 
+           [routerLink]="item.route" 
+           routerLinkActive="active" 
+           class="nav-item">
+          <span class="nav-icon"><i [class]="item.icon"></i></span>
           <span class="nav-text">{{ item.label }}</span>
         </a>
       </ng-container>

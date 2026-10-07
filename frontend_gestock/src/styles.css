@@ -1,23 +1,123 @@
 /* ==========================================================================
-   MODO OSCURO GLOBAL Y RESET PARA GESTOCK
+   GESTOCK — DISEÑO CLARO PROFESIONAL
    ========================================================================== */
+
+/* ---------- PALETA DE COLORES ---------- */
+:root {
+  /* Fondos */
+  --bg-primary:    #f1f5f9;
+  --bg-surface:    #ffffff;
+  --bg-elevated:   #ffffff;
+  --bg-subtle:     #f8fafc;
+  --bg-muted:      #e2e8f0;
+
+  /* Texto */
+  --text-primary:    #0f172a;
+  --text-secondary:  #475569;
+  --text-muted:      #94a3b8;
+  --text-inverse:    #ffffff;
+
+  /* Bordes */
+  --border-light:    #e2e8f0;
+  --border-default:  #cbd5e1;
+  --border-strong:   #94a3b8;
+
+  /* Acentos */
+  --accent:          #3b82f6;
+  --accent-hover:    #2563eb;
+  --accent-light:    #dbeafe;
+  --accent-soft:     rgba(59, 130, 246, 0.1);
+
+  /* Estado */
+  --success:         #10b981;
+  --success-light:   #d1fae5;
+  --danger:          #ef4444;
+  --danger-light:    #fee2e2;
+  --warning:         #f59e0b;
+  --warning-light:   #fef3c7;
+  --info:            #06b6d4;
+  --info-light:      #cffafe;
+
+  /* Sombras */
+  --shadow-xs:    0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm:    0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md:    0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-glow:  0 0 20px rgba(59, 130, 246, 0.15);
+
+  /* Radio */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   20px;
+  --radius-full: 9999px;
+
+  /* Transiciones */
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast:  150ms;
+  --duration-base:  250ms;
+  --duration-slow:  400ms;
+
+  /* Glow tracking */
+  --glow-color: rgba(59, 130, 246, 0.4);
+
+  /* Botones — paleta unificada */
+  --btn-radius: 10px;
+  --btn-primary-grad: linear-gradient(135deg, #4f8df9 0%, #2f6cf7 55%, #2458d8 100%);
+  --btn-primary-grad-hover: linear-gradient(135deg, #2f6cf7 0%, #2458d8 60%, #1e4ccb 100%);
+  --btn-primary-shadow: 0 4px 14px rgba(47, 108, 247, 0.32);
+  --btn-primary-shadow-hover: 0 8px 22px rgba(37, 99, 235, 0.42);
+  --btn-success-grad: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --btn-success-grad-hover: linear-gradient(135deg, #059669 0%, #047857 100%);
+  --btn-danger-grad: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  --btn-danger-grad-hover: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  --btn-danger-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+  --btn-focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.32);
+  --btn-focus-ring-danger: 0 0 0 3px rgba(239, 68, 68, 0.30);
+  --btn-focus-ring-success: 0 0 0 3px rgba(16, 185, 129, 0.32);
+  --btn-disabled-opacity: 0.55;
+}
+
+/* ---------- ICONOS FONT AWESOME EN LINEA ---------- */
+/* Separación consistente entre un ícono y el texto que le sigue
+   (títulos y etiquetas de formulario) para que no se vean pegados. */
+.page-title i,
+.section-header h1 i,
+.section-header h2 i,
+.section-header h3 i,
+h1 i, h2 i, h3 i, h4 i,
+.form-label i,
+.input-group .form-label i {
+  margin-right: 0.5rem;
+}
+
+/* En títulos que ya usan flex + gap, evitar doble espaciado */
+.registro-header h2 i,
+.form-card .card-title i {
+  margin-right: 0;
+}
+
+/* ---------- RESET GLOBAL ---------- */
 html, body {
   margin: 0 !important;
   padding: 0 !important;
   width: 100% !important;
   height: 100% !important;
   overflow-x: hidden;
-  background-color: #0b0f19 !important;
-  color: #f1f5f9 !important;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-/* Evita que los contenedores principales de Angular agreguen margen */
 app-root, mat-sidenav-container, mat-sidenav-content {
   display: block;
   width: 100%;
@@ -26,14 +126,297 @@ app-root, mat-sidenav-container, mat-sidenav-content {
   padding: 0 !important;
 }
 
-/* Contenedores de vistas principales */
 .content-container {
-  background-color: #0b0f19 !important;
+  background-color: var(--bg-primary) !important;
+}
+
+/* ---------- ANIMACIONES GLOBALES ---------- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  0%   { opacity: 0; transform: scale(0.95) translateY(12px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  0%   { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.7; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toastSlideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(100%); }
+}
+
+@keyframes modalOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes modalContentIn {
+  from { opacity: 0; transform: scale(0.92) translateY(16px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Clases de utilidad de animación */
+.animate-fade { animation: fadeIn var(--duration-slow) var(--ease-out) forwards; }
+.animate-fade-in-up { animation: fadeInUp var(--duration-slow) var(--ease-out) forwards; }
+.animate-fade-in-down { animation: fadeInDown var(--duration-slow) var(--ease-out) forwards; }
+.animate-fade-in-scale { animation: fadeInScale var(--duration-slow) var(--ease-out) forwards; }
+.animate-slide-right { animation: slideInRight var(--duration-slow) var(--ease-out) forwards; }
+.animate-slide-left { animation: slideInLeft var(--duration-slow) var(--ease-out) forwards; }
+.animate-scale-in { animation: scaleIn var(--duration-base) var(--ease-out) forwards; }
+
+/* Stagger para grids */
+.stagger-item {
+  opacity: 0;
+  animation: fadeInUp var(--duration-slow) var(--ease-out) forwards;
+}
+.stagger-item:nth-child(1)  { animation-delay: 0ms; }
+.stagger-item:nth-child(2)  { animation-delay: 50ms; }
+.stagger-item:nth-child(3)  { animation-delay: 100ms; }
+.stagger-item:nth-child(4)  { animation-delay: 150ms; }
+.stagger-item:nth-child(5)  { animation-delay: 200ms; }
+.stagger-item:nth-child(6)  { animation-delay: 250ms; }
+.stagger-item:nth-child(7)  { animation-delay: 300ms; }
+.stagger-item:nth-child(8)  { animation-delay: 350ms; }
+.stagger-item:nth-child(9)  { animation-delay: 400ms; }
+.stagger-item:nth-child(10) { animation-delay: 450ms; }
+
+/* ---------- COMPONENTES BASE ---------- */
+
+/* Tarjetas */
+.card, .apple-card, .form-card, .table-card, .config-card {
+  background: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-light) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all var(--duration-base) var(--ease-out) !important;
+}
+
+.card:hover, .apple-card:hover, .form-card:hover {
+  box-shadow: var(--shadow-md) !important;
+  transform: translateY(-2px);
+  border-color: var(--accent) !important;
+}
+
+/* Botones base */
+button, .btn {
+  transition: all var(--duration-fast) var(--ease-out) !important;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button:active, .btn:active {
+  transform: scale(0.97);
 }
 
 /* ==========================================================================
-   UTILIDAD GLOBAL: tablas con scroll horizontal propio (no la página entera)
+   SISTEMA DE BOTONES — PALETA UNIFICADA
    ========================================================================== */
+
+/* ---------- PRIMARIOS (AZUL) ---------- */
+.btn-primary,
+.btn-primary.btn-save,
+.btn-primary-action,
+.btn-action,
+.btn-modal-confirm,
+.btn-modal-enviar,
+.btn-action-trigger,
+.btn-export,
+.btn-exportar {
+  background: var(--btn-primary-grad) !important;
+  background-image: var(--btn-primary-grad) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: var(--btn-radius) !important;
+  box-shadow: var(--btn-primary-shadow) !important;
+  transition: all var(--duration-fast) var(--ease-out) !important;
+}
+
+.btn-primary:hover:not(:disabled),
+.btn-primary.btn-save:hover:not(:disabled),
+.btn-primary-action:hover:not(:disabled),
+.btn-action:hover:not(:disabled),
+.btn-modal-confirm:hover:not(:disabled),
+.btn-modal-enviar:hover:not(:disabled),
+.btn-action-trigger:hover:not(:disabled),
+.btn-export:hover:not(:disabled),
+.btn-exportar:hover:not(:disabled) {
+  background: var(--btn-primary-grad-hover) !important;
+  background-image: var(--btn-primary-grad-hover) !important;
+  box-shadow: var(--btn-primary-shadow-hover) !important;
+}
+
+/* Los que ya tenían gradiente propio conservan su brillo/pulso (no forzar sombra) */
+.btn-submit,
+.apple-btn-primary,
+.apple-btn-submit,
+.btn-nueva,
+.btn-crear {
+  background: var(--btn-primary-grad) !important;
+  background-image: var(--btn-primary-grad) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: var(--btn-radius) !important;
+}
+
+.btn-submit:hover:not(:disabled),
+.apple-btn-primary:hover:not(:disabled),
+.apple-btn-submit:hover:not(:disabled),
+.btn-nueva:hover:not(:disabled),
+.btn-crear:hover:not(:disabled) {
+  background: var(--btn-primary-grad-hover) !important;
+  background-image: var(--btn-primary-grad-hover) !important;
+}
+
+/* ---------- SECUNDARIOS (GRIS PIZARRA) ---------- */
+.btn-secondary,
+.btn-secondary-glass,
+.btn-back,
+.btn-cancel,
+.btn-cancelar,
+.btn-modal-cancel,
+.btn-modal-cancelar,
+.btn-clear,
+.btn-limpiar,
+.btn-cerrar-modal,
+.btn-toggle-status,
+.btn-toggle-detail {
+  background: var(--bg-surface, #f1f5f9) !important;
+  color: var(--text-secondary, #475569) !important;
+  border-radius: var(--btn-radius) !important;
+  box-shadow: none !important;
+  transition: all var(--duration-fast) var(--ease-out) !important;
+}
+
+.btn-secondary:hover:not(:disabled),
+.btn-secondary-glass:hover:not(:disabled),
+.btn-back:hover:not(:disabled),
+.btn-cancel:hover:not(:disabled),
+.btn-cancelar:hover:not(:disabled),
+.btn-modal-cancel:hover:not(:disabled),
+.btn-modal-cancelar:hover:not(:disabled),
+.btn-clear:hover:not(:disabled),
+.btn-limpiar:hover:not(:disabled),
+.btn-cerrar-modal:hover:not(:disabled),
+.btn-toggle-status:hover:not(:disabled),
+.btn-toggle-detail:hover:not(:disabled) {
+  background: var(--bg-muted, #e2e8f0) !important;
+  color: var(--text-primary, #0f172a) !important;
+  box-shadow: none !important;
+}
+
+/* ---------- PELIGRO (ROJO) ---------- */
+.btn-peligro-eliminar,
+.btn-eliminar-prod {
+  background: var(--btn-danger-grad) !important;
+  background-image: var(--btn-danger-grad) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: var(--btn-radius) !important;
+  box-shadow: var(--btn-danger-shadow) !important;
+  transition: all var(--duration-fast) var(--ease-out) !important;
+}
+
+.btn-peligro-eliminar:hover:not(:disabled),
+.btn-eliminar-prod:hover:not(:disabled) {
+  background: var(--btn-danger-grad-hover) !important;
+  background-image: var(--btn-danger-grad-hover) !important;
+}
+
+/* ---------- FOCO ACCESIBLE ---------- */
+.btn-primary:focus-visible,
+.btn-primary-action:focus-visible,
+.btn-action:focus-visible,
+.btn-modal-confirm:focus-visible,
+.btn-modal-enviar:focus-visible,
+.btn-action-trigger:focus-visible,
+.btn-export:focus-visible,
+.btn-exportar:focus-visible,
+.btn-submit:focus-visible,
+.apple-btn-primary:focus-visible,
+.apple-btn-submit:focus-visible,
+.btn-nueva:focus-visible,
+.btn-crear:focus-visible {
+  outline: none;
+  box-shadow: var(--btn-focus-ring, 0 0 0 3px rgba(59, 130, 246, 0.32)) !important;
+}
+
+.btn-peligro-eliminar:focus-visible,
+.btn-eliminar-prod:focus-visible,
+.btn-delete:focus-visible,
+.btn-danger-link:focus-visible,
+.apple-btn-outline-danger:focus-visible {
+  outline: none;
+  box-shadow: var(--btn-focus-ring-danger, 0 0 0 3px rgba(239, 68, 68, 0.30)) !important;
+}
+
+/* ---------- DESACTIVADOS ---------- */
+[class*="btn-"]:disabled,
+[class*="btn-"]:disabled:hover {
+  opacity: var(--btn-disabled-opacity, 0.55) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* Inputs base */
+input, textarea, select {
+  transition: border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out) !important;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+}
+
+/* ---------- TABLAS ---------- */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
@@ -41,12 +424,235 @@ app-root, mat-sidenav-container, mat-sidenav-content {
 }
 
 .table-responsive table {
-  min-width: 560px; /* La tabla puede ser más ancha que la pantalla; se desliza dentro de su caja */
+  min-width: 560px;
 }
 
 /* ==========================================================================
-   RESPONSIVE GLOBAL: encabezados de página, tarjetas y formularios
+   MEJORAS PREMIUM: TRANSICIONES, ANIMACIONES E INTERACCIONES
    ========================================================================== */
+
+/* ---------- BOTONES: BARRA DE BRILLO (SHINE SWEEP) ---------- */
+.btn-action,
+.btn-primary-glow,
+.apple-btn-primary,
+.btn-nueva,
+.btn-crear {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-action::after,
+.btn-primary-glow::after,
+.apple-btn-primary::after,
+.btn-nueva::after,
+.btn-crear::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.btn-action:hover::after,
+.btn-primary-glow:hover::after,
+.apple-btn-primary:hover::after,
+.btn-nueva:hover::after,
+.btn-crear:hover::after {
+  left: 120%;
+}
+
+/* Pulso suave del botón primario */
+.btn-nueva:not(:hover),
+.btn-crear:not(:hover),
+.apple-btn-primary:not(:hover) {
+  animation: btn-pulse-soft 2.5s ease-in-out infinite;
+}
+
+@keyframes btn-pulse-soft {
+  0%, 100% { box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35); }
+  50%      { box-shadow: 0 4px 22px rgba(59, 130, 246, 0.55); }
+}
+
+/* ---------- TARJETAS: ELEVACIÓN CON GLOW DIRECCIONAL ---------- */
+.card, .apple-card, .form-card, .table-card, .config-card,
+.stat-card, .section-block, .bodega-card, .categoria-card, .feature-card {
+  will-change: transform;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.3s ease,
+              border-color 0.3s ease !important;
+}
+
+.card:hover, .apple-card:hover, .form-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 20px 40px -8px rgba(59, 130, 246, 0.22), var(--shadow-md) !important;
+}
+
+/* ---------- INPUTS: ANILLO DE FOCO CON SATÉLITE ---------- */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="date"],
+textarea,
+select,
+.dark-input {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease,
+              background 0.2s ease !important;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="date"]:focus,
+textarea:focus,
+select:focus {
+  transform: translateY(-1px);
+}
+
+/* ---------- FILAS DE TABLA: DESLIZAMIENTO SUAVE ---------- */
+table tbody tr {
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+table tbody tr:hover {
+  transform: scale(1.003);
+}
+
+/* ---------- MENÚS / DESPLEGABLES ---------- */
+[class*="dropdown"], 
+[class*="menu"]:not(.btn) {
+  transform-origin: top center;
+  animation: menuIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes menuIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---------- MODALES: ENTRADA ESCALONADA ---------- */
+.modal-overlay {
+  animation: modalOverlayIn 0.25s ease forwards !important;
+}
+
+.modal-content {
+  animation: modalContentIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+}
+
+/* ---------- ESQUELETOS DE CARGA (SHIMMER) ---------- */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-muted);
+  border-radius: var(--radius-sm);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ---------- UTILIDADES DE HOVER REUTILIZABLES ---------- */
+.hover-lift         { transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease !important; }
+.hover-lift:hover   { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+
+.hover-grow         { transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
+.hover-grow:hover   { transform: scale(1.05); }
+
+.hover-scale        { transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
+.hover-scale:hover  { transform: scale(1.03); }
+
+/* Ícono que se anima en hover de tarjeta */
+.hover-icon {
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.hover-icon:hover {
+  transform: rotate(-8deg) scale(1.15);
+}
+
+/* Barra de progreso animada */
+[class*="progress-bar-fill"] {
+  position: relative;
+  overflow: hidden;
+}
+[class*="progress-bar-fill"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Entrada con rebote elástico para elementos destacados */
+.animate-bounce-in {
+  animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes bounceIn {
+  0%   { opacity: 0; transform: scale(0.5); }
+  60%  { opacity: 1; transform: scale(1.08); }
+  80%  { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+/* Badges con pulso suave */
+.badge, [class*="badge-status"], [class*="badge-estado"] {
+  transition: all 0.3s ease;
+}
+[class*="badge-status"]:hover, [class*="badge-estado"]:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+/* ---------- UTILIDADES DE COLOR ---------- */
+.bg-surface     { background-color: var(--bg-surface); }
+.bg-primary     { background-color: var(--bg-primary); }
+.bg-accent      { background-color: var(--accent-light); }
+.bg-success     { background-color: var(--success-light); }
+.bg-danger      { background-color: var(--danger-light); }
+.bg-warning     { background-color: var(--warning-light); }
+
+.text-primary   { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted     { color: var(--text-muted); }
+.text-accent    { color: var(--accent); }
+.text-success   { color: var(--success); }
+.text-danger    { color: var(--danger); }
+
+/* ---------- SCROLLBAR ---------- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 640px) {
   .page-header h1,
   .roles-container h2,
@@ -64,83 +670,17 @@ app-root, mat-sidenav-container, mat-sidenav-content {
     margin-bottom: 0.6rem !important;
   }
 
-  .apple-card,
-  .form-card,
-  .table-card,
-  .config-card {
+  .apple-card, .form-card, .table-card, .config-card {
     padding: 1.1rem !important;
   }
 
-  .header-section,
-  .page-header-flex {
+  .header-section, .page-header-flex {
     flex-direction: column !important;
     align-items: stretch !important;
   }
 
-  .btn-action,
-  .btn-primary-glow,
-  .apple-btn-primary {
+  .btn-action, .btn-primary-glow, .apple-btn-primary {
     width: 100% !important;
     justify-content: center !important;
   }
-}
-
-/* ==========================================================================
-   EFECTO MOUSE-TRACKING / GLOW BORDER PARA CARDS Y CONTENEDORES
-   ========================================================================== */
-
-/* Variables de brillo */
-:root {
-  --glow-color: rgba(59, 130, 246, 0.5);
-  --surface-bg: #0d121d;
-}
-
-/* Aplicamos el efecto de borde brillante y transición a las tarjetas y contenedores clave */
-.card, 
-.panel, 
-form, 
-table, 
-.table-container,
-button,
-.btn {
-  position: relative;
-  border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Estilo base para las tarjetas */
-.card {
-  background-color: #1e293b !important;
-  color: #f1f5f9 !important;
-  border: 1px solid #334155 !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
-}
-
-/* Efecto de borde iluminado y sombra sofisticada al pasar el cursor */
-.card:hover, 
-.panel:hover, 
-form:hover {
-  border-color: rgba(59, 130, 246, 0.4) !important;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7), 
-              0 0 25px rgba(59, 130, 246, 0.15) !important;
-  transform: translateY(-2px);
-}
-
-/* Efecto tipo neón fluido para los botones estilo la referencia */
-button, 
-.btn {
-  background: 
-    linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(13, 18, 29, 0.9)),
-    linear-gradient(135deg, #0d121d, #0d121d) padding-box,
-    linear-gradient(135deg, #3b82f6, #1e3a8a) border-box;
-  border: 1px solid transparent !important;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-}
-
-button:hover, 
-.btn:hover {
-  box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
-  filter: brightness(1.2);
 }

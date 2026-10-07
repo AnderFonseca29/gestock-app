@@ -6,13 +6,13 @@
       <p>Visualización, registro y control de entradas, salidas y estados de validación</p>
     </div>
     <div class="action-dropdown-container">
-      <button class="btn-primary-action" (click)="toggleMenuAcciones()">
+      <button class="btn-primary-action" (click)="toggleMenuAcciones()" *ngIf="tienePermiso('recepcion.create')">
         + Nueva acción
       </button>
       <!-- Menú Desplegable (Solo Entrada y Salida) -->
       <div class="dropdown-menu-custom" *ngIf="menuAccionesAbierto">
         <div class="dropdown-item" (click)="abrirFormulario('ENTRADA')">
-          <span class="icon">📥</span> Registrar Entrada/Salida
+          <span class="icon"><i class="fas fa-inbox"></i></span> Registrar Entrada/Salida
         </div>
         
       </div>
@@ -22,21 +22,21 @@
   <!-- Tarjetas de Filtros por Tipo de Movimiento -->
   <div class="process-cards-grid">
     <div class="process-card clickable" (click)="filtrarPorTipo('TODOS')" [class.active-card]="filtroTipo === 'TODOS'">
-      <span class="process-icon">📋</span>
+      <span class="process-icon"><i class="fas fa-clipboard-list"></i></span>
       <div>
         <h4>Todos los Movimientos</h4>
         <p>Historial consolidado global</p>
       </div>
     </div>
     <div class="process-card clickable" (click)="filtrarPorTipo('ENTRADA')" [class.active-card]="filtroTipo === 'ENTRADA'">
-      <span class="process-icon">📥</span>
+      <span class="process-icon"><i class="fas fa-inbox"></i></span>
       <div>
         <h4>Solo Entradas</h4>
         <p>Recepción de proveedores</p>
       </div>
     </div>
     <div class="process-card clickable" (click)="filtrarPorTipo('SALIDA')" [class.active-card]="filtroTipo === 'SALIDA'">
-      <span class="process-icon">📤</span>
+      <span class="process-icon"><i class="fas fa-arrow-up-from-bracket"></i></span>
       <div>
         <h4>Solo Salidas</h4>
         <p>Despachos y distribución</p>
@@ -48,7 +48,7 @@
   <div class="filter-bar">
     <div class="filter-group">
       <label>Filtrar por Estado:</label>
-      <select [(ngModel)]="filtroEstado" class="status-select">
+      <select [(ngModel)]="filtroEstado" (ngModelChange)="aplicarFiltros()" class="status-select">
         <option value="TODOS">Todos los estados (Validados y Discrepancias)</option>
         <option value="Validado">Solo Validados (Conformes)</option>
         <option value="Discrepancia">Solo con Discrepancia (Novedades)</option>
@@ -96,7 +96,7 @@
             </span>
           </td>
           <td>
-            <button class="action-btn" title="Ver Detalle" (click)="generarInforme(item)">📄</button>
+            <button class="action-btn" title="Ver Detalle" (click)="generarInforme(item)"><i class="fas fa-file-lines"></i></button>
           </td>
         </tr>
       </tbody>
@@ -121,14 +121,20 @@
               </select>
             </div>
             <div class="form-group">
-              <label>Código o SKU del Producto</label>
-              <input type="text" [(ngModel)]="nuevoItem.sku" name="sku" placeholder="Ej. SKU-PROD-005" required class="form-input">
+              <label>Producto (Código / SKU - Nombre)</label>
+              <select [(ngModel)]="nuevoItem.productoId" name="productoId" required class="form-input">
+                <option [ngValue]="null" disabled>Seleccione un producto...</option>
+                <option *ngFor="let p of productos" [ngValue]="p.id">{{ p.codigo }} - {{ p.nombre }}</option>
+              </select>
             </div>
           </div>
 
           <div class="form-group">
-            <label>Descripción del Artículo (Nombre y características)</label>
-            <input type="text" [(ngModel)]="nuevoItem.producto" name="producto" placeholder="Ej. Laptop Enterprise 15 i7 16GB RAM" required class="form-input">
+            <label>Bodega (Origen / Destino)</label>
+            <select [(ngModel)]="nuevoItem.bodegaId" name="bodegaId" class="form-input">
+              <option [ngValue]="null">Sin bodega</option>
+              <option *ngFor="let b of bodegas" [ngValue]="b.id">{{ b.nombre }}</option>
+            </select>
           </div>
 
           <div class="form-row">

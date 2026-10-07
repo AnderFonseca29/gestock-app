@@ -1,6 +1,20 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
+import { InventarioService } from '../services/services';
+import { ToastService } from '../../../../services/toast.service';
+
+interface Categoria {
+  id: number;
+  nombre: string;
+  estado: string;
+}
+
+interface Bodega {
+  id: number;
+  nombre: string;
+  activa: boolean;
+}
 
 @Component({
   selector: 'app-registrar-productos',
@@ -9,118 +23,100 @@ import { FormsModule, NgForm } from '@angular/forms';
   templateUrl: './registrar-productos.html',
   styleUrls: ['./registrar-productos.css']
 })
-export class RegistrarProductosComponent {
-  categorias = ['Tecnología', 'Accesorios', 'Mobiliario', 'Herramientas', 'Seguridad'];
+export class RegistrarProductosComponent implements OnInit {
+  private inventarioService = inject(InventarioService);
+  private toastService = inject(ToastService);
 
-  private bodegasIniciales: any[] = [
-    { id: 1, nombre: 'Bodega Principal Yopal', codigo: 'BOD-001', activa: false },
-    { id: 2, nombre: 'Centro Logístico Medellín', codigo: 'BOD-002', activa: false },
-    { id: 3, nombre: 'Bodega de Tránsito Cali', codigo: 'BOD-003', activa: false },
-    { id: 4, nombre: 'Depósito Bogotá Norte', codigo: 'BOD-004', activa: false },
-    { id: 5, nombre: 'Bodega Costa Caribe', codigo: 'BOD-005', activa: false },
-    { id: 6, nombre: 'Punto Villavicencio', codigo: 'BOD-006', activa: false },
-    { id: 7, nombre: 'Bodega Eje Cafetero', codigo: 'BOD-007', activa: false },
-    { id: 8, nombre: 'Centro Acopio Bucaramanga', codigo: 'BOD-008', activa: false },
-    { id: 9, nombre: 'Bodega Nororiente Cúcuta', codigo: 'BOD-009', activa: false },
-    { id: 10, nombre: 'Terminal Logística Cartagena', codigo: 'BOD-010', activa: false },
-    { id: 11, nombre: 'Bodega Sur Neiva', codigo: 'BOD-011', activa: false },
-    { id: 12, nombre: 'Almacén Manizales Centro', codigo: 'BOD-012', activa: false },
-    { id: 13, nombre: 'Bodega Llanos Paz de Ariporo', codigo: 'BOD-013', activa: false },
-    { id: 14, nombre: 'Centro Operativo Santa Marta', codigo: 'BOD-014', activa: false },
-    { id: 15, nombre: 'Depósito Pasto Andina', codigo: 'BOD-015', activa: false }
-  ];
+  categorias = signal<Categoria[]>([]);
+  bodegas = signal<Bodega[]>([]);
+  bodegasCargadas = signal(false);
 
-  get bodegasActivas(): any[] {
-    const data = localStorage.getItem('inventario_bodegas');
-    if (!data) {
-      localStorage.setItem('inventario_bodegas', JSON.stringify(this.bodegasIniciales));
-      return this.bodegasIniciales;
-    }
-    return JSON.parse(data);
-  }
+  categoriasActivas = computed(() => this.categorias().filter(c => c.estado === 'Activo'));
+
+  bodegasActivas = computed(() => this.bodegas().filter(b => b.activa));
+
+  mensajeExito = signal<string | null>(null);
 
   producto = signal({
     codigo: '',
     nombre: '',
     categoria: '',
     bodega: '',
-    precio: null,
-    stock: null
+    precio: null as number | null,
+    stock: null as number | null
   });
 
-  mensajeExito: string | null = null;
-
-  getBodegasActivasDisponibles(): any[] {
-    return this.bodegasActivas.filter(b => b.activa);
+  ngOnInit() {
+    this.cargarCategorias();
+    this.cargarBodegas();
   }
 
-  registrarAuditoria(accion: 'CREAR' | 'ACTUALIZAR' | 'ELIMINAR', producto: any, usuario: string = 'Administrador') {
-    const nuevoRegistro = {
-      id: `#${Date.now().toString().slice(-3)}`,
-      usuario: usuario,
-      accion: accion,
-      entidad: `Producto: ${producto.nombre}`,
-      detalles: `Se registró el producto en ${producto.bodega} con stock inicial de ${producto.stock} un.`,
-      fechaHora: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }),
-      estado: 'Completado',
-      jsonDetalle: {
-        codigo: producto.codigo,
-        nombre: producto.nombre,
-        categoria: producto.categoria,
-        precio: producto.precio,
-        stock: producto.stock,
-        bodega: producto.bodega,
-        responsable: usuario
-      }
-    };
+  private cargarCategorias() {
+    this.inventarioService.obtenerCategorias()
+      .then((data) => {
+        const lista = (data ?? []) as any[];
+        this.categorias.set(
+          lista
+            .map(c => ({ id: c.id, nombre: c.nombre, estado: c.estado }))
+            .sort((a, b) => a.nombre.localeCompare(b.nombre))
+        );
+      })
+      .catch((err) => this.mostrarError(err, 'No se pudieron cargar las categorías.'));
+  }
 
-    const llaves = ['sistema_auditorias', 'auditorias'];
-    llaves.forEach(key => {
-      const actual = JSON.parse(localStorage.getItem(key) || '[]');
-      actual.unshift(nuevoRegistro);
-      localStorage.setItem(key, JSON.stringify(actual));
-    });
+  private cargarBodegas() {
+    this.inventarioService.obtenerBodegas()
+      .then((data) => {
+        const lista = (data ?? []) as any[];
+        this.bodegas.set(lista.map(b => ({ id: b.id, nombre: b.nombre, activa: b.activa === true })));
+      })
+      .catch((err) => this.mostrarError(err, 'No se pudieron cargar las bodegas.'))
+      .finally(() => this.bodegasCargadas.set(true));
   }
 
   registrarProducto(form: NgForm) {
-    if (form.valid) {
-      const prodValues = this.producto();
-      const nuevoProductoData = {
-        id: 'PROD-' + Date.now(),
-        ...prodValues,
-        fechaRegistro: new Date().toISOString()
-      };
-
-      const productosGuardados = JSON.parse(localStorage.getItem('inventario_productos') || '[]');
-      productosGuardados.unshift(nuevoProductoData);
-      localStorage.setItem('inventario_productos', JSON.stringify(productosGuardados));
-
-      this.registrarAuditoria('CREAR', prodValues);
-
-      // 🖨️ CONSOLA: Muestra el JSON detallado cuando se CREA un producto nuevo
-      console.group(`✨ NUEVO PRODUCTO REGISTRADO [ ACCIÓN: CREAR ]`);
-      console.log('Se ha dado de alta el siguiente producto en el sistema:');
-      console.log(JSON.stringify(nuevoProductoData, null, 2));
-      console.groupEnd();
-
-      this.mostrarNotificacion('¡Producto registrado con éxito y visible en lista!');
-      
-      form.resetForm();
-      this.producto.set({
-        codigo: '',
-        nombre: '',
-        categoria: '',
-        bodega: '',
-        precio: null,
-        stock: null
-      });
+    if (!form.valid) {
+      this.toastService.mostrar('Complete todos los campos obligatorios antes de guardar.', 'error', 'Formulario incompleto');
+      return;
     }
+
+    const valores = this.producto();
+    const categoriaId = this.categoriasActivas().find(c => c.nombre === valores.categoria)?.id ?? null;
+    const bodegaId = this.bodegas().find(b => b.nombre === valores.bodega)?.id ?? null;
+
+    if (categoriaId == null || bodegaId == null) {
+      this.toastService.mostrar('Seleccione una categoría y una bodega válidas.', 'error', 'Datos inválidos');
+      return;
+    }
+
+    const nuevoProductoData = {
+      codigo: valores.codigo.trim(),
+      nombre: valores.nombre.trim(),
+      categoriaId,
+      bodegaId,
+      precio: Number(valores.precio),
+      stock: Number(valores.stock)
+    };
+
+    this.inventarioService.crearProducto(nuevoProductoData)
+      .then(() => {
+        this.mensajeExito.set('Producto registrado correctamente y visible en el listado.');
+        this.toastService.mostrar('Producto registrado correctamente.', 'success', 'Producto registrado');
+        form.resetForm();
+        this.producto.set({
+          codigo: '',
+          nombre: '',
+          categoria: '',
+          bodega: '',
+          precio: null,
+          stock: null
+        });
+        setTimeout(() => this.mensajeExito.set(null), 3500);
+      })
+      .catch((err) => this.mostrarError(err, 'No se pudo registrar el producto.'));
   }
 
-  mostrarNotificacion(mensaje: string) {
-    this.mensajeExito = mensaje;
-    setTimeout(() => {
-      this.mensajeExito = null;
-    }, 3500);
+  private mostrarError(err: any, fallback: string) {
+    this.toastService.mostrar(err?.error?.message || fallback, 'error', 'Error');
   }
 }

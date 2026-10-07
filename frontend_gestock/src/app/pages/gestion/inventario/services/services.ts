@@ -1,15 +1,11 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { ApiService } from '../../../../services/api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventarioService {
-  private http = inject(HttpClient);
-  
-  // URL base de tu API (ajusta el puerto según tu backend: Go/Beego, NestJS o Django)
-  private apiUrl = 'http://localhost:8080/api/inventario';
+  private api = inject(ApiService);
 
   // Signals reactivos para manejar los datos globalmente si lo requieres
   productos = signal<any[]>([]);
@@ -20,56 +16,94 @@ export class InventarioService {
   // ==================== OPERACIONES DE PRODUCTOS ====================
 
   /** Obtener todos los productos */
-  obtenerProductos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/productos`).pipe(
-      tap(data => this.productos.set(data))
-    );
+  obtenerProductos(): Promise<any[]> {
+    return this.api.get('/productos').then((data) => {
+      const lista = data as any[];
+      this.productos.set(lista);
+      return lista;
+    });
+  }
+
+  /** Obtener productos filtrados por bodega */
+  obtenerProductosPorBodega(bodegaId: number): Promise<any[]> {
+    return this.api.get('/productos', { bodegaId });
+  }
+
+  /** Obtener productos con stock bajo */
+  obtenerStockBajo(): Promise<any[]> {
+    return this.api.get('/productos/stock-bajo');
   }
 
   /** Registrar un nuevo producto */
-  crearProducto(producto: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/productos`, producto).pipe(
-      tap(nuevo => {
-        this.productos.update(lista => [...lista, nuevo]);
-      })
-    );
+  crearProducto(producto: any): Promise<any> {
+    return this.api.post('/productos', producto).then((nuevo) => {
+      this.productos.update((lista) => [...lista, nuevo]);
+      return nuevo;
+    });
+  }
+
+  /** Actualizar un producto existente */
+  actualizarProducto(id: number, producto: any): Promise<any> {
+    return this.api.put(`/productos/${id}`, producto).then((actualizado) => {
+      this.productos.update((lista) => lista.map((p) => (p.id === id ? actualizado : p)));
+      return actualizado;
+    });
   }
 
   /** Eliminar un producto */
-  eliminarProducto(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/productos/${id}`).pipe(
-      tap(() => {
-        this.productos.update(lista => lista.filter(p => p.id !== id));
-      })
-    );
+  eliminarProducto(id: number): Promise<any> {
+    return this.api.delete(`/productos/${id}`).then((res) => {
+      this.productos.update((lista) => lista.filter((p) => p.id !== id));
+      return res;
+    });
+  }
+
+  // ==================== OPERACIONES DE CATEGORÍAS ====================
+
+  /** Obtener todas las categorías */
+  obtenerCategorias(): Promise<any[]> {
+    return this.api.get('/categorias');
+  }
+
+  /** Crear una nueva categoría */
+  crearCategoria(categoria: any): Promise<any> {
+    return this.api.post('/categorias', categoria);
+  }
+
+  /** Actualizar una categoría existente */
+  actualizarCategoria(id: number, categoria: any): Promise<any> {
+    return this.api.put(`/categorias/${id}`, categoria);
+  }
+
+  /** Eliminar una categoría */
+  eliminarCategoria(id: number): Promise<any> {
+    return this.api.delete(`/categorias/${id}`);
   }
 
   // ==================== OPERACIONES DE BODEGAS ====================
 
-  /** Obtener todas las bodegas */
-  obtenerBodegas(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/bodegas`).pipe(
-      tap(data => this.bodegas.set(data))
-    );
+  /** Obtener todas las bodegas (o solo las activas) */
+  obtenerBodegas(activas?: boolean): Promise<any[]> {
+    return this.api.get('/bodegas', activas ? { activas: 'true' } : undefined).then((data) => {
+      const lista = data as any[];
+      this.bodegas.set(lista);
+      return lista;
+    });
   }
 
   /** Crear una nueva bodega */
-  crearBodega(bodega: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/bodegas`, bodega).pipe(
-      tap(nueva => {
-        this.bodegas.update(lista => [...lista, nueva]);
-      })
-    );
+  crearBodega(bodega: any): Promise<any> {
+    return this.api.post('/bodegas', bodega).then((nueva) => {
+      this.bodegas.update((lista) => [...lista, nueva]);
+      return nueva;
+    });
   }
 
   /** Cambiar el estado (activo/inactivo) de una bodega */
-  toggleEstadoBodega(id: number): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/bodegas/${id}/toggle`, {}).pipe(
-      tap(() => {
-        this.bodegas.update(lista => 
-          lista.map(b => b.id === id ? { ...b, activa: !b.activa } : b)
-        );
-      })
-    );
+  toggleEstadoBodega(id: number, activa: boolean): Promise<any> {
+    return this.api.put(`/bodegas/${id}`, { activa }).then((actualizada) => {
+      this.bodegas.update((lista) => lista.map((b) => (b.id === id ? actualizada : b)));
+      return actualizada;
+    });
   }
 }

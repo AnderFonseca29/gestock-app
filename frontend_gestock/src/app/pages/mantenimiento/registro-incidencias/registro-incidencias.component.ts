@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ApiService } from '../../../services/api.service';
+import { ToastService } from '../../../services/toast.service';
 
 interface IncidenciaItem {
   id: string;
@@ -12,6 +14,20 @@ interface IncidenciaItem {
   fecha: string;
 }
 
+interface IncidenciaBackend {
+  id: number;
+  titulo: string;
+  descripcion: string;
+  prioridad: string;
+  estado: string;
+  reportado_por: number;
+  reportado_por_nombre?: string | null;
+  fecha: string;
+}
+
+const PRIORIDADES: IncidenciaItem['prioridad'][] = ['Baja', 'Media', 'Alta', 'Crítica'];
+const ESTADOS: IncidenciaItem['estado'][] = ['En Revisión', 'Pendiente', 'Resuelto'];
+
 @Component({
   selector: 'app-incidencias',
   standalone: true,
@@ -21,6 +37,10 @@ interface IncidenciaItem {
 })
 export class IncidenciasComponent implements OnInit {
 
+  private api = inject(ApiService);
+  private toast = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
+
   listaIncidencias: IncidenciaItem[] = [];
 
   nuevaIncidencia: IncidenciaItem = {
@@ -28,84 +48,78 @@ export class IncidenciasComponent implements OnInit {
     titulo: '',
     prioridad: 'Media',
     descripcion: '',
-    reportadoPor: 'Maicol Nore',
+    reportadoPor: '',
     estado: 'En Revisión',
     fecha: ''
   };
 
   ngOnInit() {
-    const guardados = localStorage.getItem('gestock_incidencias');
-    if (guardados) {
-      try {
-        this.listaIncidencias = JSON.parse(guardados);
-      } catch (e) {
-        console.error('Error al cargar incidencias del localStorage', e);
-        this.cargarDatosIniciales();
-      }
-    } else {
-      this.cargarDatosIniciales();
-    }
+    this.cargarIncidencias();
   }
 
-  cargarDatosIniciales() {
-    this.listaIncidencias = [
-      {
-        id: '#101',
-        titulo: 'Fuga de aceite en sensor',
-        prioridad: 'Alta',
-        descripcion: 'Se detectó pérdida de fluido hidráulico cerca del sensor principal de la línea 2.',
-        reportadoPor: 'Operador 1',
-        estado: 'En Revisión',
-        fecha: '2026-08-25 09:30'
+  cargarIncidencias(): void {
+    this.api.get<IncidenciaBackend[]>('/incidencias').then(
+      (lista) => {
+        this.listaIncidencias = (lista || []).map((i) => ({
+          id: `#${i.id}`,
+          titulo: i.titulo,
+          prioridad: PRIORIDADES.includes(i.prioridad as IncidenciaItem['prioridad'])
+            ? (i.prioridad as IncidenciaItem['prioridad'])
+            : 'Media',
+          descripcion: i.descripcion,
+          reportadoPor: i.reportado_por_nombre || `Usuario #${i.reportado_por}`,
+          estado: ESTADOS.includes(i.estado as IncidenciaItem['estado'])
+            ? (i.estado as IncidenciaItem['estado'])
+            : 'Pendiente',
+          fecha: this.formatearFecha(i.fecha)
+        }));
+        this.cdr.detectChanges();
       },
-      {
-        id: '#102',
-        titulo: 'Fallo de encendido panel central',
-        prioridad: 'Crítica',
-        descripcion: 'El tablero de control principal no responde al suministro auxiliar de energía.',
-        reportadoPor: 'Operador 2',
-        estado: 'Pendiente',
-        fecha: '2026-08-25 10:15'
+      () => {
+        this.listaIncidencias = [];
+        this.cdr.detectChanges();
       }
-    ];
-    this.sincronizarStorage();
+    );
   }
 
-  sincronizarStorage() {
-    localStorage.setItem('gestock_incidencias', JSON.stringify(this.listaIncidencias));
-  }
-
-  guardarIncidencia() {
-    if (!this.nuevaIncidencia.titulo || !this.nuevaIncidencia.descripcion) {
-      alert('Por favor complete los campos obligatorios.');
+  guardarIncidencia(): void {
+    if (!this.nuevaIncidencia.titulo.trim() || !this.nuevaIncidencia.descripcion.trim()) {
+      this.toast.mostrar('Por favor complete los campos obligatorios.', 'error');
       return;
     }
 
-    const ahora = new Date();
-    const idNum = 100 + this.listaIncidencias.length + 1;
+    this.api.post<IncidenciaBackend>('/incidencias', {
+      titulo: this.nuevaIncidencia.titulo.trim(),
+      descripcion: this.nuevaIncidencia.descripcion.trim(),
+      prioridad: this.nuevaIncidencia.prioridad
+    }).then(
+      () => {
+        this.toast.mostrar('Incidencia registrada correctamente.', 'success', 'Incidencia');
+        this.nuevaIncidencia = {
+          id: '',
+          titulo: '',
+          prioridad: 'Media',
+          descripcion: '',
+          reportadoPor: '',
+          estado: 'En Revisión',
+          fecha: ''
+        };
+        this.cargarIncidencias();
+        this.cdr.detectChanges();
+      },
+      () => {
+        // El interceptor muestra el toast de error automáticamente.
+        this.cdr.detectChanges();
+      }
+    );
+  }
 
-    this.nuevaIncidencia.id = `#${idNum}`;
-    this.nuevaIncidencia.fecha = ahora.toISOString().slice(0, 10) + ' ' + ahora.toTimeString().slice(0, 5);
-
-    // Agregar al inicio de la lista
-    this.listaIncidencias.unshift({ ...this.nuevaIncidencia });
-
-    // Guardar temporalmente en localStorage
-    this.sincronizarStorage();
-
-    // Mostrar JSON exacto en la consola de desarrollo de manera limpia
-    console.log('%c[GESTOCK] Nueva Incidencia Registrada (JSON):', 'color: #f97316; font-weight: bold;');
-    console.log(JSON.stringify(this.nuevaIncidencia, null, 2));
-
-    // Resetear formulario con valores base
-    this.nuevaIncidencia = {
-      id: '',
-      titulo: '',
-      prioridad: 'Media',
-      descripcion: '',
-      reportadoPor: 'Maicol Nore',
-      estado: 'En Revisión',
-      fecha: ''
-    };
+  private formatearFecha(fecha: string): string {
+    if (!fecha) return '';
+    const fechaObj = new Date(fecha);
+    if (Number.isNaN(fechaObj.getTime())) return String(fecha);
+    const dia = fechaObj.toISOString().slice(0, 10);
+    const hora = fechaObj.toTimeString().slice(0, 5);
+    return `${dia} ${hora}`;
   }
 }

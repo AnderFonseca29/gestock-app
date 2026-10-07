@@ -8,15 +8,15 @@
   <header class="navbar">
     <div class="brand">
       <div class="logo-box">
-        <span class="logo-icon">📦</span>
+        <span class="logo-icon"><i class="fas fa-boxes-stacked"></i></span>
       </div>
       <span class="brand-name">GESTOCK<span class="accent-dot">.</span></span>
     </div>
     <nav class="nav-links">
-      <a href="#inicio">Inicio</a>
-      <a href="#caracteristicas">Soluciones</a>
-      <a href="#blog">Explorar</a>
-      <a href="#contacto">Contacto</a>
+      <a (click)="scrollASeccion('inicio')">Inicio</a>
+      <a (click)="scrollASeccion('caracteristicas')">Soluciones</a>
+      <a (click)="scrollASeccion('blog')">Explorar</a>
+      <a (click)="scrollASeccion('contacto')">Contacto</a>
       <button class="btn-start" (click)="irALogin()">
         <span>Regístrate</span>
         <span class="btn-glow-effect"></span>
@@ -33,7 +33,7 @@
   <section id="inicio" class="hero-section">
     <div class="hero-badge">
       <span class="pulse-ring"></span>
-      <span class="badge-text">⚡ Plataforma Inteligente de Gestión 4.0</span>
+      <span class="badge-text"><i class="fas fa-bolt"></i> Plataforma Inteligente de Gestión 4.0</span>
     </div>
 
     <h1 class="hero-title">
@@ -42,7 +42,7 @@
 
     <div class="quote-card-glass">
       <div class="quote-border-line"></div>
-      <span class="quote-icon">💡</span>
+      <span class="quote-icon"><i class="fas fa-lightbulb"></i></span>
       <blockquote class="proverb-text">
         "Lo que no se mide, no se controla; y lo que no se controla, no se puede mejorar."
       </blockquote>
@@ -53,7 +53,7 @@
         Ingresar al Sistema
         <span class="arrow-icon">→</span>
       </button>
-      <a href="#contacto" class="btn-secondary-glass">Agendar Demo</a>
+      <a (click)="scrollASeccion('contacto')" class="btn-secondary-glass">Agendar Demo</a>
     </div>
 
     <!-- Stats Counter Bar -->
@@ -85,7 +85,7 @@
     <div class="features-grid">
       <div class="feature-card-holo">
         <div class="card-glow-bg"></div>
-        <div class="card-icon-wrapper">📊</div>
+        <div class="card-icon-wrapper"><i class="fas fa-chart-line"></i></div>
         <span class="feature-step">01</span>
         <h3>Visibilidad Total</h3>
         <p>Monitorea cada entrada, salida y movimiento con auditoría precisa y trazabilidad avanzada.</p>
@@ -93,7 +93,7 @@
 
       <div class="feature-card-holo active-featured">
         <div class="card-glow-bg"></div>
-        <div class="card-icon-wrapper">🏷️</div>
+        <div class="card-icon-wrapper"><i class="fas fa-tags"></i></div>
         <span class="feature-step">02</span>
         <h3>Automatización RFID</h3>
         <p>Escaneo masivo e instantáneo sin abrir cajas ni perder tiempo en conteos manuales.</p>
@@ -101,7 +101,7 @@
 
       <div class="feature-card-holo">
         <div class="card-glow-bg"></div>
-        <div class="card-icon-wrapper">🛡️</div>
+        <div class="card-icon-wrapper"><i class="fas fa-shield-halved"></i></div>
         <span class="feature-step">03</span>
         <h3>Máxima Seguridad</h3>
         <p>Decisiones respaldadas por analíticas financieras en tiempo real y fiabilidad del 100%.</p>
@@ -149,7 +149,7 @@
         <div class="item-overlay">
           <span class="item-tag">TESTIMONIOS</span>
           <h3>Reseñas de Usuarios</h3>
-          <p>⭐ 4.8 Calificación de nuestros clientes.</p>
+          <p><i class="fas fa-star"></i> 4.8 Calificación de nuestros clientes.</p>
         </div>
       </div>
     </div>
@@ -162,8 +162,8 @@
       <div class="location-card-glass">
         <span class="section-tag">NUESTRA SEDE</span>
         <h3>YOPAL - CASANARE</h3>
-        <p class="location-detail">📍 Crr. 19 # cll 36 - 14</p>
-        <p class="location-detail">📞 +57 322 233 6216</p>
+        <p class="location-detail"><i class="fas fa-location-dot"></i> Crr. 19 # cll 36 - 14</p>
+        <p class="location-detail"><i class="fas fa-phone"></i> +57 322 233 6216</p>
         
         <div class="map-wrapper">
           <iframe 
@@ -201,7 +201,7 @@
   <!-- Banner Flotante WhatsApp -->
   <div class="whatsapp-float-bar">
     <button class="btn-whatsapp-glow" (click)="abrirWhatsApp()">
-      <span class="wa-icon">💬</span>
+      <span class="wa-icon"><i class="fas fa-comment-dots"></i></span>
       <span>Hablar con un Asesor por WhatsApp</span>
     </button>
   </div>
@@ -217,26 +217,26 @@
       <div class="footer-col">
         <h4>Productos</h4>
         <ul>
-          <li><a href="#">Puntos de venta</a></li>
-          <li><a href="#">Control RFID</a></li>
-          <li><a href="#">Reportes y Facturas</a></li>
-          <li><a href="#">Analítica Web</a></li>
+          <li><a (click)="scrollASeccion('caracteristicas')">Puntos de venta</a></li>
+          <li><a (click)="scrollASeccion('caracteristicas')">Control RFID</a></li>
+          <li><a (click)="scrollASeccion('caracteristicas')">Reportes y Facturas</a></li>
+          <li><a (click)="scrollASeccion('caracteristicas')">Analítica Web</a></li>
         </ul>
       </div>
 
       <div class="footer-col">
         <h4>Soporte & Contacto</h4>
-        <p class="contact-info">📞 +57 322 233 6216</p>
-        <p class="contact-info">📍 Yopal, Casanare - Colombia</p>
+        <p class="contact-info"><i class="fas fa-phone"></i> +57 322 233 6216</p>
+        <p class="contact-info"><i class="fas fa-location-dot"></i> Yopal, Casanare - Colombia</p>
       </div>
     </div>
 
     <div class="footer-bottom">
       <p>© 2026 GESTOCK. Todos los derechos reservados.</p>
       <div class="social-icons">
-        <a href="#" aria-label="Twitter">🐦</a>
-        <a href="#" aria-label="Facebook">📘</a>
-        <a href="#" aria-label="Instagram">📷</a>
+        <a href="#" aria-label="Twitter" (click)="$event.preventDefault()"><i class="fas fa-twitter"></i></a>
+        <a href="#" aria-label="Facebook" (click)="$event.preventDefault()"><i class="fas fa-facebook"></i></a>
+        <a href="#" aria-label="Instagram" (click)="$event.preventDefault()"><i class="fas fa-instagram"></i></a>
       </div>
     </div>
   </footer>

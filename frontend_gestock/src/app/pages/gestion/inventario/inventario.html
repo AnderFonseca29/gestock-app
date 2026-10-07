@@ -1,14 +1,17 @@
 <div class="inventario-layout">
   <!-- Submenú de navegación del inventario -->
   <nav class="inventario-nav">
-    <a routerLink="bodegas" routerLinkActive="active" class="nav-tab">
+    <a routerLink="bodegas" routerLinkActive="active" class="nav-tab" *ngIf="tienePermiso('bodegas.view')">
       <i class="fas fa-warehouse"></i> Bodegas
     </a>
-    <a routerLink="lista-productos" routerLinkActive="active" class="nav-tab">
+    <a routerLink="lista-productos" routerLinkActive="active" class="nav-tab" *ngIf="tienePermiso('productos.view')">
       <i class="fas fa-boxes"></i> Lista de Productos
     </a>
-    <a routerLink="registrar-productos" routerLinkActive="active" class="nav-tab">
+    <a routerLink="registrar-productos" routerLinkActive="active" class="nav-tab" *ngIf="tienePermiso('productos.create')">
       <i class="fas fa-plus-circle"></i> Registrar Producto
+    </a>
+    <a routerLink="categorias" routerLinkActive="active" class="nav-tab" *ngIf="tienePermiso('categorias.view')">
+      <i class="fas fa-folder"></i> Categorías
     </a>
   </nav>
 

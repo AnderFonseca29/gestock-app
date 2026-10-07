@@ -5,9 +5,34 @@
       <h1>Empresas</h1>
       <p class="empresas-subtitle">Gestión y administración de empresas registradas en GESTOCK</p>
     </div>
-    <button class="btn-primary-action" (click)="abrirModalCrear()">
+    <button class="btn-primary-action" (click)="abrirModalCrear()" *ngIf="tienePermiso('empresas.create')">
       <span>+</span> Crear nueva empresa
     </button>
+  </div>
+
+  <!-- Resumen estadístico -->
+  <div class="empresas-stats">
+    <div class="stat-card">
+      <span class="stat-icon"><i class="fas fa-building"></i></span>
+      <div>
+        <p class="stat-value">{{ empresasLista.length }}</p>
+        <p class="stat-label">Empresas registradas</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon success"><i class="fas fa-circle-check"></i></span>
+      <div>
+        <p class="stat-value">{{ empresasActivas }}</p>
+        <p class="stat-label">Activas</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon muted"><i class="fas fa-circle-pause"></i></span>
+      <div>
+        <p class="stat-value">{{ empresasInactivas }}</p>
+        <p class="stat-label">Inactivas</p>
+      </div>
+    </div>
   </div>
 
   <!-- Contenedor de la tabla -->
@@ -17,6 +42,7 @@
       <p>Listado general de organizaciones activas en el sistema</p>
     </div>
 
+    <div class="table-responsive">
     <table class="empresas-table">
       <thead>
         <tr>
@@ -32,7 +58,7 @@
         <tr *ngFor="let empresa of empresasLista" (click)="seleccionarEmpresa(empresa.id)" class="table-row-clickable">
           <td>
             <div class="empresa-cell">
-              <span class="empresa-icon-cell">🏢</span>
+              <span class="empresa-icon-cell"><i class="fas fa-building"></i></span>
               <strong>{{ empresa.nombre }}</strong>
             </div>
           </td>
@@ -45,8 +71,8 @@
             </span>
           </td>
           <td>
-            <button class="btn-delete" (click)="eliminarEmpresa($event, empresa.id)" title="Eliminar empresa">
-              🗑️
+            <button *ngIf="tienePermiso('empresas.delete')" class="btn-delete" (click)="eliminarEmpresa($event, empresa.id)" title="Eliminar empresa">
+              <i class="fas fa-trash"></i>
             </button>
           </td>
         </tr>
@@ -55,6 +81,7 @@
         </tr>
       </tbody>
     </table>
+    </div>
   </div>
 
   <!-- Modal para Crear Nueva Empresa -->
@@ -94,9 +121,64 @@
           </select>
         </div>
 
+        <div class="modal-divider">Administrador inicial de la empresa</div>
+
+        <div class="form-group">
+          <label for="adminEmail">Correo del administrador</label>
+          <input id="adminEmail" type="email" formControlName="adminEmail" placeholder="admin@empresa.com" />
+          <div *ngIf="nuevaEmpresaForm.get('adminEmail')?.invalid && nuevaEmpresaForm.get('adminEmail')?.touched" class="error-text">
+            Ingrese un correo válido.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="adminPassword">Contraseña del administrador</label>
+          <input id="adminPassword" type="password" formControlName="adminPassword" placeholder="Mínimo 8 caracteres, con mayúscula, número y símbolo" />
+          <div *ngIf="nuevaEmpresaForm.get('adminPassword')?.invalid && nuevaEmpresaForm.get('adminPassword')?.touched" class="error-text">
+            La contraseña debe tener al menos 8 caracteres.
+          </div>
+        </div>
+
         <div class="modal-footer">
           <button type="button" class="btn-secondary" (click)="cerrarModalCrear()">Cancelar</button>
           <button type="submit" class="btn-primary" [disabled]="nuevaEmpresaForm.invalid">Guardar Empresa</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para Ingresar a una Empresa -->
+  <div class="modal-backdrop" *ngIf="mostrarModalIngreso" (click)="cerrarModalIngreso()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Ingresar a {{ empresaIngreso?.nombre }}</h3>
+        <button class="close-btn" (click)="cerrarModalIngreso()">×</button>
+      </div>
+
+      <p class="empresa-ingreso-info">Para tu seguridad, confirma tus credenciales de {{ empresaIngreso?.nombre }} antes de ingresar.</p>
+
+      <form [formGroup]="ingresoForm" (ngSubmit)="ingresarEmpresa()">
+        <div class="form-group">
+          <label for="ingresoEmail">Correo del usuario</label>
+          <input id="ingresoEmail" type="email" formControlName="email" placeholder="usuario@empresa.com" />
+          <div *ngIf="ingresoForm.get('email')?.invalid && ingresoForm.get('email')?.touched" class="error-text">
+            Ingrese un correo válido.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ingresoPassword">Contraseña</label>
+          <input id="ingresoPassword" type="password" formControlName="password" placeholder="Contraseña" />
+          <div *ngIf="ingresoForm.get('password')?.invalid && ingresoForm.get('password')?.touched" class="error-text">
+            La contraseña es obligatoria.
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="cerrarModalIngreso()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="ingresoForm.invalid || ingresando">
+            {{ ingresando ? 'Ingresando...' : 'Ingresar' }}
+          </button>
         </div>
       </form>
     </div>

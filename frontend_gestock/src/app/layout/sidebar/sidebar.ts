@@ -7,8 +7,8 @@ interface MenuItem {
   label: string;
   icon: string;
   route: string;
-  section: 'PANEL' | 'GESTIÓN' | 'MANTENIMIENTO';
-  rolesPermitidos: string[];
+  section: 'PANEL' | 'GESTIÓN' | 'MANTENIMIENTO' | 'DOCUMENTACIÓN';
+  permisos: string[];
 }
 
 @Component({
@@ -22,99 +22,97 @@ export class SidebarComponent implements OnInit {
   private authService = inject(AuthService);
   usuarioActual: Usuario | null = null;
 
-  private todosLosRoles: string[] = [
-    'Administrador',
-    'Supervisor',
-    'Operario',
-    'Operador',
-    'Técnico de Mantenimiento',
-    'Técnico Mantenimiento',
-    'Auditor'
-  ];
-
   menuItems: MenuItem[] = [
     // PANEL
-    { 
-      label: 'Panel', 
-      icon: '📊', 
-      route: '/app/panel', 
-      section: 'PANEL', 
-      rolesPermitidos: ['Administrador', 'Supervisor', 'Auditor'] 
+    {
+      label: 'Panel',
+      icon: 'fas fa-chart-line',
+      route: '/app/panel',
+      section: 'PANEL',
+      permisos: ['dashboard.view']
     },
-    { 
-      label: 'Empresas', 
-      icon: '🏢', 
-      route: '/app/empresas', 
-      section: 'PANEL', 
-      rolesPermitidos: ['Administrador'] 
+    {
+      label: 'Empresas',
+      icon: 'fas fa-building',
+      route: '/app/empresas',
+      section: 'PANEL',
+      permisos: ['empresas.view']
     },
-    { 
-      label: 'Configuración', 
-      icon: '⚙️', 
-      route: '/app/configuracion', 
-      section: 'PANEL', 
-      rolesPermitidos: this.todosLosRoles 
+    {
+      label: 'Configuración',
+      icon: 'fas fa-gear',
+      route: '/app/configuracion',
+      section: 'PANEL',
+      permisos: ['configuracion.view']
     },
 
     // GESTIÓN
-    { 
-      label: 'Inventario', 
-      icon: '📦', 
-      route: '/app/gestion/inventario', 
-      section: 'GESTIÓN', 
-      rolesPermitidos: this.todosLosRoles
-    },
-    { 
-      label: 'Recepción', 
-      icon: '📥', 
-      route: '/app/recepcion/recepcion-mercancias', 
-      section: 'GESTIÓN', 
-      rolesPermitidos: ['Administrador', 'Supervisor', 'Operario', 'Operador'] 
-    },
-    { 
-      label: 'Historial Logístico', 
-      icon: '📋', 
-      route: '/app/recepcion/historial-logistico', 
-      section: 'GESTIÓN', 
-      rolesPermitidos: ['Administrador', 'Supervisor', 'Técnico de Mantenimiento', 'Técnico Mantenimiento', 'Auditor'] 
-    },
-    { 
-      label: 'Auditorías', 
-      icon: '📑', 
-      route: '/app/gestion/auditorias', 
-      section: 'GESTIÓN', 
-      rolesPermitidos: ['Administrador', 'Auditor'] 
-    },
-    { 
-      label: 'Roles y Usuarios', 
-      icon: '👤', 
-      route: '/app/gestion/roles-yusuarios', 
-      section: 'GESTIÓN', 
-      rolesPermitidos: ['Administrador'] 
-    },
-    // (Ítem de Envíos eliminado de aquí)
-
-    // MANTENIMIENTO
-    { 
-      label: 'Programación', 
-      icon: '🛠️', 
-      route: '/app/programacion', 
-      section: 'MANTENIMIENTO', 
-      rolesPermitidos: ['Administrador', 'Supervisor', 'Técnico de Mantenimiento', 'Técnico Mantenimiento'] 
-    },
-    { 
-      label: 'Incidencias', 
-      icon: '⚠️', 
-      route: '/app/incidencias', 
-      section: 'MANTENIMIENTO', 
-      rolesPermitidos: ['Administrador', 'Supervisor', 'Operario', 'Operador', 'Técnico de Mantenimiento', 'Técnico Mantenimiento'] 
+    {
+      label: 'Inventario',
+      icon: 'fas fa-boxes-stacked',
+      route: '/app/gestion/inventario',
+      section: 'GESTIÓN',
+      permisos: ['inventario.view', 'productos.view', 'bodegas.view', 'categorias.view']
     },
     {
-      section: 'GESTIÓN', // o la sección donde prefieras ubicarlo ('PANEL' o 'MANTENIMIENTO')
+      label: 'Recepción',
+      icon: 'fas fa-inbox',
+      route: '/app/recepcion/recepcion-mercancias',
+      section: 'GESTIÓN',
+      permisos: ['recepcion.view', 'recepcion.create']
+    },
+    {
+      label: 'Historial Logístico',
+      icon: 'fas fa-clipboard-list',
+      route: '/app/recepcion/historial-logistico',
+      section: 'GESTIÓN',
+      permisos: ['historial.view']
+    },
+    {
+      label: 'Auditorías',
+      icon: 'fas fa-file-lines',
+      route: '/app/gestion/auditorias',
+      section: 'GESTIÓN',
+      permisos: ['auditoria.view']
+    },
+    {
+      label: 'Roles y Usuarios',
+      icon: 'fas fa-user',
+      route: '/app/gestion/roles-yusuarios',
+      section: 'GESTIÓN',
+      permisos: ['usuarios.view', 'roles.view']
+    },
+    {
       label: 'Reportes',
-      icon: '📊', // O el emoji/icono que utilices
+      icon: 'fas fa-chart-line',
       route: '/app/reportes',
-      rolesPermitidos: ['Administrador', 'Gerente', 'Operador'] // Ajusta según los roles que deban verlo
+      section: 'GESTIÓN',
+      permisos: ['reportes.view']
+    },
+
+    // MANTENIMIENTO
+    {
+      label: 'Programación',
+      icon: 'fas fa-screwdriver-wrench',
+      route: '/app/programacion',
+      section: 'MANTENIMIENTO',
+      permisos: ['mantenimiento.view', 'mantenimiento.create']
+    },
+    {
+      label: 'Incidencias',
+      icon: 'fas fa-triangle-exclamation',
+      route: '/app/incidencias',
+      section: 'MANTENIMIENTO',
+      permisos: ['incidencias.view', 'incidencias.create']
+    },
+
+    // DOCUMENTACIÓN
+    {
+      label: 'Diagramas',
+      icon: 'fas fa-diagram-project',
+      route: '/app/diagramas',
+      section: 'DOCUMENTACIÓN',
+      permisos: ['diagramas.view']
     }
   ];
 
@@ -122,12 +120,11 @@ export class SidebarComponent implements OnInit {
     this.usuarioActual = this.authService.obtenerUsuarioActual();
   }
 
-  esPermitido(rolesPermitidos: string[]): boolean {
-    const rolActual = this.usuarioActual?.rol || '';
-    return rolesPermitidos.includes(rolActual);
+  esPermitido(permisos: string[]): boolean {
+    return permisos.some((codigo) => this.authService.tienePermiso(codigo));
   }
 
   tieneItemsVisibles(section: string): boolean {
-    return this.menuItems.some(item => item.section === section && this.esPermitido(item.rolesPermitidos));
+    return this.menuItems.some(item => item.section === section && this.esPermitido(item.permisos));
   }
 }

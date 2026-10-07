@@ -8,16 +8,16 @@
     "sidebar content"
     "sidebar footer";
   height: 100vh;
-  background-color: #070a12;
-  color: #f8fafc;
-  overflow: hidden; /* Evita scroll general en la ventana */
+  background-color: var(--bg-primary, #f1f5f9);
+  color: var(--text-primary, #0f172a);
+  overflow: hidden;
 }
 
 /* 1. Sidebar fijo */
 .sidebar-wrapper {
   grid-area: sidebar;
   height: 100%;
-  background-color: #0d121d;
+  background-color: var(--bg-surface, #ffffff);
   overflow: hidden;
 }
 
@@ -25,29 +25,45 @@
 .header-container {
   grid-area: header;
   height: 100%;
-  overflow: visible !important; /* Permite que el desplegable del perfil sobresalga */
+  overflow: visible !important;
   position: relative;
-  z-index: 1000; /* Hace que el menú quede por encima de las tarjetas y la tabla */
+  z-index: 1000;
 }
 
-/* 3. Única zona con scroll (Aquí es donde se mueven las tarjetas y tablas) */
+/* 3. Única zona con scroll */
 .content-container {
   grid-area: content;
   overflow-y: auto;
-  overflow-x: hidden; /* Evita que un elemento ancho genere scroll horizontal */
+  overflow-x: hidden;
   padding: 32px;
   box-sizing: border-box;
   width: 100%;
-  min-width: 0; /* Permite que el contenido se reduzca en vez de forzar el ancho del grid */
+  min-width: 0;
 }
 
 /* 4. Footer fijo abajo */
 .footer-container {
   grid-area: footer;
-  background-color: #060910;
+  background-color: var(--bg-surface, #ffffff);
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Animación de entrada */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.content-container {
+  animation: fadeInUp 0.45s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
 }
 
 /* Responsivo: el sidebar se colapsa a modo ícono */

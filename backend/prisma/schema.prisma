@@ -1,0 +1,265 @@
+// ============================================================
+// Prisma schema (documentación/alternativa)
+// El backend en producción usa SQL parametrizado (node-postgres).
+// Este archivo sirve como referencia del modelo de datos y como
+// alternativa si se desea migrar el acceso a datos a Prisma.
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Empresa {
+  id                  Int      @id @default(autoincrement())
+  nombre              String   @db.VarChar(200)
+  nit                 String   @unique @db.VarChar(50)
+  correo              String   @db.VarChar(200)
+  telefono            String?  @db.VarChar(30)
+  direccion           String?  @db.VarChar(255)
+  estado              String   @default("Activa") @db.VarChar(15)
+  moneda              String   @default("COP - Peso Colombiano") @db.VarChar(50)
+  formatoFecha        String   @default("DD/MM/YYYY") @map("formato_fecha") @db.VarChar(20)
+  fechaCreacion       DateTime @default(now()) @map("fecha_creacion")
+  fechaActualizacion  DateTime @updatedAt @map("fecha_actualizacion")
+  usuarios            Usuario[]
+
+  @@map("empresas")
+}
+
+model Rol {
+  id            Int       @id @default(autoincrement())
+  nombre        String    @unique @db.VarChar(80)
+  descripcion   String?   @db.VarChar(255)
+  estado        String    @default("Activo") @db.VarChar(15)
+  fechaCreacion DateTime  @default(now()) @map("fecha_creacion")
+  usuarios      Usuario[]
+  permisos      Permiso[] @relation("rol_permiso")
+
+  @@map("roles")
+}
+
+model Permiso {
+  id          Int      @id @default(autoincrement())
+  nombre      String   @db.VarChar(120)
+  codigo      String   @unique @db.VarChar(100)
+  descripcion String?  @db.VarChar(255)
+  modulo      String   @db.VarChar(60)
+  roles       Rol[]    @relation("rol_permiso")
+
+  @@map("permisos")
+}
+
+model Usuario {
+  id                  Int       @id @default(autoincrement())
+  nombre              String    @db.VarChar(150)
+  apellido            String    @db.VarChar(150)
+  email               String    @unique @db.VarChar(200)
+  passwordHash        String    @map("password_hash") @db.VarChar(100)
+  estado              String    @default("Activo") @db.VarChar(15)
+  rolId               Int       @map("rol_id")
+  empresaId           Int?      @map("empresa_id")
+  ultimoAcceso        DateTime? @map("ultimo_acceso")
+  fechaCreacion       DateTime  @default(now()) @map("fecha_creacion")
+  fechaActualizacion  DateTime  @updatedAt @map("fecha_actualizacion")
+  rol                 Rol       @relation(fields: [rolId], references: [id])
+  empresa             Empresa?  @relation(fields: [empresaId], references: [id])
+  movimientos         MovimientoInventario[]
+  recepciones         Recepcion[]
+  incidencias         Incidencia[] @relation("incidencias_reportadas")
+  incidenciasResueltas Incidencia[] @relation("incidencias_resueltas")
+  mantenimientos      Mantenimiento[]
+  auditorias          Auditoria[]
+  sesiones            Sesion[]
+  notificaciones      Notificacion[]
+
+  @@map("usuarios")
+}
+
+model Categoria {
+  id          Int       @id @default(autoincrement())
+  nombre      String    @unique @db.VarChar(120)
+  descripcion String?   @db.VarChar(255)
+  estado      String    @default("Activo") @db.VarChar(15)
+  productos   Producto[]
+
+  @@map("categorias")
+}
+
+model Bodega {
+  id          Int        @id @default(autoincrement())
+  nombre      String     @unique @db.VarChar(150)
+  codigo      String     @unique @db.VarChar(20)
+  ciudad      String?    @db.VarChar(100)
+  direccion   String?    @db.VarChar(255)
+  responsable String?    @db.VarChar(150)
+  telefono    String?    @db.VarChar(30)
+  capacidad   Int        @default(0)
+  ocupado     Int        @default(0)
+  activa      Boolean    @default(true)
+  productos   Producto[]
+  movimientos MovimientoInventario[]
+  recepciones Recepcion[]
+
+  @@map("bodegas")
+}
+
+model Producto {
+  id            Int                    @id @default(autoincrement())
+  codigo        String                 @unique @db.VarChar(50)
+  nombre        String                 @db.VarChar(200)
+  descripcion   String?                @db.VarChar(500)
+  categoriaId   Int?                   @map("categoria_id")
+  bodegaId      Int?                   @map("bodega_id")
+  precio        Decimal                @db.Decimal(14, 2)
+  costo         Decimal                @db.Decimal(14, 2)
+  stock         Int
+  stockMin      Int                    @default(0) @map("stock_min")
+  estado        String                 @default("Activo") @db.VarChar(15)
+  fechaCreacion DateTime               @default(now()) @map("fecha_creacion")
+  categoria     Categoria?             @relation(fields: [categoriaId], references: [id])
+  bodega        Bodega?                @relation(fields: [bodegaId], references: [id])
+  movimientos   MovimientoInventario[]
+  detalles      RecepcionDetalle[]
+
+  @@index([nombre])
+  @@map("productos")
+}
+
+model MovimientoInventario {
+  id           Int       @id @default(autoincrement())
+  productoId   Int?      @relation(fields: [productoId], references: [id]) @map("producto_id")
+  bodegaId     Int?      @relation(fields: [bodegaId], references: [id]) @map("bodega_id")
+  tipo         String    @db.VarChar(20)
+  cantidad     Int
+  motivo       String    @db.VarChar(100)
+  responsable  String    @db.VarChar(150)
+  observaciones String?  @db.VarChar(255)
+  estado       String    @default("Validado") @db.VarChar(20)
+  usuarioId    Int?      @map("usuario_id")
+  fecha        DateTime  @default(now())
+  producto     Producto? @relation(fields: [productoId], references: [id])
+  bodega       Bodega?   @relation(fields: [bodegaId], references: [id])
+  usuario      Usuario?  @relation(fields: [usuarioId], references: [id])
+
+  @@index([fecha])
+  @@map("movimientos_inventario")
+}
+
+model Recepcion {
+  id              Int                   @id @default(autoincrement())
+  numeroDocumento String                @unique @map("numero_documento") @db.VarChar(50)
+  proveedor       String                @db.VarChar(200)
+  fechaRecepcion  DateTime              @default(now()) @map("fecha_recepcion")
+  usuarioId       Int                   @map("usuario_id")
+  bodegaId        Int?                  @map("bodega_id")
+  estado          String                @default("En Proceso") @db.VarChar(20)
+  observaciones   String?               @db.VarChar(255)
+  usuario         Usuario               @relation(fields: [usuarioId], references: [id])
+  bodega          Bodega?               @relation(fields: [bodegaId], references: [id])
+  detalles        RecepcionDetalle[]
+
+  @@map("recepciones")
+}
+
+model RecepcionDetalle {
+  id            Int      @id @default(autoincrement())
+  recepcionId   Int      @map("recepcion_id")
+  productoId    Int      @map("producto_id")
+  cantidad      Int
+  costoUnitario Decimal? @map("costo_unitario") @db.Decimal(14, 2)
+  recepcion     Recepcion @relation(fields: [recepcionId], references: [id])
+  producto      Producto  @relation(fields: [productoId], references: [id])
+
+  @@unique([recepcionId, productoId])
+  @@map("recepcion_detalle")
+}
+
+model Incidencia {
+  id               Int       @id @default(autoincrement())
+  titulo           String    @db.VarChar(150)
+  descripcion      String
+  prioridad        String    @db.VarChar(20)
+  estado           String    @default("Pendiente") @db.VarChar(20)
+  reportadoPor     Int       @map("reportado_por")
+  fecha            DateTime  @default(now())
+  resueltoPor      Int?      @map("resuelto_por")
+  fechaResolucion  DateTime? @map("fecha_resolucion")
+  reportado        Usuario   @relation("incidencias_reportadas", fields: [reportadoPor], references: [id])
+  resuelto         Usuario?  @relation("incidencias_resueltas", fields: [resueltoPor], references: [id])
+
+  @@index([estado])
+  @@map("incidencias")
+}
+
+model Mantenimiento {
+  id              Int       @id @default(autoincrement())
+  equipo          String    @db.VarChar(150)
+  tipo            String    @db.VarChar(20)
+  fechaProgramada DateTime  @map("fecha_programada")
+  estado          String    @default("Pendiente") @db.VarChar(20)
+  usuarioId       Int?      @map("usuario_id")
+  descripcion     String?   @db.VarChar(500)
+  usuario         Usuario?  @relation(fields: [usuarioId], references: [id])
+
+  @@map("mantenimientos")
+}
+
+model Auditoria {
+  id            Int       @id @default(autoincrement())
+  usuarioId     Int?      @map("usuario_id")
+  usuarioNombre String?   @map("usuario_nombre") @db.VarChar(300)
+  accion        String    @db.VarChar(30)
+  modulo        String    @db.VarChar(60)
+  entidad       String?   @db.VarChar(120)
+  registroId    String?   @map("registro_id") @db.VarChar(60)
+  descripcion   String?
+  fecha         DateTime  @default(now())
+  usuario       Usuario?  @relation(fields: [usuarioId], references: [id])
+
+  @@index([fecha])
+  @@index([modulo])
+  @@map("auditorias")
+}
+
+model Sesion {
+  id           Int       @id @default(autoincrement())
+  usuarioId    Int       @map("usuario_id")
+  ip           String?   @db.VarChar(45)
+  userAgent    String?   @map("user_agent")
+  dispositivo  String?   @db.VarChar(30)
+  navegador    String?   @db.VarChar(40)
+  fechaInicio  DateTime  @default(now()) @map("fecha_inicio")
+  ultimoAcceso DateTime  @default(now()) @map("ultimo_acceso")
+  fechaCierre  DateTime? @map("fecha_cierre")
+  estado       String    @default("Activa") @db.VarChar(15)
+  usuario      Usuario   @relation(fields: [usuarioId], references: [id])
+
+  @@map("sesiones")
+}
+
+model Notificacion {
+  id        Int      @id @default(autoincrement())
+  usuarioId Int      @map("usuario_id")
+  titulo    String   @db.VarChar(150)
+  mensaje   String
+  tipo      String   @default("info") @db.VarChar(30)
+  leida     Boolean  @default(false)
+  fecha     DateTime @default(now())
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+
+  @@map("notificaciones")
+}
+
+model ConfiguracionSistema {
+  clave               String   @id @db.VarChar(60)
+  valor               String
+  descripcion         String?  @db.VarChar(255)
+  fechaActualizacion  DateTime @updatedAt @map("fecha_actualizacion")
+
+  @@map("configuracion_sistema")
+}

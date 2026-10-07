@@ -1,5 +1,8 @@
-import { Component, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { Component, ElementRef, ViewChild, HostListener, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ApiService } from '../../../services/api.service';
+import { ToastService } from '../../../services/toast.service';
+import { AuthService } from '../../../services/auth';
 
 interface Sesion {
   id: string;
@@ -19,6 +22,22 @@ interface Alerta {
   ip: string;
 }
 
+interface SesionBackend {
+  id: number;
+  usuario_id: number;
+  ip: string | null;
+  user_agent: string | null;
+  dispositivo: string | null;
+  navegador: string | null;
+  fecha_inicio: string;
+  fecha_cierre: string | null;
+  ultimo_acceso: string;
+  estado: string;
+  es_actual: boolean;
+  usuario_nombre?: string;
+  usuario_email?: string;
+}
+
 @Component({
   selector: 'app-sesiones-activas',
   standalone: true,
@@ -26,42 +45,18 @@ interface Alerta {
   templateUrl: './sesiones-activas.html',
   styleUrl: './sesiones-activas.css'
 })
-export class SesionesActivasComponent {
+export class SesionesActivasComponent implements OnInit {
   @ViewChild('cardRef') cardRef!: ElementRef<HTMLDivElement>;
 
-  // Simulación de rol de administrador (HU011 - Restricción)
-  esAdmin: boolean = true; 
+  private apiService = inject(ApiService);
+  private toastService = inject(ToastService);
+  private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
-  // HU011: Visualización de sesiones activas
-  sesiones: Sesion[] = [
-    {
-      id: 'sess-01',
-      dispositivo: 'MacBook Pro 16"',
-      navegador: 'Chrome v128',
-      ubicacion: 'Yopal, Colombia',
-      ip: '181.135.22.10',
-      ultimaActividad: 'Hace un momento',
-      esActual: true
-    },
-    {
-      id: 'sess-02',
-      dispositivo: 'iPhone 15 Pro',
-      navegador: 'Safari Mobile',
-      ubicacion: 'Bogotá, Colombia',
-      ip: '190.28.44.112',
-      ultimaActividad: 'Hace 15 minutos',
-      esActual: false
-    },
-    {
-      id: 'sess-03',
-      dispositivo: 'Windows PC (Tractomula Depot)',
-      navegador: 'Edge v126',
-      ubicacion: 'Santa Marta, Colombia',
-      ip: '186.112.80.05',
-      ultimaActividad: 'Hace 2 horas',
-      esActual: false
-    }
-  ];
+  // Restricción de acceso: solo administradores gestionan las sesiones
+  esAdmin: boolean = false;
+
+  sesiones: Sesion[] = [];
 
   // HU013: Notificaciones de inicio de sesión inusual
   alertas: Alerta[] = [
@@ -73,6 +68,39 @@ export class SesionesActivasComponent {
       ip: '190.157.10.88'
     }
   ];
+
+  ngOnInit(): void {
+    this.esAdmin = this.authService.tieneRol(['Administrador']);
+    void this.cargarSesiones();
+  }
+
+  private async cargarSesiones(): Promise<void> {
+    try {
+      const datos = await this.apiService.get<SesionBackend[]>('/sesiones');
+      this.sesiones = (datos ?? []).map((s) => ({
+        id: String(s.id),
+        dispositivo: s.dispositivo ?? 'Dispositivo desconocido',
+        navegador: s.navegador ?? 'Navegador desconocido',
+        ubicacion: '-',
+        ip: s.ip ?? '-',
+        ultimaActividad: this.formatearActividad(s.ultimo_acceso || s.fecha_inicio),
+        esActual: Boolean(s.es_actual)
+      }));
+      this.cdr.detectChanges();
+    } catch {
+      this.sesiones = [];
+      this.toastService.mostrar('No se pudieron cargar las sesiones activas.', 'error', 'Sesiones');
+      this.cdr.detectChanges();
+    }
+  }
+
+  private formatearActividad(fechaStr: string): string {
+    const fecha = new Date(fechaStr);
+    if (isNaN(fecha.getTime())) {
+      return '-';
+    }
+    return `Conectado el ${fecha.toLocaleDateString()} a las ${fecha.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  }
 
   // Interacción 3D y seguimiento del cursor
   @HostListener('mousemove', ['$event'])
@@ -88,18 +116,30 @@ export class SesionesActivasComponent {
   }
 
   // HU012: Cierre de sesión individual
-  cerrarSesion(id: string): void {
-    this.sesiones = this.sesiones.filter(s => s.id !== id);
-    alert('Sesión finalizada exitosamente.');
+  async cerrarSesion(id: string): Promise<void> {
+    try {
+      await this.apiService.delete(`/sesiones/${id}`);
+      this.sesiones = this.sesiones.filter((s) => s.id !== id);
+      this.cdr.detectChanges();
+      this.toastService.mostrar('La sesión fue finalizada correctamente.', 'success', 'Sesión cerrada');
+    } catch {
+      this.toastService.mostrar('No se pudo cerrar la sesión.', 'error', 'Sesión cerrada');
+    }
   }
 
   // HU012: Cierre de todas las demás sesiones
-  cerrarTodasLasDemas(): void {
-    this.sesiones = this.sesiones.filter(s => s.esActual);
-    alert('Se han cerrado todas las sesiones remotas.');
+  async cerrarTodasLasDemas(): Promise<void> {
+    try {
+      await this.apiService.post('/sesiones/cerrar-otras');
+      this.sesiones = this.sesiones.filter((s) => s.esActual);
+      this.cdr.detectChanges();
+      this.toastService.mostrar('Se cerraron todas las sesiones remotas.', 'success', 'Sesiones');
+    } catch {
+      this.toastService.mostrar('No se pudieron cerrar las demás sesiones.', 'error', 'Sesiones');
+    }
   }
 
   descartarAlerta(id: string): void {
-    this.alertas = this.alertas.filter(a => a.id !== id);
+    this.alertas = this.alertas.filter((a) => a.id !== id);
   }
 }
